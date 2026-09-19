@@ -1,11 +1,14 @@
 repositories {
     mavenCentral()
     google() // Needed for androidx
+    maven { url = 'https://maven.pedropathing.com/' } // For Pedro Pathing
+    maven { url = "https://mymaven.bylazar.com/releases" } // For Panels
 }
 
 dependencies {
     implementation 'org.firstinspires.ftc:Inspection:12.0.0'
     implementation 'org.firstinspires.ftc:Blocks:12.0.0'
+    //noinspection Aligned16KB
     implementation 'org.firstinspires.ftc:RobotCore:12.0.0'
     implementation 'org.firstinspires.ftc:RobotServer:12.0.0'
     implementation 'org.firstinspires.ftc:OnBotJava:12.0.0'
@@ -13,5 +16,13 @@ dependencies {
     implementation 'org.firstinspires.ftc:FtcCommon:12.0.0'
     implementation 'org.firstinspires.ftc:Vision:12.0.0'
     implementation 'androidx.appcompat:appcompat:1.2.0'
+
+    // Pedro Pathing
+    implementation 'com.pedropathing:ftc:2.1.2'
+    implementation 'com.pedropathing:telemetry:1.0.0'
+    implementation 'com.bylazar:fullpanels:1.0.13'
+
+    // EJML, for Kalman filter
+    implementation 'org.ejml:ejml-simple:0.46.1'
 }
 

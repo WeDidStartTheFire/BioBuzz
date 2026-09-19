@@ -14,13 +14,11 @@ import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.IntakeController;
-import org.firstinspires.ftc.teamcode.controllers.LaunchController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
 
 public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
     protected Robot robot;
-    protected LaunchController launchController;
     protected IntakeController intakeController;
     protected Pose startPose, shootPose;
     protected TelemetryUtils tm;
@@ -65,10 +63,8 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         RobotState.color = color;
         robot = new Robot(hardwareMap, telemetry, true);
         robot.drivetrain.follower.setStartingPose(startPose);
-        robot.indexer.markAllUnknown();
         tm = robot.drivetrain.tm;
         buildPaths();
-        launchController = new LaunchController(robot);
         intakeController = new IntakeController(robot);
         tm.print(name + " auto initialized");
         tm.update();
@@ -80,8 +76,6 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
     @Override
     public final void start() {
         robot.drivetrain.follower.setPose(startPose);
-        robot.feeder.retract();
-        robot.indexer.setPos(0);
         robot.limelight.start();
         robot.turret.setTarget(Turret.Target.GOAL);
         RobotState.motif = robot.limelight.getMotif();
@@ -97,18 +91,13 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         vel = robot.drivetrain.follower.getVelocity();
         pathUpdate();
         robot.turret.update(true);
-        robot.indexer.update();
-        launchController.update();
         intakeController.update();
         robot.led.update();
 
         tm.drawRobot(robot.drivetrain.follower, 250);
         tm.print("Path State", state);
-        tm.print("Launcher State", launchController.getState());
         tm.print("Intake State", intakeController.getState());
-        tm.print("Queue", launchController.getQueue());
         tm.print("Motif", motif);
-        tm.print("Indexer Pos", robot.indexer.getGoalPos());
         if (pose != null) tm.print(pose);
         tm.print("Motor Goal Vel", robot.launcher.getGoalVel(shootPose, null));
         tm.print("Launcher Vel", robot.launcher.getCachedVel());
@@ -130,7 +119,6 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         robot.drivetrain.follower.breakFollowing();
         pose = robot.drivetrain.follower.getPose();
         if (pose != null) saveOdometryPosition(pose);
-        launchController.stop();
         intakeController.stop();
         robot.limelight.stop();
         tm.showLogs();

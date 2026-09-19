@@ -32,28 +32,12 @@ public class RobotConstants {
     public static final double M = 0.889;
 
     public static final IMU.Parameters IMU_PARAMS = new IMU.Parameters(
-            new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-                    RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
+        new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+            RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
 
     public static final double DRIVETRAIN_VELOCITY = 2000;
 
-    public static final double MIDDLE_INDEXER_POS = 0.455;
-    public static double INDEXER_SPEED = 0.9;
-    public static final double INDEXER_POS_EPSILON = 1e-4;
-
     public static final double[] speeds = {0.2, 0.6, 1};
-
-    @Configurable
-    public static class LaunchController {
-        public static double MAX_LAUNCHER_SPIN_WAIT = 5;
-        public static double MAX_DROOP_WAIT = 3;
-        public static double MAX_FEEDER_DOWN_WAIT = .35;
-        public static double MIN_FEEDER_DOWN_WAIT = .15;
-        public static double ARTIFACT_LAUNCH_WAIT = .15;
-        public static int MAX_FAILED_ATTEMPTS = 5;
-        public static double STOP_LAUNCHER_WAIT = 0.25;
-        public static int MAX_ARTIFACT_PRESENT_COUNT = 1;
-    }
 
     @Configurable
     public static class Reset {
@@ -109,7 +93,7 @@ public class RobotConstants {
     }
 
     public static com.pedropathing.control.PIDFCoefficients teleopHeadingPID =
-            new com.pedropathing.control.PIDFCoefficients(1, 0, .05, 0);
+        new com.pedropathing.control.PIDFCoefficients(1, 0, .05, 0);
     public static com.pedropathing.control.PIDFCoefficients launcherPIDF = new com.pedropathing.control.PIDFCoefficients(.002, 0, 0, .00055);
     public static PIDFCoefficients launcherReversePIDF = new PIDFCoefficients(80, 0, 0, 20);
     public static final double LAUNCHER_HEIGHT = 15.5;
@@ -163,46 +147,6 @@ public class RobotConstants {
                 default:
                     return super.toString();
             }
-        }
-
-        /**
-         * Gets the nth artifact in this motif sequence (0-indexed).
-         *
-         * @param n The position in the motif sequence (0-based, wraps around)
-         * @return The artifact at the specified position
-         */
-        public Artifact getNthArtifact(int n) {
-            n %= 3;
-            switch (this) {
-                case GPP:
-                    switch (n) {
-                        case 0:
-                            return Artifact.GREEN;
-                        case 1:
-                        case 2:
-                            return Artifact.PURPLE;
-                    }
-                    break;
-                case PGP:
-                    switch (n) {
-                        case 1:
-                            return Artifact.GREEN;
-                        case 0:
-                        case 2:
-                            return Artifact.PURPLE;
-                    }
-                    break;
-                case PPG:
-                    switch (n) {
-                        case 2:
-                            return Artifact.GREEN;
-                        case 1:
-                        case 0:
-                            return Artifact.PURPLE;
-                    }
-                    break;
-            }
-            return Artifact.UNKNOWN;
         }
     }
 

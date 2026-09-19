@@ -11,8 +11,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
-import org.firstinspires.ftc.teamcode.robot.mechanisms.Feeder;
-import org.firstinspires.ftc.teamcode.robot.mechanisms.Indexer;
 
 @Utility(name = "Diagnostics")
 public class Diagnostics extends LinearOpMode {
@@ -23,8 +21,7 @@ public class Diagnostics extends LinearOpMode {
     public ColorSensor colorSensor, colorSensorB;
     public TouchSensor turretTouchSensor;
     public SparkFunOTOS otos;
-    public Indexer indexer;
-    
+
     public TelemetryUtils tm;
     
     public void runOpMode() {
@@ -99,10 +96,6 @@ public class Diagnostics extends LinearOpMode {
         tm.print("SparkFun Sensor",
                 otos == null ? "⚠️ Not Connected (CH I2C 1)" : "✅ Connected");
 
-        indexer = new Indexer(hardwareMap, tm,
-            new org.firstinspires.ftc.teamcode.robot.mechanisms.ColorSensor(hardwareMap, tm),
-            new Feeder(hardwareMap, tm));
-
         tm.update();
         waitForStart();
         if (!opModeIsActive()) return;
@@ -116,18 +109,6 @@ public class Diagnostics extends LinearOpMode {
             feederServoA.setPosition(0);
             feederServoB.setPosition(0);
             actionTm("Lowering feeder servo", "Indexer to second position");
-            sleep(1000);
-        }
-
-        if (indexerServo != null){
-            indexer.setPos(0.5);
-            actionTm("Indexer to second position", "Indexer to third position");
-            sleep(1000);
-            indexer.setPos(1);
-            actionTm("Indexer to third position", "Indexer to first position");
-            sleep(1000);
-            indexer.setPos(0);
-            actionTm("Indexer to first position", "Intake moving");
             sleep(1000);
         }
 

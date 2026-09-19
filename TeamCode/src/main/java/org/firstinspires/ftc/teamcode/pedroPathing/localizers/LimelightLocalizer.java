@@ -53,7 +53,7 @@ public class LimelightLocalizer implements Localizer {
         limelight.setPollRateHz(100);
         limelight.pipelineSwitch(0);
         limelight.start();
-        prevTime = System.currentTimeMillis();
+        prevTime = System.nanoTime();
         if (startPose == null) startPose = new Pose();
         prevPose = startPose;
         setStartPose(startPose);

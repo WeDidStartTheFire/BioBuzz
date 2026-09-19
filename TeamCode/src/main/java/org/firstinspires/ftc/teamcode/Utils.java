@@ -22,7 +22,7 @@ public class Utils {
     }
 
     /**
-     * Saves the current pose to a file.
+     * Saves the current pos to be used in TeleOp. Clears after power off.
      *
      * @param pos Pose to save
      */
@@ -31,7 +31,7 @@ public class Utils {
     }
 
     /**
-     * Loads the current pose from a file.
+     * Saves the current pos to be used in TeleOp. Clears after power off.
      *
      * @return The position the robot ended at in the last Auto
      */

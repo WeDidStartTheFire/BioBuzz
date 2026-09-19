@@ -130,6 +130,9 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         robot.drivetrain.follower.breakFollowing();
         pose = robot.drivetrain.follower.getPose();
         if (pose != null) saveOdometryPosition(pose);
+        launchController.stop();
+        intakeController.stop();
+        robot.limelight.stop();
         tm.showLogs();
         tm.update();
         onStop();

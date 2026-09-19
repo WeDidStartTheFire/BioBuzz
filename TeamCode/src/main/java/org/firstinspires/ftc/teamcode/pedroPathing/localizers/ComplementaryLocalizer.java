@@ -24,7 +24,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Configurable
-public class ComplimentaryLocalizer implements Localizer {
+public class ComplementaryLocalizer implements Localizer {
     private final Limelight3A limelight;
     @NonNull
     private Pose pose;
@@ -38,11 +38,11 @@ public class ComplimentaryLocalizer implements Localizer {
     public static double linAlpha = .97;
     public static double angAlpha = .999;
 
-    public ComplimentaryLocalizer(HardwareMap map) {
+    public ComplementaryLocalizer(HardwareMap map) {
         this(map, null);
     }
 
-    public ComplimentaryLocalizer(@NonNull HardwareMap map, @Nullable Pose startPose) {
+    public ComplementaryLocalizer(@NonNull HardwareMap map, @Nullable Pose startPose) {
         limelight = map.get(Limelight3A.class, "limelight");
         limelight.setPollRateHz(100);
         limelight.pipelineSwitch(0);

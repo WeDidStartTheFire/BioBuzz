@@ -116,6 +116,7 @@ public class TeleOpController {
         driveController.stop();
         launchController.stop();
         intakeController.stop();
+        robot.limelight.stop();
         robot.indexer.markAllUnknown();
         RobotState.launcherVelModifier = 0;
         tm.showLogs();

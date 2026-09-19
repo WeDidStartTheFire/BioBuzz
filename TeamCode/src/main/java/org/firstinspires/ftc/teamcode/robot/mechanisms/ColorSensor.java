@@ -72,6 +72,7 @@ public class ColorSensor {
     public Scalar getRGB_A() {
         if (colorSensorA == null) return new Scalar(0, 0, 0);
         NormalizedRGBA color = colorSensorA.getNormalizedColors();
+        if (color.alpha == 0) return new Scalar(color.red, color.green, color.blue);
         float r = color.red / color.alpha;
         float g = color.green / color.alpha;
         float b = color.blue / color.alpha;
@@ -87,6 +88,7 @@ public class ColorSensor {
     public Scalar getRGB_B() {
         if (colorSensorB == null) return new Scalar(0, 0, 0);
         NormalizedRGBA color = colorSensorB.getNormalizedColors();
+        if (color.alpha == 0) return new Scalar(color.red, color.green, color.blue);
         float r = color.red / color.alpha;
         float g = color.green / color.alpha;
         float b = color.blue / color.alpha;

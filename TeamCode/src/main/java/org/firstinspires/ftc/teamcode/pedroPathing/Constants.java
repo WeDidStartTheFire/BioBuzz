@@ -18,7 +18,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.pedroPathing.localizers.ComplimentaryLocalizer;
+import org.firstinspires.ftc.teamcode.pedroPathing.localizers.ComplementaryLocalizer;
 import org.firstinspires.ftc.teamcode.pedroPathing.localizers.KalmanLocalizer;
 import org.firstinspires.ftc.teamcode.pedroPathing.localizers.LimelightLocalizer;
 import org.firstinspires.ftc.teamcode.pedroPathing.localizers.RedundantLocalizer;
@@ -106,8 +106,8 @@ public class Constants {
         return createCustomFollower(hardwareMap, new KalmanLocalizer(hardwareMap));
     }
 
-    public static Follower createComplimentaryFollower(HardwareMap hardwareMap) {
-        return createCustomFollower(hardwareMap, new ComplimentaryLocalizer(hardwareMap));
+    public static Follower createComplementaryFollower(HardwareMap hardwareMap) {
+        return createCustomFollower(hardwareMap, new ComplementaryLocalizer(hardwareMap));
     }
 
     public static Follower createLimelightFollower(HardwareMap hardwareMap) {
@@ -115,6 +115,6 @@ public class Constants {
     }
 
     public static Follower createFollower(HardwareMap hardwareMap) {
-        return createComplimentaryFollower(hardwareMap);
+        return createComplementaryFollower(hardwareMap);
     }
 }

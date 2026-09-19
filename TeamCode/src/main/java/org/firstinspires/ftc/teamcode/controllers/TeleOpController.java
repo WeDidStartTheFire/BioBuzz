@@ -1,18 +1,9 @@
 package org.firstinspires.ftc.teamcode.controllers;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Color.BLUE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Positions.BLUE_BASE_ZONE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Positions.BLUE_FAR_LAUNCH;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Positions.BLUE_HUMAN_PLAYER;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Positions.RED_BASE_ZONE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Positions.RED_FAR_LAUNCH;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Positions.RED_HUMAN_PLAYER;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Reset.HARD_RESET_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Reset.SOFT_RESET_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.runtime;
 import static org.firstinspires.ftc.teamcode.RobotState.launcherVelModifier;
-import static org.firstinspires.ftc.teamcode.RobotState.motif;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.robotCentric;
 import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
@@ -32,7 +23,6 @@ import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
 public class TeleOpController {
     private final Gamepad gamepad1, gamepad2;
     private final IntakeController intakeController;
-    private final LaunchController launchController;
     private final DriveController driveController;
     private final Robot robot;
     private final Follower follower;
@@ -56,7 +46,6 @@ public class TeleOpController {
         this.robot = robot;
         this.robot.initBulkCache();
         intakeController = new IntakeController(robot);
-        launchController = new LaunchController(robot);
         RobotState.launcherVelModifier = 0;
         driveController = new DriveController(robot);
         this.gamepad1 = gamepad1;
@@ -71,10 +60,7 @@ public class TeleOpController {
      * the team motif. To be called in the start() method of the OpMode.
      */
     public void start() {
-        robot.feeder.retract();
-        robot.indexer.setPos(0);
         robot.limelight.start();
-        if (motif == RobotConstants.Motif.UNKNOWN) motif = robot.limelight.getMotif();
     }
 
     /**
@@ -82,7 +68,6 @@ public class TeleOpController {
      * Should be called repeatedly during TeleOp operation.
      */
     public void update() {
-        tm.print("Motif", motif);
         long t = runtime.nanoseconds();
         int ms = 0;
         if (lastUpdateTime != 0) {
@@ -103,7 +88,6 @@ public class TeleOpController {
         }
         robot.turret.rotateManual(gamepad2.right_stick_x * .001 * ms);
         robot.turret.update(true);
-        if (motif == RobotConstants.Motif.UNKNOWN) motif = robot.limelight.getMotif();
         robot.led.update();
         tm.updateOnlyPanels(10);
     }
@@ -114,10 +98,8 @@ public class TeleOpController {
      */
     public void stop() {
         driveController.stop();
-        launchController.stop();
         intakeController.stop();
         robot.limelight.stop();
-        robot.indexer.markAllUnknown();
         RobotState.launcherVelModifier = 0;
         tm.showLogs();
         tm.update();
@@ -140,12 +122,12 @@ public class TeleOpController {
      */
     public void drivetrainLogic(boolean fieldCentric, boolean usePedro) {
         if (validStartPose && useOdometry) {
-            if (gamepad1.xWasPressed())
-                driveController.follow(RobotState.color == BLUE ? BLUE_FAR_LAUNCH : RED_FAR_LAUNCH);
-            if (gamepad1.aWasPressed())
-                driveController.follow(RobotState.color == BLUE ? BLUE_HUMAN_PLAYER : RED_HUMAN_PLAYER);
-            if (gamepad1.yWasPressed())
-                driveController.follow(RobotState.color == BLUE ? BLUE_BASE_ZONE : RED_BASE_ZONE);
+//            if (gamepad1.xWasPressed())
+//                driveController.follow(RobotState.color == BLUE ? BLUE_FAR_LAUNCH : RED_FAR_LAUNCH);
+//            if (gamepad1.aWasPressed())
+//                driveController.follow(RobotState.color == BLUE ? BLUE_HUMAN_PLAYER : RED_HUMAN_PLAYER);
+//            if (gamepad1.yWasPressed())
+//                driveController.follow(RobotState.color == BLUE ? BLUE_BASE_ZONE : RED_BASE_ZONE);
             if (gamepad1.bWasPressed()) driveController.toggleAiming();
         }
         if (gamepad1.dpadDownWasPressed()) {
@@ -187,28 +169,6 @@ public class TeleOpController {
     }
 
     /**
-     * Updates the indexer mechanism during TeleOp.
-     * Handles manual rotation and automatic inner intake control to keep artifacts in the indexer.
-     */
-    public void updateIndexerTeleOp() {
-        tm.print("Indexer still", robot.indexer.isStill());
-        tm.print("Indexer goal pos", robot.indexer.getGoalPos());
-
-        if (gamepad2.dpadRightWasPressed()) robot.indexer.rotateClockwise();
-        else if (gamepad2.dpadLeftWasPressed()) robot.indexer.rotateCounterclockwise();
-        if (!intakeController.isBusy() && !robot.indexer.isStill()) intakeController.innerIntake();
-    }
-
-
-    /**
-     * Updates the indexer mechanism state.
-     * Should be called every loop iteration.
-     */
-    public void indexerUpdate() {
-        robot.indexer.update();
-    }
-
-    /**
      * Handles intake control based on gamepad input.
      * Manages intake, outtake, and automatic stopping.
      */
@@ -230,32 +190,8 @@ public class TeleOpController {
     public void updateLauncherTeleOp() {
         if (gamepad2.dpadUpWasPressed()) launcherVelModifier += 25;
         if (gamepad2.dpadDownWasPressed()) launcherVelModifier -= 25;
-        if (gamepad2.right_trigger >= 0.5) launchController.manualSpin();
-        else launchController.manualStop();
-        if (gamepad2.left_trigger >= 0.4) launchController.intake(gamepad2.left_trigger);
-        else if (gamepad2.left_bumper) launchController.intake(0.4);
-        if (gamepad2.yWasPressed()) launchController.launchArtifacts(3, false);
-        if (gamepad2.aWasPressed()) launchController.launchArtifact(Artifact.GREEN);
-        if (gamepad2.bWasPressed()) launchController.launchArtifact(Artifact.PURPLE);
-        if (gamepad2.xWasPressed()) launchController.stop();
-        launchController.update();
 
-        tm.print("Queue", launchController.getQueue());
         tm.print("Launcher Vel", robot.launcher.getCachedVel());
         tm.print("Goal", robot.launcher.getGoalVel());
-    }
-
-    /**
-     * Controls feeder logic for launching artifacts.
-     * Coordinates feeder movement with launcher and indexer.
-     */
-    public void feederLogic() {
-        tm.print("Feeder Up", robot.feeder.isUp());
-        tm.print("Feeder Pos", robot.feeder.getGoalPos());
-        if (gamepad2.right_bumper && (launchController.isBusy() || gamepad2.right_trigger >= 0.5)
-            && robot.indexer.isStill()) {
-            launchController.manualRaise();
-            intakeController.innerIntake();
-        } else launchController.manualRetract();
     }
 }

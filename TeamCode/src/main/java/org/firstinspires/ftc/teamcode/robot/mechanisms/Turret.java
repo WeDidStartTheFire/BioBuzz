@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.Color.RED;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Positions.BLUE_HUMAN_PLAYER_POSE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Positions.RED_HUMAN_PLAYER_POSE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.MAX_TIMES_NOT_RESET;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.TURRET_ADJUST_FOR_VOLTAGE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.TURRET_ENCODERS_PER_DEGREE;
@@ -24,7 +21,6 @@ import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.HIGH;
 import static java.lang.Math.abs;
-import static java.lang.Math.atan2;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.Math.signum;
@@ -33,7 +29,6 @@ import static java.lang.Math.toDegrees;
 import androidx.annotation.Nullable;
 
 import com.pedropathing.control.PIDFController;
-import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -41,7 +36,6 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
-import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
@@ -59,7 +53,7 @@ public class Turret {
     private boolean reset = false;
 
     public enum Target {
-        GOAL, HUMAN_PLAYER, NONE, HOLD, MANUAL
+        GOAL, NONE, HOLD, MANUAL
     }
 
     public Turret(HardwareMap hardwareMap, TelemetryUtils tm) {
@@ -139,10 +133,6 @@ public class Turret {
             ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolution();
             if (sol == null) return;
             setFieldCentricAngle(sol.phi);
-        } else if (target == Target.HUMAN_PLAYER && pose != null) {
-            Pose targetPose = RobotState.color == RED ? RED_HUMAN_PLAYER_POSE : BLUE_HUMAN_PLAYER_POSE;
-            Pose dPose = targetPose.minus(pose);
-            setFieldCentricAngle(atan2(dPose.getY(), dPose.getX()));
         }
 
         double pos = turretMotor.getCurrentPosition();

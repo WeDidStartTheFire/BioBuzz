@@ -9,7 +9,6 @@ import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
@@ -38,35 +37,6 @@ public class Limelight {
      */
     public void stop() {
         if (limelight != null) limelight.stop();
-    }
-
-    /**
-     * Gets the detected motif
-     *
-     * @return Detected motif. If it doesn't detect a valid ID or multiple motif IDs, will return
-     * Motif.UNKNOWN.
-     */
-    public RobotConstants.Motif getMotif() {
-        List<LLResultTypes.FiducialResult> fiducials = getFiducials();
-        if (fiducials == null) return RobotConstants.Motif.UNKNOWN;
-        RobotConstants.Motif motif = RobotConstants.Motif.UNKNOWN;
-        for (LLResultTypes.FiducialResult fiducial : fiducials) {
-            switch (fiducial.getFiducialId()) {
-                case 21:
-                    if (motif == RobotConstants.Motif.UNKNOWN) motif = RobotConstants.Motif.GPP;
-                    else return RobotConstants.Motif.UNKNOWN;
-                    break;
-                case 22:
-                    if (motif == RobotConstants.Motif.UNKNOWN) motif = RobotConstants.Motif.PGP;
-                    else return RobotConstants.Motif.UNKNOWN;
-                    break;
-                case 23:
-                    if (motif == RobotConstants.Motif.UNKNOWN) motif = RobotConstants.Motif.PPG;
-                    else return RobotConstants.Motif.UNKNOWN;
-                    break;
-            }
-        }
-        return motif;
     }
 
     /**

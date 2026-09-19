@@ -9,7 +9,6 @@ import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.CRITICAL;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.MEDIUM;
-import static java.lang.Math.abs;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -148,22 +147,6 @@ public class Launcher {
     public boolean almostToSpeed(double vel) {
         if (launcherMotorA == null || launcherMotorB == null) return false;
         return vel >= getGoalVel() - 100;
-    }
-
-    /**
-     * Spins the launch motors inward to intake artifacts
-     *
-     * @param percent Power on [0, 1] to power the launch motors
-     */
-    public void intakeMotors(double percent) {
-        if (launcherMotorA != null) launcherMotorA.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        if (launcherMotorB != null) launcherMotorB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        percent = Math.max(0, Math.min(1, percent));
-        if (!spinning && abs(cachedPower + percent * .4) <= .005) return;
-        spinning = false;
-        cachedPower = -percent * .4;
-        if (launcherMotorA != null) launcherMotorA.setPower(-percent * .4);
-        if (launcherMotorB != null) launcherMotorB.setPower(-percent * .4);
     }
 
     /**

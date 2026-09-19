@@ -3,21 +3,11 @@ package org.firstinspires.ftc.teamcode;
 import static java.lang.Math.PI;
 import static java.lang.Math.toRadians;
 
-import androidx.annotation.NonNull;
-
 import com.bylazar.configurables.annotations.Configurable;
-import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.PathConstraints;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 @Configurable
 public class RobotConstants {
@@ -53,23 +43,6 @@ public class RobotConstants {
     public static final double baseTurnSpeed = 2.5;
 
     @Configurable
-    public static class Autonomous {
-        public static PathConstraints slowIntakePathConstraints = new PathConstraints(
-            0.3,
-            500,
-            0.5,
-            0.4
-        );
-        public static double INTAKE_MOVE_MAX_SPEED = 0.4;
-        public static double MAX_MOTIF_DETECT_WAIT = 1;
-        public static double MAX_INTAKE_PATH_WAIT = 2.5;
-        public static double INTAKE_AFTER_LAUNCH_WAIT = 1;
-    }
-
-    public static double INDEXER_ARTIFACT_DETECTION_WAIT = 0.9;
-    public static double PARTIAL_INDEXER_ARTIFACT_DETECTION_WAIT = 0.2;
-
-    @Configurable
     public static class Turret {
         public static com.pedropathing.control.PIDFCoefficients turretMotorPID =
             new com.pedropathing.control.PIDFCoefficients(.00055, 0, 0.00003, 0);
@@ -101,23 +74,6 @@ public class RobotConstants {
     public static double BALL_VEL_TO_MOTOR_VEL_COEFF = 4.45;
     public static double BALL_VEL_TO_MOTOR_VEL_CONST = 466;
 
-    @Configurable
-    public static class Positions {
-        public static Pose3D RED_GOAL_POSE = new Pose3D(new Position(DistanceUnit.INCH, 139, 139, 44, 0),
-            new YawPitchRollAngles(AngleUnit.RADIANS, 0, 0, 0, 0));
-        public static Pose3D BLUE_GOAL_POSE = new Pose3D(new Position(DistanceUnit.INCH, 5, 139, 44, 0),
-            new YawPitchRollAngles(AngleUnit.RADIANS, 0, 0, 0, 0));
-        public static Pose RED_HUMAN_PLAYER_POSE = new Pose(0, 9);
-        public static Pose BLUE_HUMAN_PLAYER_POSE = new Pose(144, 9);
-
-        public static Pose RED_BASE_ZONE = new Pose(38, 33, toRadians(90));
-        public static Pose BLUE_BASE_ZONE = new Pose(106, 33, toRadians(90));
-        public static Pose RED_FAR_LAUNCH = new Pose(84, 20, toRadians(90));
-        public static Pose BLUE_FAR_LAUNCH = new Pose(60, 20, toRadians(90));
-        public static Pose RED_HUMAN_PLAYER = new Pose(20, 14, toRadians(90));
-        public static Pose BLUE_HUMAN_PLAYER = new Pose(124, 14, toRadians(90));
-    }
-
     public static final String BLUE_TELEOP_NAME = "🟦Blue🟦 Main";
     public static final String RED_TELEOP_NAME = "🟥Red🟥 Main";
 
@@ -127,51 +83,6 @@ public class RobotConstants {
 
     public enum Color {
         RED, BLUE
-    }
-
-    public enum Motif {
-        GPP, PPG, PGP, UNKNOWN;
-
-        @NonNull
-        @Override
-        public String toString() {
-            switch (this) {
-                case GPP:
-                    return "🟢🟣🟣";
-                case PGP:
-                    return "🟣🟢🟣";
-                case PPG:
-                    return "🟣🟣🟢";
-                case UNKNOWN:
-                    return "Not Detected ⚫⚫⚫";
-                default:
-                    return super.toString();
-            }
-        }
-    }
-
-    public enum Artifact {
-        GREEN,
-        PURPLE,
-        EMPTY,
-        UNKNOWN;
-
-        @NonNull
-        @Override
-        public String toString() {
-            switch (this) {
-                case GREEN:
-                    return "🟢Green🟢";
-                case PURPLE:
-                    return "🟣Purple🟣";
-                case EMPTY:
-                    return "◌Empty◌";
-                case UNKNOWN:
-                    return "?UNKNOWN?";
-                default:
-                    return super.toString();
-            }
-        }
     }
 
     public enum LEDColors {

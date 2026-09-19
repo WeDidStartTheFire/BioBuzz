@@ -1,11 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Motif;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.bylazar.configurables.annotations.Configurable;
@@ -25,12 +21,7 @@ public class RobotState {
     public static Pose savedPose;
     @Nullable
     public static Vector vel;
-    @NonNull
-    public static Motif motif = Motif.UNKNOWN;
-    @NonNull
-    public static Artifact[] artifacts = {UNKNOWN, UNKNOWN, UNKNOWN};
     public static double launcherVelModifier = 0;
     public static boolean panelsResetTurret;
-    public static boolean launcherIntaking = false;
     public static boolean normalIntaking = false;
 }

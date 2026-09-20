@@ -2,9 +2,6 @@ package org.firstinspires.ftc.teamcode.teleops;
 
 import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 
-import com.bylazar.gamepad.GamepadManager;
-import com.bylazar.gamepad.PanelsGamepad;
-import com.qualcomm.hardware.limelightvision.LLFieldMap;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -18,10 +15,6 @@ import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
-import org.firstinspires.ftc.teamcode.robot.ServoFred;
-import org.openftc.apriltag.AprilTagDetection;
-
-import java.util.List;
 
 @TeleOp(name = "TeleOp_AprilTag_Follower", group = "C")
 public class TeleOp_AprilTag_Follower extends OpMode {
@@ -30,7 +23,6 @@ public class TeleOp_AprilTag_Follower extends OpMode {
     Limelight3A limelight;
     private TelemetryUtils tm;
     private TeleOpController teleop;
-    private ServoFred fred;
     Gamepad gamepad;
     int targetID = 0;
 

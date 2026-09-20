@@ -145,6 +145,10 @@ public class RobotConstants {
         RED, BLUE
     }
 
+    public enum HivePosition {
+        STAGE, TRANSITIONING, AUDIENCE, UNKNOWN
+    }
+
     public enum Motif {
         GPP, PPG, PGP, UNKNOWN;
 

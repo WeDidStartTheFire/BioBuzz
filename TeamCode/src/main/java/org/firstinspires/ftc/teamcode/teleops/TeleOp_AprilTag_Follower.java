@@ -50,13 +50,22 @@ public class TeleOp_AprilTag_Follower extends OpMode {
         else tm.print("Field Centric Driving", "✅");
     }
 
+    @Override
+    public void init_loop() {
+        LLResult result = limelight.getLatestResult();
+        for (LLResultTypes.FiducialResult fiducial : result.getFiducialResults()) {
+            tm.print(String.valueOf(fiducial.getTargetXPixels()));
+        }
+        tm.update();
+    }
+
     // Main problem, not updating Joystick values
     @Override
     public void loop() {
         LLResult result = limelight.getLatestResult();
         robot.initBulkCache();
         robot.updateBulkCache();
-        teleop.drivetrainLogic(false, false, 100);
+        teleop.drivetrainLogic(false, false, 1);
         for (LLResultTypes.FiducialResult fiducial : result.getFiducialResults()) {
             if (targetID == 0) {
                 targetID = fiducial.getFiducialId();
@@ -64,9 +73,9 @@ public class TeleOp_AprilTag_Follower extends OpMode {
                 tm.print(String.valueOf(fiducial.getTargetXPixels()));
                 if (gamepad == null) { tm.print("Gamepad returning null!"); }
                 // Target pixels may be the wrong value, fine-tuning might help.
-                else if (fiducial.getTargetXPixels() <= -7000) { gamepad.left_stick_x = -0.25f; }
-                else if (fiducial.getTargetXPixels() >= 7000) { gamepad.left_stick_x = 0.25f; }
-                else { gamepad.left_stick_x = 0.1f; } // This is here for testing, I will probably remove this.
+                else if (fiducial.getTargetXPixels() <= 600) { gamepad.left_stick_x = -1f; }
+                else if (fiducial.getTargetXPixels() >= 900) { gamepad.left_stick_x = 1f; }
+                else { gamepad.left_stick_x = 0f; } // This is here for testing, I will probably remove this.
             }
         }
         // Following prints are for reading the target ID (ID it saw first), left joystick X, and just checking if gamepad exists.

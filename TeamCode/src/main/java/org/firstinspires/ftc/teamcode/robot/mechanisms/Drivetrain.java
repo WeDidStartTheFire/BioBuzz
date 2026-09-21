@@ -15,6 +15,11 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.DRIVETRAIN_VELOCITY;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Dir;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Dir.BACKWARD;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Dir.FORWARD;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.DRIVETRAIN_LEFT_BACK_MOTOR;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.DRIVETRAIN_LEFT_FRONT_MOTOR;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.DRIVETRAIN_RIGHT_BACK_MOTOR;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.DRIVETRAIN_RIGHT_FRONT_MOTOR;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.SPARKFUN_OTOS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.IMU_PARAMS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.M;
 import static org.firstinspires.ftc.teamcode.RobotConstants.runtime;
@@ -84,7 +89,7 @@ public class Drivetrain {
         this.tm = tm;
         this.hardwareMap = hardwareMap;
         follower = Constants.createFollower(hardwareMap);
-        otos = HardwareInitializer.init(hardwareMap, SparkFunOTOS.class, "otosSensor");
+        otos = HardwareInitializer.init(hardwareMap, tm, SPARKFUN_OTOS);
 
         imu = hardwareMap.get(IMU.class, "imu");
         imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
@@ -94,10 +99,10 @@ public class Drivetrain {
         imu.resetYaw();
 
         // Drive train
-        lf = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "leftFront"); // Port 1
-        lb = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "leftBack"); // Port 3
-        rf = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "rightFront"); // Port 0
-        rb = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "rightBack"); // Port 4
+        lf = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_LEFT_FRONT_MOTOR);
+        lb = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_LEFT_BACK_MOTOR);
+        rf = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_RIGHT_FRONT_MOTOR);
+        rb = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_RIGHT_BACK_MOTOR);
         if (isMotorDisconnected()) {
             tm.warn(CRITICAL, "At least one drive train motor is not connected, so all will be disabled");
             lf = lb = rf = rb = null;

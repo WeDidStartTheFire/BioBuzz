@@ -4,7 +4,8 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.EMPTY;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.GREEN;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.PURPLE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.HIGH;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.COLOR_SENSOR_A;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.COLOR_SENSOR_B;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,11 +31,9 @@ public class ColorSensor {
 
     public ColorSensor(HardwareMap hardwareMap, TelemetryUtils tm) {
         this.tm = tm;
-        colorSensorA = HardwareInitializer.init(hardwareMap, RevColorSensorV3.class, "colorSensorA");
-        colorSensorB = HardwareInitializer.init(hardwareMap, RevColorSensorV3.class, "colorSensorB");
-        if (colorSensorA == null || colorSensorB == null) {
-            tm.warn(HIGH, ">= 1 Color Sensor disconnected. Check CH I2C 2 and CH I2C 3");
-        } else setBusSpeed(LynxI2cDeviceSynch.BusSpeed.FAST_400K);
+        colorSensorA = HardwareInitializer.init(hardwareMap, tm, COLOR_SENSOR_A);
+        colorSensorB = HardwareInitializer.init(hardwareMap, tm, COLOR_SENSOR_B);
+        setBusSpeed(LynxI2cDeviceSynch.BusSpeed.FAST_400K);
     }
 
     /**

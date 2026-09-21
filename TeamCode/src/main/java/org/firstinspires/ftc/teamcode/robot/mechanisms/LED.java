@@ -30,7 +30,7 @@ public class LED {
     }
 
     public LED(HardwareMap hardwareMap, TelemetryUtils tm) {
-        led = HardwareInitializer.init(hardwareMap, Servo.class, "led");
+        led = HardwareInitializer.init(hardwareMap, tm, RobotConstants.Hardware.LED);
         if (led == null)
             tm.warn(LOW, "LED disconnected. Check Control Hub servo port 0.");
     }

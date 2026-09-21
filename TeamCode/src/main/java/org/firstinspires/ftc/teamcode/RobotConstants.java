@@ -72,7 +72,7 @@ public class RobotConstants {
         LAUNCHER_MOTOR_A("Launcher Motor A", DcMotorEx.class, "launcherMotorA", Hub.EXPANSION, PortType.MOTOR, 1, CRITICAL),
         LAUNCHER_MOTOR_B("Launcher Motor B", DcMotorEx.class, "launcherMotorB", Hub.EXPANSION, PortType.MOTOR, 2, CRITICAL),
         LIMELIGHT("Limelight", Limelight3A.class, "limelight", Hub.CONTROL, PortType.USB, -1, MEDIUM),
-        SPARKFUN_OTOS("SparkFun OTOS", SparkFunOTOS.class, "otosSensor", Hub.CONTROL, PortType.I2C, 1, CRITICAL),
+        SPARKFUN_OTOS("SparkFun OTOS", SparkFunOTOS.class, "sensorOtos", Hub.CONTROL, PortType.I2C, 1, CRITICAL),
         INTAKE_MOTOR("Intake Motor", DcMotorEx.class, "intakeMotor", Hub.EXPANSION, PortType.MOTOR, 0, HIGH),
         INTAKE_SERVO_A("Intake Servo A", CRServo.class, "intakeServoA", Hub.EXPANSION, PortType.SERVO, 3, HIGH),
         INTAKE_SERVO_B("Intake Servo B (roller)", CRServo.class, "intakeServoB", Hub.EXPANSION, PortType.SERVO, 4, LOW),

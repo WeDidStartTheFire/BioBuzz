@@ -16,7 +16,7 @@ public class Auto_Basic extends LinearOpMode {
     @Override
     public void runOpMode() {
         RobotState.auto = true;
-        robot = new Robot(hardwareMap, telemetry, false);
+        robot = new Robot(hardwareMap, telemetry);
         robot.drivetrain.follower.setPose(new Pose());
         waitForStart();
 

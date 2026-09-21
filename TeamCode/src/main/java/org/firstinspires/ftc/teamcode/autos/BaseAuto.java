@@ -63,7 +63,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         configure();
         RobotState.auto = true;
         RobotState.color = color;
-        robot = new Robot(hardwareMap, telemetry, true);
+        robot = new Robot(hardwareMap, telemetry);
         robot.drivetrain.follower.setStartingPose(startPose);
         robot.indexer.markAllUnknown();
         tm = robot.drivetrain.tm;

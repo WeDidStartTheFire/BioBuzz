@@ -21,7 +21,7 @@ public class TeleOp_Slow extends OpMode {
     @Override
     public void init() {
         RobotState.auto = false;
-        robot = new Robot(hardwareMap, telemetry, false);
+        robot = new Robot(hardwareMap, telemetry);
         robot.drivetrain.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 

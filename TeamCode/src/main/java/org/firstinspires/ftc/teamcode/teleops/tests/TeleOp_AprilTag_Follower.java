@@ -32,7 +32,7 @@ public class TeleOp_AprilTag_Follower extends OpMode {
         RobotState.auto = false;
         validStartPose = pose != null;
         RobotState.pose = validStartPose ? pose : new Pose();
-        robot = new Robot(hardwareMap, telemetry, true);
+        robot = new Robot(hardwareMap, telemetry);
         robot.drivetrain.useLimelightFollower();
         robot.drivetrain.follower.setPose(RobotState.pose);
         robot.drivetrain.follower.startTeleopDrive();

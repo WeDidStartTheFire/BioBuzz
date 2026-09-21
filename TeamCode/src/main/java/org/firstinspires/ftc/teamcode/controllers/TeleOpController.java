@@ -36,7 +36,6 @@ public class TeleOpController {
     private final DriveController driveController;
     private final Robot robot;
     private final Follower follower;
-    private final boolean useOdometry;
     private final TelemetryUtils tm;
     private long lastUpdateTime;
     private int totalMs;
@@ -62,7 +61,6 @@ public class TeleOpController {
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
         follower = robot.drivetrain.follower;
-        useOdometry = robot.drivetrain.useOdometry;
         tm = robot.drivetrain.tm;
     }
 
@@ -139,7 +137,7 @@ public class TeleOpController {
      * @param usePedro     Whether to use Pedro Pathing
      */
     public void drivetrainLogic(boolean fieldCentric, boolean usePedro) {
-        if (validStartPose && useOdometry) {
+        if (validStartPose && usePedro) {
             if (gamepad1.xWasPressed())
                 driveController.follow(RobotState.color == BLUE ? BLUE_FAR_LAUNCH : RED_FAR_LAUNCH);
             if (gamepad1.aWasPressed())

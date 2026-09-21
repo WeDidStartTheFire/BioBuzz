@@ -84,7 +84,7 @@ public class Drivetrain {
         this.tm = tm;
         this.hardwareMap = hardwareMap;
         follower = Constants.createFollower(hardwareMap);
-        otos = HardwareInitializer.init(hardwareMap, SparkFunOTOS.class, "otosSensor");
+        otos = HardwareInitializer.init(hardwareMap, SparkFunOTOS.class, "sensorOtos");
 
         imu = hardwareMap.get(IMU.class, "imu");
         imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(

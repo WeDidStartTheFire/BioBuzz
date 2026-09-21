@@ -50,8 +50,6 @@ public class Drivetrain {
 
     public volatile boolean loop = false;
 
-    public boolean useOdometry;
-
     public TelemetryUtils tm;
     private final HardwareMap hardwareMap;
 
@@ -81,13 +79,12 @@ public class Drivetrain {
      *
      * @param hardwareMap HardwareMap containing motor and sensor configurations
      * @param tm          TelemetryUtils instance for debugging output
-     * @param useOdom     Whether to use odometry (because it may be disconnected)
      */
-    public Drivetrain(HardwareMap hardwareMap, TelemetryUtils tm, boolean useOdom) {
+    public Drivetrain(HardwareMap hardwareMap, TelemetryUtils tm) {
         this.tm = tm;
         this.hardwareMap = hardwareMap;
         follower = Constants.createFollower(hardwareMap);
-        otos = HardwareInitializer.init(hardwareMap, SparkFunOTOS.class, "otosSensor");
+        otos = HardwareInitializer.init(hardwareMap, SparkFunOTOS.class, "sensorOtos");
 
         imu = hardwareMap.get(IMU.class, "imu");
         imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
@@ -120,8 +117,6 @@ public class Drivetrain {
             lf.setTargetPosition(lf.getCurrentPosition());
             rf.setTargetPosition(rf.getCurrentPosition());
         }
-
-        useOdometry = useOdom;
     }
 
     public boolean isMotorDisconnected() {

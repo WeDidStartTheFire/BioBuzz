@@ -25,10 +25,10 @@ public class Robot {
     public Turret turret;
     public HardwareMap hardwareMap;
 
-    public Robot(@NonNull HardwareMap hardwareMap, @NonNull Telemetry telemetry, boolean useOdometry) {
+    public Robot(@NonNull HardwareMap hardwareMap, @NonNull Telemetry telemetry) {
         this.hardwareMap = hardwareMap;
         TelemetryUtils tm = new TelemetryUtils(telemetry);
-        drivetrain = new Drivetrain(hardwareMap, tm, useOdometry);
+        drivetrain = new Drivetrain(hardwareMap, tm);
         intake = new Intake(hardwareMap, tm);
         colorSensor = new ColorSensor(hardwareMap, tm);
         led = new LED(hardwareMap, tm);

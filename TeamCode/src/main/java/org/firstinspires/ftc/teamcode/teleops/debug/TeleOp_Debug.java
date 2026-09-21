@@ -35,7 +35,7 @@ public class TeleOp_Debug extends OpMode {
 
     @Override
     public void init() {
-        robot = new Robot(hardwareMap, telemetry, false);
+        robot = new Robot(hardwareMap, telemetry);
 
         tm = robot.drivetrain.tm;
         servoA = HardwareInitializer.init(hardwareMap, Servo.class, "servoA");

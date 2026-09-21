@@ -85,6 +85,10 @@ public class RobotConstants {
         RED, BLUE
     }
 
+    public enum HivePosition {
+        STAGE, TRANSITIONING, AUDIENCE, UNKNOWN
+    }
+
     public enum LEDColors {
         OFF, RED, ORANGE, YELLOW, SAGE, GREEN, AZURE, BLUE, INDIGO, VIOLET, WHITE;
 

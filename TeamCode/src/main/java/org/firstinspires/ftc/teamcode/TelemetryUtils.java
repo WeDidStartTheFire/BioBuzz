@@ -37,9 +37,9 @@ public class TelemetryUtils {
      * @param caption String
      * @param content Object
      */
-    public void print(@NonNull String caption, @NonNull Object content) {
-        telemetry.addData(caption, content);
-        telemetryM.addData(caption, content);
+    public void print(@NonNull Object caption, @NonNull Object content) {
+        telemetry.addData(caption.toString(), content);
+        telemetryM.addData(caption.toString(), content);
     }
 
     /**
@@ -47,9 +47,9 @@ public class TelemetryUtils {
      *
      * @param content Content to display in telemetry
      */
-    public void print(@NonNull String content) {
-        telemetry.addLine(content);
-        telemetryM.addLine(content);
+    public void print(@NonNull Object content) {
+        telemetry.addLine(content.toString());
+        telemetryM.addLine(content.toString());
     }
 
     /**

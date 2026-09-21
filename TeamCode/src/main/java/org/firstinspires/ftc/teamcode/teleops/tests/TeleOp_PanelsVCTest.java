@@ -17,7 +17,7 @@ public class TeleOp_PanelsVCTest extends OpMode {
 
     @Override
     public void init() {
-        robot = new Robot(hardwareMap, telemetry, false);
+        robot = new Robot(hardwareMap, telemetry);
         tm = robot.drivetrain.tm;
         vgamepad1 = PanelsGamepad.INSTANCE.getFirstManager();
         tm.print("Panels Virtual Controller Test Initialized");

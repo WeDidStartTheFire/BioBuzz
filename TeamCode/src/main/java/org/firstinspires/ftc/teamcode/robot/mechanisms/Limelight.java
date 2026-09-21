@@ -9,6 +9,8 @@ import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.RobotConstants;
+import org.firstinspires.ftc.teamcode.RobotConstants.HivePosition;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
@@ -52,4 +54,33 @@ public class Limelight {
         if (limelight == null) return null;
         return limelight.getLatestResult();
     }
+
+    public double getAverageHiveY() {
+        double total = 0;
+        int number = 0;
+
+        if (limelight != null && getFiducials() != null) {
+            for (LLResultTypes.FiducialResult fiducial : getFiducials()) {
+                number++;
+                total += fiducial.getTargetPoseRobotSpace().getPosition().y;
+            }
+        }
+
+        return total / number;
+    }
+
+    public HivePosition getHivePosition() {
+        if (limelight != null && getFiducials() != null) {
+            for (LLResultTypes.FiducialResult fiducial : getFiducials()) {
+                if (getAverageHiveY() <= -1.40 && fiducial.getFiducialId() == 21)
+                    return HivePosition.STAGE;
+                else if (getAverageHiveY() >= -1.1 &&
+                    fiducial.getFiducialId() == 21) return HivePosition.AUDIENCE;
+                else return HivePosition.TRANSITIONING;
+            }
+        }
+        return HivePosition.UNKNOWN;
+    }
+
+
 }

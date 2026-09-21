@@ -30,7 +30,7 @@ public class TeleOp_AprilTag_Follower extends OpMode {
     public void init() {
         gamepad = new Gamepad();
         gamepad.left_stick_x = 0;
-        limelight = hardwareMap.get(Limelight3A.class, "Limelight");
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
         RobotState.color = RobotConstants.Color.BLUE;
         RobotState.auto = false;
         robot = new Robot(hardwareMap, telemetry, false);

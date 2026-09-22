@@ -54,8 +54,8 @@ public class TeleOpController {
     }
 
     /**
-     * Initializes robot systems for TeleOp mode. Sets up feeder, indexer, limelight, and detects
-     * the team motif. To be called in the start() method of the OpMode.
+     * Initializes robot systems for TeleOp mode and starts the limelight. To be called in the
+     * start() method of the OpMode.
      */
     public void start() {
         robot.limelight.start();

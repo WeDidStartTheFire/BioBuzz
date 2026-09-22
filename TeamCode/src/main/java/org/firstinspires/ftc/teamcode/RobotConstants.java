@@ -43,8 +43,8 @@ public class RobotConstants {
     public static final double M = 0.889;
 
     public static final IMU.Parameters IMU_PARAMS = new IMU.Parameters(
-            new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-                    RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
+        new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+            RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
 
     public static final double DRIVETRAIN_VELOCITY = 2000;
 
@@ -76,7 +76,8 @@ public class RobotConstants {
         INTAKE_MOTOR("Intake Motor", DcMotorEx.class, "intakeMotor", Hub.EXPANSION, PortType.MOTOR, 0, HIGH),
         INTAKE_SERVO_A("Intake Servo A", CRServo.class, "intakeServoA", Hub.EXPANSION, PortType.SERVO, 3, HIGH),
         INTAKE_SERVO_B("Intake Servo B (roller)", CRServo.class, "intakeServoB", Hub.EXPANSION, PortType.SERVO, 4, LOW),
-        INTAKE_SERVO_C("Intake Servo C", CRServo.class, "intakeServoC", Hub.EXPANSION, PortType.SERVO, 5, HIGH);
+        INTAKE_SERVO_C("Intake Servo C", CRServo.class, "intakeServoC", Hub.EXPANSION, PortType.SERVO, 5, HIGH),
+        IMU("IMU", IMU.class, "imu", Hub.CONTROL, PortType.I2C, 0, MEDIUM);
 
         public enum Hub {
             CONTROL, EXPANSION, UNKNOWN;
@@ -205,7 +206,7 @@ public class RobotConstants {
     }
 
     public static com.pedropathing.control.PIDFCoefficients teleopHeadingPID =
-            new com.pedropathing.control.PIDFCoefficients(1, 0, .05, 0);
+        new com.pedropathing.control.PIDFCoefficients(1, 0, .05, 0);
     public static com.pedropathing.control.PIDFCoefficients launcherPIDF = new com.pedropathing.control.PIDFCoefficients(.002, 0, 0, .00055);
     public static PIDFCoefficients launcherReversePIDF = new PIDFCoefficients(80, 0, 0, 20);
     public static final double LAUNCHER_HEIGHT = 15.5;

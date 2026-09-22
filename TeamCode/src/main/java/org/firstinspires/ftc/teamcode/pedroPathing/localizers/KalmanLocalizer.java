@@ -4,6 +4,8 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADI
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.normalizeRadians;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.LIMELIGHT;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.SPARKFUN_OTOS;
 import static java.lang.Math.abs;
 import static java.lang.Math.toDegrees;
 import static java.lang.Math.toRadians;
@@ -30,11 +32,13 @@ import org.ejml.dense.row.CommonOps_DDRM;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
 
 public class KalmanLocalizer implements Localizer {
+    @Nullable
     private final IMU imu;
     private long prevNano;
     private Pose pose, prevPose;
@@ -42,6 +46,7 @@ public class KalmanLocalizer implements Localizer {
     private double totalHeading;
     private double lastDt = Double.NaN;
 
+    @Nullable
     private final SparkFunOTOS otos;
     private final OTOSLocalizer otosLocalizer;
     private Pose lastOtosPose;
@@ -88,19 +93,21 @@ public class KalmanLocalizer implements Localizer {
     }
 
     public KalmanLocalizer(@NonNull HardwareMap map, Pose startPose) {
-        imu = map.get(IMU.class, "imu");
-        imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
-            RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-            RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
-        imu.resetYaw();
+        imu = HardwareInitializer.init(map, null, RobotConstants.Hardware.IMU);
+        if (imu != null) {
+            imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
+                RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
+            imu.resetYaw();
+        }
 
         driveEncoderLocalizer = new DriveEncoderLocalizer(map, Constants.driveEncoderConstants);
 
         otosLocalizer = new OTOSLocalizer(map, Constants.otosConstants);
 
-        otos = map.get(SparkFunOTOS.class, Constants.otosConstants.hardwareMapName);
+        otos = HardwareInitializer.init(map, null, SPARKFUN_OTOS);
 
-        limelight = HardwareInitializer.init(map, Limelight3A.class, "limelight");
+        limelight = HardwareInitializer.init(map, null, LIMELIGHT);
         if (limelight != null) {
             limelight.setPollRateHz(100);
             limelight.pipelineSwitch(0);
@@ -150,7 +157,7 @@ public class KalmanLocalizer implements Localizer {
 
     public void setPose(Pose setPose) {
         otosLocalizer.setPose(setPose);
-        IMUoffset = otosAngleUnit.toRadians(setPose.getHeading())
+        IMUoffset = imu == null ? 0 : otosAngleUnit.toRadians(setPose.getHeading())
             - imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle;
     }
 
@@ -162,7 +169,7 @@ public class KalmanLocalizer implements Localizer {
 
         // TODO: Make sure we have the right axis for yaw
         double robotYaw = getIMUHeading();
-        double yawRate = imu.getRobotAngularVelocity(RADIANS).zRotationRate;
+        double yawRate = imu == null ? 0 : imu.getRobotAngularVelocity(RADIANS).zRotationRate;
 
         driveEncoderLocalizer.update();
         Pose driveEncoderVel = driveEncoderLocalizer.getVelocity();
@@ -182,7 +189,9 @@ public class KalmanLocalizer implements Localizer {
         }
 
         otosLocalizer.update();
-        SparkFunOTOS.Pose2D otosStdDev = otos.getVelocityStdDev();
+        // TODO: Get a good estimate for a default otosStdDev
+        SparkFunOTOS.Pose2D otosStdDev = otos == null ?
+            new SparkFunOTOS.Pose2D(10, 10, toRadians(30)) : otos.getVelocityStdDev();
         Pose otosPose = otosLocalizer.getPose();
         Pose otosDel = otosPose.minus(lastOtosPose);
         lastOtosPose = otosPose;
@@ -309,10 +318,11 @@ public class KalmanLocalizer implements Localizer {
     }
 
     public void resetIMU() {
-        imu.resetYaw();
+        if (imu != null) imu.resetYaw();
     }
 
     public double getIMUHeading() {
+        if (imu == null) return 0;
         return imu.getRobotYawPitchRollAngles().getYaw(RADIANS) + IMUoffset;
     }
 

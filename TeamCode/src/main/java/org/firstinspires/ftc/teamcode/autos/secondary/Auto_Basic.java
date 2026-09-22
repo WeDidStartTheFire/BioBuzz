@@ -20,7 +20,7 @@ public class Auto_Basic extends LinearOpMode {
         robot.drivetrain.follower.setPose(new Pose());
         waitForStart();
 
-        robot.drivetrain.drive(15, RobotConstants.Dir.FORWARD);
+        robot.drivetrain.drive(15, RobotConstants.Dir.FORWARD, this);
         robot.drivetrain.follower.update();
         Utils.saveOdometryPosition(robot.drivetrain.follower.getPose());
     }

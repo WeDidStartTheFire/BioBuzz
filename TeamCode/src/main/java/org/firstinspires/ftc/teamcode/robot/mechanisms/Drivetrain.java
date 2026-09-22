@@ -32,6 +32,8 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.lynx.LynxI2cDeviceSynch;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -88,8 +90,8 @@ public class Drivetrain {
 
         imu = hardwareMap.get(IMU.class, "imu");
         imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
+            RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+            RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
         if (!imu.initialize(IMU_PARAMS)) throw new RuntimeException("IMU initialization failed");
         imu.resetYaw();
 
@@ -151,13 +153,27 @@ public class Drivetrain {
     }
 
     /**
-     * Drives using encoder velocity. An inches value of zero will cause the robot to drive until
-     * manually stopped.
+     * Drives using encoder velocity. Thus, this function will not work if drivetrain motor encoders
+     * are disconnected. An inches value of zero will cause the robot to drive until manually
+     * stopped.
+     * <p>
+     * <b><u>Do not use this method unless you are using a linear opmode without a loop.</u></b>
+     * It will block the OpMode's loop otherwise and prevent other code from running during
+     * its duration. An error is thrown for this reason if the opmode is not a LinearOpMode.
+     * </p>
      *
      * @param inches    Amount of inches to drive.
-     * @param direction (opt.) Direction to drive if inches is zero.*
+     * @param direction Direction to drive.
+     * @param opMode    OpMode instance. To pass this value, use {@code this} in the main opmode
+     *                  file, or pass the opmode instance down a chain to this function (starting
+     *                  with {@code this}).
+     * @throws RuntimeException If opMode is not a LinearOpMode.
      */
-    public void drive(double inches, Dir direction) {
+    public void drive(double inches, Dir direction, OpMode opMode) {
+        if (!(opMode instanceof LinearOpMode))
+            throw new RuntimeException("opMode must be a LinearOpMode to use the Drivetrain.drive " +
+                "method. This method will block the OpMode's loop otherwise and prevent other code " +
+                "from running during its duration, so this restriction is in place.");
         if (isMotorDisconnected()) return;
 
         int lfTarget = 0;

@@ -30,5 +30,5 @@ public class Motor {
     /**
      * Stops the motor
      */
-    public void stop() { if (motor != null) { motor.setPower(0); } }
+    public void stopMotor() { if (motor != null) { motor.setPower(0); } }
 }

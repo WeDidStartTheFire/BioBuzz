@@ -38,7 +38,7 @@ import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
 
 public class KalmanLocalizer implements Localizer {
-    @Nullable
+    @NonNull
     private final IMU imu;
     private long prevNano;
     private Pose pose, prevPose;
@@ -46,7 +46,7 @@ public class KalmanLocalizer implements Localizer {
     private double totalHeading;
     private double lastDt = Double.NaN;
 
-    @Nullable
+    @NonNull
     private final SparkFunOTOS otos;
     private final OTOSLocalizer otosLocalizer;
     private Pose lastOtosPose;
@@ -93,19 +93,27 @@ public class KalmanLocalizer implements Localizer {
     }
 
     public KalmanLocalizer(@NonNull HardwareMap map, Pose startPose) {
-        imu = HardwareInitializer.init(map, null, RobotConstants.Hardware.IMU);
-        if (imu != null) {
-            imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
-            imu.resetYaw();
+        IMU _imu = HardwareInitializer.init(map, null, RobotConstants.Hardware.IMU);
+        if (_imu == null) {
+            throw new RuntimeException("Failed to initialize IMU. It seems to be disconnected or " +
+                "have a mismatched name. Cannot run Kalman Localizer without this.");
         }
+        imu = _imu;
+        imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
+            RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+            RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
+        imu.resetYaw();
 
         driveEncoderLocalizer = new DriveEncoderLocalizer(map, Constants.driveEncoderConstants);
 
         otosLocalizer = new OTOSLocalizer(map, Constants.otosConstants);
 
-        otos = HardwareInitializer.init(map, null, SPARKFUN_OTOS);
+        SparkFunOTOS _otos = HardwareInitializer.init(map, null, SPARKFUN_OTOS);
+        if (_otos == null) {
+            throw new RuntimeException("Failed to initialize OTOS. It seems to be disconnected " +
+                "or have a mismatched name. Cannot run Kalman Localizer without this.");
+        }
+        otos = _otos;
 
         limelight = HardwareInitializer.init(map, null, LIMELIGHT);
         if (limelight != null) {
@@ -157,7 +165,7 @@ public class KalmanLocalizer implements Localizer {
 
     public void setPose(Pose setPose) {
         otosLocalizer.setPose(setPose);
-        IMUoffset = imu == null ? 0 : otosAngleUnit.toRadians(setPose.getHeading())
+        IMUoffset = otosAngleUnit.toRadians(setPose.getHeading())
             - imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle;
     }
 
@@ -169,7 +177,7 @@ public class KalmanLocalizer implements Localizer {
 
         // TODO: Make sure we have the right axis for yaw
         double robotYaw = getIMUHeading();
-        double yawRate = imu == null ? 0 : imu.getRobotAngularVelocity(RADIANS).zRotationRate;
+        double yawRate = imu.getRobotAngularVelocity(RADIANS).zRotationRate;
 
         driveEncoderLocalizer.update();
         Pose driveEncoderVel = driveEncoderLocalizer.getVelocity();
@@ -190,8 +198,7 @@ public class KalmanLocalizer implements Localizer {
 
         otosLocalizer.update();
         // TODO: Get a good estimate for a default otosStdDev
-        SparkFunOTOS.Pose2D otosStdDev = otos == null ?
-            new SparkFunOTOS.Pose2D(10, 10, toRadians(30)) : otos.getVelocityStdDev();
+        SparkFunOTOS.Pose2D otosStdDev = otos.getVelocityStdDev();
         Pose otosPose = otosLocalizer.getPose();
         Pose otosDel = otosPose.minus(lastOtosPose);
         lastOtosPose = otosPose;
@@ -318,11 +325,10 @@ public class KalmanLocalizer implements Localizer {
     }
 
     public void resetIMU() {
-        if (imu != null) imu.resetYaw();
+        imu.resetYaw();
     }
 
     public double getIMUHeading() {
-        if (imu == null) return 0;
         return imu.getRobotYawPitchRollAngles().getYaw(RADIANS) + IMUoffset;
     }
 

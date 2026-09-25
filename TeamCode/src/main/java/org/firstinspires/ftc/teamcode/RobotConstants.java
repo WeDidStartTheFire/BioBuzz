@@ -65,7 +65,7 @@ public class RobotConstants {
         COLOR_SENSOR_B("Color Sensor B", RevColorSensorV3.class, "colorSensorB", Hub.CONTROL, PortType.I2C, 3, CRITICAL),
         LED("LED", Servo.class, "led", Hub.CONTROL, PortType.SERVO, 0, CRITICAL),
         INDEXER_SERVO("Indexer Servo", Servo.class, "indexerServo", Hub.EXPANSION, PortType.SERVO, 2, CRITICAL),
-        TURRET_MOTOR("Turret Motor", DcMotorEx.class, "turretMotor", Hub.EXPANSION, PortType.MOTOR, 0, HIGH),
+        TURRET_MOTOR("Turret Motor", DcMotorEx.class, "turretMotor", Hub.EXPANSION, PortType.MOTOR, 3, HIGH),
         TOUCH_SENSOR_A("Touch Sensor A", TouchSensor.class, "touchSensorA", Hub.UNKNOWN, PortType.DIGITAL, -1, LOW),
         TOUCH_SENSOR_B("Touch Sensor B", TouchSensor.class, "touchSensorB", Hub.UNKNOWN, PortType.DIGITAL, -1, LOW),
         TURRET_TOUCH_SENSOR("Turret Touch Sensor", TouchSensor.class, "turretTouchSensor", Hub.EXPANSION, PortType.DIGITAL, 2, HIGH),

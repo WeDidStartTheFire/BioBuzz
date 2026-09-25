@@ -4,11 +4,11 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.EMPTY;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.GREEN;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.PURPLE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.INDEXER_SERVO;
 import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_POS_EPSILON;
 import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_SPEED;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
 import static org.firstinspires.ftc.teamcode.RobotState.artifacts;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.CRITICAL;
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -41,9 +41,7 @@ public class Indexer {
         this.tm = tm;
         this.colorSensor = colorSensor;
         this.feeder = feeder;
-        indexerServo = HardwareInitializer.init(hardwareMap, Servo.class, "indexerServo");
-        if (indexerServo == null)
-            tm.warn(CRITICAL, "Indexer Servo disconnected. Check Expansion Hub servo port 2.");
+        indexerServo = HardwareInitializer.init(hardwareMap, tm, INDEXER_SERVO);
     }
 
     /**

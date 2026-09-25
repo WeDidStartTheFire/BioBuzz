@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.pedroPathing.localizers;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.normalizeRadians;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.LIMELIGHT;
 import static java.lang.Math.abs;
 import static java.lang.Math.hypot;
 import static java.lang.Math.toDegrees;
@@ -22,9 +23,11 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
 @Configurable
 public class ComplementaryLocalizer implements Localizer {
+    @Nullable
     private final Limelight3A limelight;
     @NonNull
     private Pose pose;
@@ -43,10 +46,12 @@ public class ComplementaryLocalizer implements Localizer {
     }
 
     public ComplementaryLocalizer(@NonNull HardwareMap map, @Nullable Pose startPose) {
-        limelight = map.get(Limelight3A.class, "limelight");
-        limelight.setPollRateHz(100);
-        limelight.pipelineSwitch(0);
-        limelight.start();
+        limelight = HardwareInitializer.init(map, null, LIMELIGHT);
+        if (limelight != null) {
+            limelight.setPollRateHz(100);
+            limelight.pipelineSwitch(0);
+            limelight.start();
+        }
         if (startPose == null) {
             invalidPose = true;
             startPose = new Pose();
@@ -85,16 +90,21 @@ public class ComplementaryLocalizer implements Localizer {
 
         double yawRate = relativeLocalizer.getVelocity().getHeading(); // imu.getRobotAngularVelocity(RADIANS).zRotationRate;
 
-        limelight.updateRobotOrientation(toDegrees(getIMUHeading()) + 90);
-
-        LLResult result = limelight.getLatestResult();
-
         Pose relPose = relativeLocalizer.getPose();
         Pose relPoseDelta = relPose.minus(prevRelPose);
         prevRelPose = relPose;
         vel = relativeLocalizer.getVelocity();
         Pose lastPose = pose;
         pose = pose.plus(relPoseDelta);
+
+        if (limelight == null) {
+            totalHeading += normalizeRadians(pose.getHeading() - lastPose.getHeading());
+            return;
+        }
+
+        limelight.updateRobotOrientation(toDegrees(getIMUHeading()) + 90);
+
+        LLResult result = limelight.getLatestResult();
 
         Pose LLPose = null;
         if (result != null && result.isValid()) {

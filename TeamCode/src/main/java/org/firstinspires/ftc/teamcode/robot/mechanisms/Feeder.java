@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.HIGH;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.LOW;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.FEEDER_SERVO_A;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.FEEDER_SERVO_B;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.TOUCH_SENSOR_A;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.TOUCH_SENSOR_B;
 
 import androidx.annotation.Nullable;
 
@@ -18,22 +20,12 @@ public class Feeder {
     private double feederPos = -1;
 
     public Feeder(HardwareMap hardwareMap, TelemetryUtils tm) {
-        feederServoA = HardwareInitializer.init(hardwareMap, Servo.class, "feederServoA");
-        feederServoB = HardwareInitializer.init(hardwareMap, Servo.class, "feederServoB");
+        feederServoA = HardwareInitializer.init(hardwareMap, tm, FEEDER_SERVO_A);
+        feederServoB = HardwareInitializer.init(hardwareMap, tm, FEEDER_SERVO_B);
         if (feederServoA != null) feederServoA.setDirection(Servo.Direction.REVERSE);
-        if (feederServoA == null && feederServoB == null)
-            tm.warn(HIGH, "Both feeder servos are disconnected. Check Expansion Hub" +
-                    " servo ports 0 and 1.");
-        else if (feederServoA == null || feederServoB == null)
-            tm.warn(HIGH, "One feeder servo is disconnected. Check Expansion Hub" +
-                    " servo ports 0 and 1.");
 
-        touchSensorA = HardwareInitializer.init(hardwareMap, TouchSensor.class, "touchSensorA");
-        touchSensorB = HardwareInitializer.init(hardwareMap, TouchSensor.class, "touchSensorB");
-        if (touchSensorA == null)
-            tm.warn(LOW, "Touch Sensor A for the feeder is disconnected.");
-        if (touchSensorB == null)
-            tm.warn(LOW, "Touch Sensor B for the feeder is disconnected.");
+        touchSensorA = HardwareInitializer.init(hardwareMap, tm, TOUCH_SENSOR_A);
+        touchSensorB = HardwareInitializer.init(hardwareMap, tm, TOUCH_SENSOR_B);
     }
 
     /**

@@ -1,5 +1,26 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.COLOR_SENSOR_A;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.COLOR_SENSOR_B;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.DRIVETRAIN_LEFT_BACK_MOTOR;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.DRIVETRAIN_LEFT_FRONT_MOTOR;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.DRIVETRAIN_RIGHT_BACK_MOTOR;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.DRIVETRAIN_RIGHT_FRONT_MOTOR;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.FEEDER_SERVO_A;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.FEEDER_SERVO_B;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.INDEXER_SERVO;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.INTAKE_MOTOR;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.INTAKE_SERVO_A;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.INTAKE_SERVO_B;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.INTAKE_SERVO_C;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.LAUNCHER_MOTOR_A;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.LAUNCHER_MOTOR_B;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.LED;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.LIMELIGHT;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.SPARKFUN_OTOS;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.TURRET_MOTOR;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.TURRET_TOUCH_SENSOR;
+
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -29,75 +50,35 @@ public class Diagnostics extends LinearOpMode {
     
     public void runOpMode() {
         tm = new TelemetryUtils(telemetry);
-        lf = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "leftFront");
-        tm.print("Left Front Motor",
-                lf == null ? "⚠️ Not Connected (CH Motor 1)" : "✅ Connected");
-        lb = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "leftBack");
-        tm.print("Left Back Motor",
-                lb == null ? "⚠️ Not Connected (CH Motor 3)" : "✅ Connected");
-        rf = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "rightFront");
-        tm.print("Right Front Motor",
-                rf == null ? "⚠️ Not Connected (CH Motor 0)" : "✅ Connected");
-        rb = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "rightBack");
-        tm.print("Right Back Motor",
-                rb == null ? "⚠️ Not Connected (CH Motor 2)" : "✅ Connected");
+        lf = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_LEFT_FRONT_MOTOR);
+        lb = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_LEFT_BACK_MOTOR);
+        rf = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_RIGHT_FRONT_MOTOR);
+        rb = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_RIGHT_BACK_MOTOR);
 
-        feederServoA = HardwareInitializer.init(hardwareMap, Servo.class, "feederServoA");
-        tm.print("Feeder Servo A",
-                feederServoA == null ? "⚠️ Not Connected (EH Servo 0)" : "✅ Connected");
-        feederServoB = HardwareInitializer.init(hardwareMap, Servo.class, "feederServoB");
-        tm.print("Feeder Servo B",
-                feederServoB == null ? "⚠️ Not Connected (EH Servo 1)" : "✅ Connected");
+        feederServoA = HardwareInitializer.init(hardwareMap, tm, FEEDER_SERVO_A);
+        feederServoB = HardwareInitializer.init(hardwareMap, tm, FEEDER_SERVO_B);
 
-        indexerServo = HardwareInitializer.init(hardwareMap, Servo.class, "indexerServo");
-        tm.print("Indexer Servo",
-                indexerServo == null ? "⚠️ Not Connected (EH Servo 2)" : "✅ Connected");
+        indexerServo = HardwareInitializer.init(hardwareMap, tm, INDEXER_SERVO);
 
-        intakeMotor = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "intakeMotor");
-        tm.print("Intake Motor",
-                intakeMotor == null ? "⚠️ Not Connected (EH Motor 0)" : "✅ Connected");
-        intakeServoA = HardwareInitializer.init(hardwareMap, CRServo.class, "intakeServoA");
-        tm.print("Intake Servo A",
-                intakeServoA == null ? "⚠️ Not Connected (EH Servo 3)" : "✅ Connected");
-        intakeServoB = HardwareInitializer.init(hardwareMap, CRServo.class, "intakeServoB");
-        tm.print("Intake Servo B",
-                intakeServoB == null ? "⚠️ Not Connected (EH Servo 4)" : "✅ Connected");
-        intakeServoC = HardwareInitializer.init(hardwareMap, CRServo.class, "intakeServoC");
-        tm.print("Intake Servo C",
-                intakeServoC == null ? "⚠️ Not Connected (EH Servo 5)" : "✅ Connected");
+        intakeMotor = HardwareInitializer.init(hardwareMap, tm, INTAKE_MOTOR);
+        intakeServoA = HardwareInitializer.init(hardwareMap, tm, INTAKE_SERVO_A);
+        intakeServoB = HardwareInitializer.init(hardwareMap, tm, INTAKE_SERVO_B);
+        intakeServoC = HardwareInitializer.init(hardwareMap, tm, INTAKE_SERVO_C);
 
-        launcherMotorA = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "launcherMotorA");
-        tm.print("Launcher Motor A",
-                launcherMotorA == null ? "⚠️ Not Connected (EH Motor 1)" : "✅ Connected");
-        launcherMotorB = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "launcherMotorB");
-        tm.print("Launcher Motor B",
-                launcherMotorB == null ? "⚠️ Not Connected (EH Motor 2)" : "✅ Connected");
+        launcherMotorA = HardwareInitializer.init(hardwareMap, tm, LAUNCHER_MOTOR_A);
+        launcherMotorB = HardwareInitializer.init(hardwareMap, tm, LAUNCHER_MOTOR_B);
 
-        led = HardwareInitializer.init(hardwareMap, Servo.class, "led");
-        tm.print("LED",
-                led == null ? "⚠️ Not Connected (CH Servo 0)" : "✅ Connected");
+        led = HardwareInitializer.init(hardwareMap, tm, LED);
 
-        limelight = HardwareInitializer.init(hardwareMap, Limelight3A.class, "limelight");
-        tm.print("Limelight",
-                limelight == null ? "⚠️ Not Connected (CH USB 3.0)" : "✅ Connected");
+        limelight = HardwareInitializer.init(hardwareMap, tm, LIMELIGHT);
 
-        colorSensor = HardwareInitializer.init(hardwareMap, ColorSensor.class, "colorSensorA");
-        tm.print("Color Sensor A",
-                colorSensor == null ? "⚠️ Not Connected (CH I2C 2)" : "✅ Connected");
-        colorSensorB = HardwareInitializer.init(hardwareMap, ColorSensor.class, "colorSensorB");
-        tm.print("Color Sensor B",
-                colorSensor == null ? "⚠️ Not Connected (CH I2C 3)" : "✅ Connected");
+        colorSensor = HardwareInitializer.init(hardwareMap, tm, COLOR_SENSOR_A);
+        colorSensorB = HardwareInitializer.init(hardwareMap, tm, COLOR_SENSOR_B);
 
-        turretMotor = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "turretMotor");
-        tm.print("Turret Motor",
-                turretMotor == null ? "⚠️ Not Connected (EH Motor 3)" : "✅ Connected");
-        turretTouchSensor = HardwareInitializer.init(hardwareMap, TouchSensor.class, "turretTouchSensor");
-        tm.print("Turret Touch Sensor",
-                turretTouchSensor == null ? "⚠️ Not Connected (CH Digital 2:3)" : "✅ Connected");
+        turretMotor = HardwareInitializer.init(hardwareMap, tm, TURRET_MOTOR);
+        turretTouchSensor = HardwareInitializer.init(hardwareMap, tm, TURRET_TOUCH_SENSOR);
 
-        otos = HardwareInitializer.init(hardwareMap, SparkFunOTOS.class, "sensorOtos");
-        tm.print("SparkFun Sensor",
-                otos == null ? "⚠️ Not Connected (CH I2C 1)" : "✅ Connected");
+        otos = HardwareInitializer.init(hardwareMap, tm, SPARKFUN_OTOS);
 
         indexer = new Indexer(hardwareMap, tm,
             new org.firstinspires.ftc.teamcode.robot.mechanisms.ColorSensor(hardwareMap, tm),

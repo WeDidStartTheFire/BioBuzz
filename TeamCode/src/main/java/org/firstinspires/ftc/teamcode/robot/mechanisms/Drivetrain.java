@@ -15,6 +15,11 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.DRIVETRAIN_VELOCITY;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Dir;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Dir.BACKWARD;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Dir.FORWARD;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.DRIVETRAIN_LEFT_BACK_MOTOR;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.DRIVETRAIN_LEFT_FRONT_MOTOR;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.DRIVETRAIN_RIGHT_BACK_MOTOR;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.DRIVETRAIN_RIGHT_FRONT_MOTOR;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.SPARKFUN_OTOS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.IMU_PARAMS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.M;
 import static org.firstinspires.ftc.teamcode.RobotConstants.runtime;
@@ -24,7 +29,6 @@ import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.CRITICAL;
 import static java.lang.Math.abs;
 import static java.lang.Math.signum;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.pedropathing.follower.Follower;
@@ -40,13 +44,14 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
 public class Drivetrain {
     private DcMotorEx lf, lb, rf, rb;
-    private final @NonNull IMU imu;
+    private final @Nullable IMU imu;
     public Follower follower;
     public final @Nullable SparkFunOTOS otos;
 
@@ -86,20 +91,22 @@ public class Drivetrain {
         this.tm = tm;
         this.hardwareMap = hardwareMap;
         follower = Constants.createFollower(hardwareMap);
-        otos = HardwareInitializer.init(hardwareMap, SparkFunOTOS.class, "sensorOtos");
+        otos = HardwareInitializer.init(hardwareMap, tm, SPARKFUN_OTOS);
 
-        imu = hardwareMap.get(IMU.class, "imu");
-        imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
-            RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-            RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
-        if (!imu.initialize(IMU_PARAMS)) throw new RuntimeException("IMU initialization failed");
-        imu.resetYaw();
-
+        imu = HardwareInitializer.init(hardwareMap, tm, RobotConstants.Hardware.IMU);
+        if (imu != null) {
+            imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
+                RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
+            if (!imu.initialize(IMU_PARAMS))
+                throw new RuntimeException("IMU initialization failed");
+            imu.resetYaw();
+        }
         // Drive train
-        lf = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "leftFront"); // Port 1
-        lb = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "leftBack"); // Port 3
-        rf = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "rightFront"); // Port 0
-        rb = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "rightBack"); // Port 4
+        lf = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_LEFT_FRONT_MOTOR);
+        lb = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_LEFT_BACK_MOTOR);
+        rf = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_RIGHT_FRONT_MOTOR);
+        rb = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_RIGHT_BACK_MOTOR);
         if (isMotorDisconnected()) {
             tm.warn(CRITICAL, "At least one drive train motor is not connected, so all will be disabled");
             lf = lb = rf = rb = null;
@@ -126,6 +133,7 @@ public class Drivetrain {
     }
 
     public double getYaw(AngleUnit angleUnit) {
+        if (imu == null) return 0;
         return imu.getRobotOrientation(INTRINSIC, ZYX, angleUnit).firstAngle;
     }
 
@@ -194,7 +202,7 @@ public class Drivetrain {
 
         while (runtime.seconds() < duration && inches != 0) {
             // Display it for the driver.
-            tm.print("Angle", imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
+            tm.print("Angle", imu == null ? 0 : imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
             tm.print("Running to", " " + lfTarget + ":" + rfTarget);
             tm.print("Currently at", lf.getCurrentPosition() + ":" + rf.getCurrentPosition());
             if (!loop) tm.update();

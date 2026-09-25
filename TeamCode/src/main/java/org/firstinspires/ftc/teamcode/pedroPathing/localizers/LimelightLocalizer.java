@@ -21,10 +21,13 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.teamcode.RobotConstants;
+import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
 
 public class LimelightLocalizer implements Localizer {
     private final Limelight3A limelight;
+    @Nullable
     private final IMU imu;
     private long prevTime;
     @Nullable
@@ -44,12 +47,15 @@ public class LimelightLocalizer implements Localizer {
     }
 
     public LimelightLocalizer(@NonNull HardwareMap map, @Nullable Pose startPose) {
-        imu = map.get(IMU.class, "imu");
-        imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
+        imu = HardwareInitializer.init(map, null, RobotConstants.Hardware.IMU);
+        if (imu != null) {
+            imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
                 RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
-        imu.resetYaw();
-        limelight = map.get(Limelight3A.class, "limelight");
+            imu.resetYaw();
+        }
+        limelight = HardwareInitializer.init(map, null, RobotConstants.Hardware.LIMELIGHT);
+        if (limelight == null) throw new RuntimeException("Limelight not found");
         limelight.setPollRateHz(100);
         limelight.pipelineSwitch(0);
         limelight.start();
@@ -84,13 +90,15 @@ public class LimelightLocalizer implements Localizer {
         long currTime = System.nanoTime();
         double dt = (currTime - prevTime) / 1_000_000.0;
 
-        double robotYaw = getIMUHeading();
-        double yawRate = imu.getRobotAngularVelocity(RADIANS).zRotationRate;
+        double yawRate = imu == null ? 0 : imu.getRobotAngularVelocity(RADIANS).zRotationRate;
+        if (imu != null) {
+            double robotYaw = getIMUHeading();
 
-        double llYaw = new Pose(0, 0, robotYaw, PedroCoordinates.INSTANCE)
+            double llYaw = new Pose(0, 0, robotYaw, PedroCoordinates.INSTANCE)
                 .getAsCoordinateSystem(FTCCoordinates.INSTANCE)
                 .getHeading();
-        limelight.updateRobotOrientation(toDegrees(llYaw));
+            limelight.updateRobotOrientation(toDegrees(llYaw));
+        }
 
         LLResult result = limelight.getLatestResult();
 //        pose = null;
@@ -106,7 +114,7 @@ public class LimelightLocalizer implements Localizer {
 
         pose = null;
         if (result != null && result.isValid()) {
-            Pose3D botpose = result.getBotpose_MT2();
+            Pose3D botpose = imu == null ? result.getBotpose() : result.getBotpose_MT2();
 
             if (result.getBotposeTagCount() > 0 && abs(yawRate) < toRadians(360)) {
                 double angle = result.getBotpose().getOrientation().getYaw(DEGREES) - 90;
@@ -144,11 +152,11 @@ public class LimelightLocalizer implements Localizer {
     }
 
     public double getIMUHeading() {
-        return imu.getRobotYawPitchRollAngles().getYaw(RADIANS) + IMUoffset;
+        return imu == null ? 0 : imu.getRobotYawPitchRollAngles().getYaw(RADIANS) + IMUoffset;
     }
 
     public void resetIMU() {
-        imu.resetYaw();
+        if (imu != null) imu.resetYaw();
     }
 
     public boolean isNAN() {

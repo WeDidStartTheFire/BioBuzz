@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.TURRET_MOTOR;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.TURRET_TOUCH_SENSOR;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.MAX_TIMES_NOT_RESET;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.TURRET_ADJUST_FOR_VOLTAGE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.TURRET_ENCODERS_PER_DEGREE;
@@ -19,7 +21,6 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.turretVelocit
 import static org.firstinspires.ftc.teamcode.RobotState.panelsResetTurret;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.HIGH;
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -59,19 +60,15 @@ public class Turret {
     public Turret(HardwareMap hardwareMap, TelemetryUtils tm) {
         this.tm = tm;
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
-        turretMotor = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "turretMotor");
-        if (turretMotor == null)
-            tm.warn(HIGH, "Turret Motor disconnected. Check Expansion Hub motor port 3.");
-        else {
+        turretMotor = HardwareInitializer.init(hardwareMap, tm, TURRET_MOTOR);
+        if (turretMotor != null) {
             turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             int currentPos = turretMotor.getCurrentPosition();
             turretPIDController.setTargetPosition(abs(currentPos - 7000) < 250 ? 7000 : currentPos);
             velocityPIDController.setTargetPosition(0);
         }
-        turretTouchSensor = HardwareInitializer.init(hardwareMap, TouchSensor.class, "turretTouchSensor");
-        if (turretTouchSensor == null)
-            tm.warn(HIGH, "Turret Touch Sensor disconnected. Check Expansion Hub digital port 2:3.");
+        turretTouchSensor = HardwareInitializer.init(hardwareMap, tm, TURRET_TOUCH_SENSOR);
     }
 
     /**

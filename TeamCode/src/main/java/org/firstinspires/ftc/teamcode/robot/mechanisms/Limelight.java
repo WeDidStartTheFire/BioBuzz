@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.MEDIUM;
-
 import androidx.annotation.Nullable;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
@@ -21,10 +19,8 @@ public class Limelight {
     private final @Nullable Limelight3A limelight;
 
     public Limelight(HardwareMap hardwareMap, TelemetryUtils tm) {
-        limelight = HardwareInitializer.init(hardwareMap, Limelight3A.class, "limelight");
-        if (limelight == null)
-            tm.warn(MEDIUM, "Limelight disconnected. Check the Control Hub USB 3.0 port.");
-        else limelight.pipelineSwitch(0);
+        limelight = HardwareInitializer.init(hardwareMap, tm, RobotConstants.Hardware.LIMELIGHT);
+        if (limelight != null) limelight.pipelineSwitch(0);
     }
 
     /**

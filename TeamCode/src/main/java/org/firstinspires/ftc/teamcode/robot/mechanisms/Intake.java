@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.HIGH;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.LOW;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.INTAKE_MOTOR;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.INTAKE_SERVO_A;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.INTAKE_SERVO_B;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.INTAKE_SERVO_C;
 import static java.lang.Math.abs;
 
 import androidx.annotation.Nullable;
@@ -22,20 +24,12 @@ public class Intake {
     private double insidePower = 0;
 
     public Intake(HardwareMap hardwareMap, TelemetryUtils tm) {
-        intakeMotor = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "intakeMotor");
-        if (intakeMotor == null)
-            tm.warn(HIGH, "Intake Motor disconnected. Check Expansion hub motor port 0");
+        intakeMotor = HardwareInitializer.init(hardwareMap, tm, INTAKE_MOTOR);
 
-        intakeServoA = HardwareInitializer.init(hardwareMap, CRServo.class, "intakeServoA");
-        intakeServoB = HardwareInitializer.init(hardwareMap, CRServo.class, "intakeServoB");
-        intakeServoC = HardwareInitializer.init(hardwareMap, CRServo.class, "intakeServoC");
-        if (intakeServoA == null)
-            tm.warn(HIGH, "Intake Servo A disconnected. Check Expansion Hub servo port 3");
-        if (intakeServoB == null)
-            tm.warn(LOW, "Intake Servo B (roller) disconnected. Check Expansion Hub servo port 4");
-        if (intakeServoC == null)
-            tm.warn(HIGH, "Intake Servo C disconnected. Check Expansion Hub servo port 5");
-        else intakeServoC.setDirection(REVERSE);
+        intakeServoA = HardwareInitializer.init(hardwareMap, tm, INTAKE_SERVO_A);
+        intakeServoB = HardwareInitializer.init(hardwareMap, tm, INTAKE_SERVO_B);
+        intakeServoC = HardwareInitializer.init(hardwareMap, tm, INTAKE_SERVO_C);
+        if (intakeServoC != null) intakeServoC.setDirection(REVERSE);
     }
 
     /**

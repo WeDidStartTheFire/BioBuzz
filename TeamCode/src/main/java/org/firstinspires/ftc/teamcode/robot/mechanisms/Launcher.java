@@ -2,12 +2,13 @@ package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.BALL_VEL_TO_MOTOR_VEL_COEFF;
 import static org.firstinspires.ftc.teamcode.RobotConstants.BALL_VEL_TO_MOTOR_VEL_CONST;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.LAUNCHER_MOTOR_A;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.LAUNCHER_MOTOR_B;
 import static org.firstinspires.ftc.teamcode.RobotConstants.launcherPIDF;
 import static org.firstinspires.ftc.teamcode.RobotConstants.launcherReversePIDF;
 import static org.firstinspires.ftc.teamcode.RobotState.launcherVelModifier;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.CRITICAL;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.MEDIUM;
 
 import androidx.annotation.NonNull;
@@ -50,19 +51,15 @@ public class Launcher {
     public Launcher(HardwareMap hardwareMap, TelemetryUtils tm) {
         this.tm = tm;
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
-        launcherMotorA = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "launcherMotorA");
-        if (launcherMotorA == null)
-            tm.warn(CRITICAL, "Launcher Motor A disconnected. Check Expansion Hub motor port 1.");
-        else {
+        launcherMotorA = HardwareInitializer.init(hardwareMap, tm, LAUNCHER_MOTOR_A);
+        if (launcherMotorA != null) {
             launcherMotorA.setTargetPosition(0);
             launcherMotorA.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherReversePIDF);
             launcherMotorA.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
 
-        launcherMotorB = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "launcherMotorB");
-        if (launcherMotorB == null)
-            tm.warn(CRITICAL, "Launcher Motor B disconnected. Check Expansion Hub motor port 2.");
-        else {
+        launcherMotorB = HardwareInitializer.init(hardwareMap, tm, LAUNCHER_MOTOR_B);
+        if (launcherMotorB != null) {
             launcherMotorB.setDirection(DcMotorSimple.Direction.REVERSE);
             launcherMotorB.setTargetPosition(0);
             launcherMotorB.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherReversePIDF);

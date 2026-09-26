@@ -1,14 +1,14 @@
 package org.firstinspires.ftc.teamcode.autos.primary;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.Autonomous.INTAKE_AFTER_LAUNCH_WAIT;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Autonomous.INTAKE_MOVE_MAX_SPEED;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Autonomous.MAX_INTAKE_PATH_WAIT;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Autonomous.MAX_MOTIF_DETECT_WAIT;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Autonomous.slowIntakePathConstraints;
-import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_TELEOP_NAME;
 import static org.firstinspires.ftc.teamcode.RobotState.motif;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
+import static org.firstinspires.ftc.teamcode.constants.AutoConstants.INTAKE_AFTER_LAUNCH_WAIT;
+import static org.firstinspires.ftc.teamcode.constants.AutoConstants.INTAKE_MOVE_MAX_SPEED;
+import static org.firstinspires.ftc.teamcode.constants.AutoConstants.MAX_INTAKE_PATH_WAIT;
+import static org.firstinspires.ftc.teamcode.constants.AutoConstants.MAX_MOTIF_DETECT_WAIT;
+import static org.firstinspires.ftc.teamcode.constants.AutoConstants.slowIntakePathConstraints;
+import static org.firstinspires.ftc.teamcode.constants.TeleOpConstants.BLUE_TELEOP_NAME;
 import static java.lang.Math.toRadians;
 
 import com.pedropathing.geometry.BezierCurve;
@@ -17,8 +17,9 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.autos.BaseAuto;
+import org.firstinspires.ftc.teamcode.enums.Color;
+import org.firstinspires.ftc.teamcode.enums.Motif;
 
 
 @Autonomous(name = Auto_BlueClose.name, group = "A", preselectTeleOp = BLUE_TELEOP_NAME)
@@ -28,7 +29,7 @@ public final class Auto_BlueClose extends BaseAuto<Auto_BlueClose.State> {
         shootToIntake2, intake2, intakeToShoot2, shootToEnd;
     private double launchRound = 0;
     static final String name = "🟦Blue🟦 Close";
-    private final RobotConstants.Color color = RobotConstants.Color.BLUE;
+    private final Color color = Color.BLUE;
     private final State initialState = State.START_TO_MOTIF;
 
     protected enum State {
@@ -110,9 +111,9 @@ public final class Auto_BlueClose extends BaseAuto<Auto_BlueClose.State> {
                 setState(State.MOTIF_TO_SHOOT);
                 break;
             case MOTIF_TO_SHOOT:
-                RobotConstants.Motif m = robot.limelight.getMotif();
-                if (m != RobotConstants.Motif.UNKNOWN) motif = m;
-                if (robot.drivetrain.follower.isBusy() || (motif == RobotConstants.Motif.UNKNOWN
+                Motif m = robot.limelight.getMotif();
+                if (m != Motif.UNKNOWN) motif = m;
+                if (robot.drivetrain.follower.isBusy() || (motif == Motif.UNKNOWN
                     && stateTimer.getElapsedTimeSeconds() < MAX_MOTIF_DETECT_WAIT))
                     break;
                 robot.drivetrain.follower.followPath(motifToShoot, true);

@@ -1,14 +1,14 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.EMPTY;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.GREEN;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.PURPLE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.INDEXER_SERVO;
-import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_POS_EPSILON;
-import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_SPEED;
-import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
 import static org.firstinspires.ftc.teamcode.RobotState.artifacts;
+import static org.firstinspires.ftc.teamcode.constants.IndexerConstants.INDEXER_POS_EPSILON;
+import static org.firstinspires.ftc.teamcode.constants.IndexerConstants.INDEXER_SPEED;
+import static org.firstinspires.ftc.teamcode.constants.IndexerConstants.MIDDLE_INDEXER_POS;
+import static org.firstinspires.ftc.teamcode.enums.Artifact.EMPTY;
+import static org.firstinspires.ftc.teamcode.enums.Artifact.GREEN;
+import static org.firstinspires.ftc.teamcode.enums.Artifact.PURPLE;
+import static org.firstinspires.ftc.teamcode.enums.Artifact.UNKNOWN;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.INDEXER_SERVO;
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -20,8 +20,8 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.enums.Artifact;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
 import java.util.Arrays;
@@ -63,14 +63,14 @@ public class Indexer {
         }
         long t0 = System.currentTimeMillis();
         colorSensor.update(highPriority);
-        RobotConstants.Artifact artifact = colorSensor.getArtifact();
+        Artifact artifact = colorSensor.getArtifact();
         long t1 = System.currentTimeMillis();
         tm.print("ColorSensor Update (ms)", t1 - t0);
         tm.print("Artifact", artifact);
         setCurrentArtifact(artifact);
     }
 
-    private void setCurrentArtifact(RobotConstants.Artifact artifact) {
+    private void setCurrentArtifact(Artifact artifact) {
         int idx = idxFromPos(getGoalPos());
         if (idx < 0 || idx >= artifacts.length) return;
         artifacts[idx] = artifact;
@@ -160,7 +160,7 @@ public class Indexer {
      */
     public int getTotalArtifacts() {
         int count = 0;
-        for (RobotConstants.Artifact artifact : artifacts)
+        for (Artifact artifact : artifacts)
             if (artifact == GREEN || artifact == PURPLE) count++;
         return count;
     }
@@ -177,16 +177,16 @@ public class Indexer {
     private void updateLED() {
 //        switch (getCurrentArtifact()) {
 //            case GREEN:
-//                led.setColor(RobotConstants.LEDColors.SAGE, LED.Priority.MEDIUM);
+//                led.setColor(LEDColors.SAGE, LED.Priority.MEDIUM);
 //                break;
 //            case PURPLE:
-//                led.setColor(RobotConstants.LEDColors.VIOLET, LED.Priority.MEDIUM);
+//                led.setColor(LEDColors.VIOLET, LED.Priority.MEDIUM);
 //                break;
 //            case EMPTY:
-//                led.setColor(RobotConstants.LEDColors.WHITE, LED.Priority.LOW);
+//                led.setColor(LEDColors.WHITE, LED.Priority.LOW);
 //                break;
 //            case UNKNOWN:
-//                led.setColor(RobotConstants.LEDColors.OFF, LED.Priority.LOW);
+//                led.setColor(LEDColors.OFF, LED.Priority.LOW);
 //                break;
 //        }
     }
@@ -225,7 +225,7 @@ public class Indexer {
      * @param pos Position of the indexer, on [0, 1]
      * @return Artifact at position pos
      */
-    public RobotConstants.Artifact getArtifactAtPos(double pos) {
+    public Artifact getArtifactAtPos(double pos) {
         int idx = idxFromPos(pos);
         if (idx >= 0 && idx < artifacts.length) return artifacts[idx];
         return UNKNOWN;
@@ -236,7 +236,7 @@ public class Indexer {
      *
      * @return Artifact in the active indexer slot
      */
-    public RobotConstants.Artifact getCurrentArtifact() {
+    public Artifact getCurrentArtifact() {
         return getArtifactAtPos(getGoalPos());
     }
 
@@ -251,7 +251,7 @@ public class Indexer {
      * @param artifact Artifact to rotate to
      * @return Whether that artifact is present
      */
-    public boolean rotateToArtifact(RobotConstants.Artifact artifact) {
+    public boolean rotateToArtifact(Artifact artifact) {
         double pos = getGoalPos();
         if (pos == -1) pos = 0;
 
@@ -313,7 +313,7 @@ public class Indexer {
      * @param artifact The artifact to check for
      * @return true if the indexer does not contain the artifact or if it is unknown, false if it does
      */
-    public boolean doesNotContain(RobotConstants.Artifact artifact) {
+    public boolean doesNotContain(Artifact artifact) {
         return !Arrays.asList(artifacts).contains(artifact);
     }
 

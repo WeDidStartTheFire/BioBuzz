@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.teleops.other;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.speeds;
+import static org.firstinspires.ftc.teamcode.constants.TeleOpConstants.speeds;
 import static java.lang.Math.abs;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;

@@ -9,10 +9,10 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
+import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 @TeleOp(name = "TeleOp_AprilTag_Follower", group = "Test")
@@ -27,7 +27,7 @@ public class TeleOp_AprilTag_Follower extends OpMode {
     public void init() {
         gamepad = new Gamepad();
         gamepad.left_stick_x = 0;
-        RobotState.color = RobotConstants.Color.BLUE;
+        RobotState.color = Color.BLUE;
         Pose pose = loadOdometryPosition();
         RobotState.auto = false;
         validStartPose = pose != null;

@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.FEEDER_SERVO_A;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.FEEDER_SERVO_B;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.TOUCH_SENSOR_A;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.TOUCH_SENSOR_B;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.FEEDER_SERVO_A;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.FEEDER_SERVO_B;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.TOUCH_SENSOR_A;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.TOUCH_SENSOR_B;
 
 import androidx.annotation.Nullable;
 

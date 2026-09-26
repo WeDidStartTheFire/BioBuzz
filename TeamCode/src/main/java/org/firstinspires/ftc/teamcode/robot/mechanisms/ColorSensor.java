@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.COLOR_SENSOR_A;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.COLOR_SENSOR_B;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.COLOR_SENSOR_A;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.COLOR_SENSOR_B;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

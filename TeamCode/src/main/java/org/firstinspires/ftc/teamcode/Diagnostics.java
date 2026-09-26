@@ -1,21 +1,21 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.COLOR_SENSOR_A;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.COLOR_SENSOR_B;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.DRIVETRAIN_LEFT_BACK_MOTOR;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.DRIVETRAIN_LEFT_FRONT_MOTOR;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.DRIVETRAIN_RIGHT_BACK_MOTOR;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.DRIVETRAIN_RIGHT_FRONT_MOTOR;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.INTAKE_MOTOR;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.INTAKE_SERVO_A;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.INTAKE_SERVO_B;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.INTAKE_SERVO_C;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.LAUNCHER_MOTOR_A;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.LAUNCHER_MOTOR_B;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.LED;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.LIMELIGHT;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.SPARKFUN_OTOS;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.TURRET_MOTOR;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.COLOR_SENSOR_A;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.COLOR_SENSOR_B;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.DRIVETRAIN_LEFT_BACK_MOTOR;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.DRIVETRAIN_LEFT_FRONT_MOTOR;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.DRIVETRAIN_RIGHT_BACK_MOTOR;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.DRIVETRAIN_RIGHT_FRONT_MOTOR;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_MOTOR;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_SERVO_A;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_SERVO_B;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_SERVO_C;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.LAUNCHER_MOTOR_A;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.LAUNCHER_MOTOR_B;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.LED;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.LIMELIGHT;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.SPARKFUN_OTOS;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.TURRET_MOTOR;
 
 import androidx.annotation.Nullable;
 

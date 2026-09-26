@@ -1,15 +1,14 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.BALL_VEL_TO_MOTOR_VEL_COEFF;
-import static org.firstinspires.ftc.teamcode.RobotConstants.BALL_VEL_TO_MOTOR_VEL_CONST;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.LAUNCHER_MOTOR_A;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.LAUNCHER_MOTOR_B;
-import static org.firstinspires.ftc.teamcode.RobotConstants.launcherPIDF;
-import static org.firstinspires.ftc.teamcode.RobotConstants.launcherReversePIDF;
-import static org.firstinspires.ftc.teamcode.RobotState.launcherVelModifier;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.MEDIUM;
+import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.BALL_VEL_TO_MOTOR_VEL_COEFF;
+import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.BALL_VEL_TO_MOTOR_VEL_CONST;
+import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.launcherPIDF;
+import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.launcherReversePIDF;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.LAUNCHER_MOTOR_A;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.LAUNCHER_MOTOR_B;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,6 +24,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
+import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
@@ -66,7 +66,7 @@ public class Launcher {
             launcherMotorB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
         spinningTimer = new Timer();
-        launcherVelModifier = 0;
+        RobotState.launcherVelModifier = 0;
     }
 
     /**
@@ -87,12 +87,12 @@ public class Launcher {
     public double getGoalVel(@Nullable Pose pose, @Nullable Vector vel) {
         if (pose == null) return 0;
         if (pose.equals(lastPose) && ((vel == null && lastVel == null) || vel != null && vel.equals(lastVel)))
-            return lastGoalVel + launcherVelModifier;
+            return lastGoalVel + RobotState.launcherVelModifier;
         ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolution(pose, vel);
         lastPose = pose;
         lastVel = vel;
         lastGoalVel = sol != null ? ballVelToMotorVel(sol.w) : 0;
-        return lastGoalVel + launcherVelModifier;
+        return lastGoalVel + RobotState.launcherVelModifier;
     }
 
     /**

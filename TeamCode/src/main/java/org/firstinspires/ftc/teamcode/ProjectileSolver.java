@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_ANGLE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_HEIGHT;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
+import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.LAUNCHER_ANGLE;
+import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.LAUNCHER_HEIGHT;
 import static java.lang.Math.abs;
 import static java.lang.Math.sqrt;
 

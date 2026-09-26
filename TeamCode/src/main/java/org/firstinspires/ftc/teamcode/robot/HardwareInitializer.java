@@ -5,8 +5,8 @@ import androidx.annotation.Nullable;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.enums.Hardware;
 
 public class HardwareInitializer {
     /**
@@ -32,7 +32,7 @@ public class HardwareInitializer {
     }
 
     public static @Nullable <T> T init(@NonNull HardwareMap hardwareMap, @Nullable TelemetryUtils tm,
-                                       @NonNull RobotConstants.Hardware hardware) {
+                                       @NonNull Hardware hardware) {
         try {
             @SuppressWarnings("unchecked")
             T device = (T) hardwareMap.get(hardware.classOrInterface, hardware.deviceName);

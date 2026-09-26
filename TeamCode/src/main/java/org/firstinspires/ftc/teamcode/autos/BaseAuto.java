@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.autos;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.runtime;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
@@ -9,10 +8,10 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.IntakeController;
+import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
 
@@ -24,9 +23,9 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
     protected Timer stateTimer = new Timer();
     protected S state;
     protected S initialState;
-    protected RobotConstants.Color color;
+    protected Color color;
     protected String name;
-    private long lastUpdateTime = 0;
+    private double lastUpdateTime = 0;
     private int totalMs = 0;
     private int totalUpdates = 0;
 
@@ -98,9 +97,9 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         if (pose != null) tm.print(pose);
         tm.print("Motor Goal Vel", robot.launcher.getGoalVel(shootPose, null));
         tm.print("Launcher Vel", robot.launcher.getCachedVel());
-        long t = runtime.nanoseconds();
+        double t = getRuntime();
         if (lastUpdateTime != 0) {
-            int ms = Math.toIntExact((t - lastUpdateTime) / 1_000_000);
+            int ms = (int) ((t - lastUpdateTime) * 1000);
             totalMs += ms;
             totalUpdates++;
             tm.print("dt (ms)", ms);

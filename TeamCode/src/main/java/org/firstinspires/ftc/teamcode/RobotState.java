@@ -1,12 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.Color;
-
 import androidx.annotation.Nullable;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.math.Vector;
+
+import org.firstinspires.ftc.teamcode.enums.Color;
 
 @Configurable
 public class RobotState {

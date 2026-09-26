@@ -9,23 +9,21 @@ import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
-import static org.firstinspires.ftc.teamcode.RobotConstants.B;
-import static org.firstinspires.ftc.teamcode.RobotConstants.COUNTS_PER_INCH;
-import static org.firstinspires.ftc.teamcode.RobotConstants.DRIVETRAIN_VELOCITY;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Dir;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Dir.BACKWARD;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Dir.FORWARD;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.DRIVETRAIN_LEFT_BACK_MOTOR;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.DRIVETRAIN_LEFT_FRONT_MOTOR;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.DRIVETRAIN_RIGHT_BACK_MOTOR;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.DRIVETRAIN_RIGHT_FRONT_MOTOR;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.SPARKFUN_OTOS;
-import static org.firstinspires.ftc.teamcode.RobotConstants.IMU_PARAMS;
-import static org.firstinspires.ftc.teamcode.RobotConstants.M;
-import static org.firstinspires.ftc.teamcode.RobotConstants.runtime;
 import static org.firstinspires.ftc.teamcode.RobotState.auto;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.CRITICAL;
+import static org.firstinspires.ftc.teamcode.constants.DrivetrainConstants.B;
+import static org.firstinspires.ftc.teamcode.constants.DrivetrainConstants.COUNTS_PER_INCH;
+import static org.firstinspires.ftc.teamcode.constants.DrivetrainConstants.DRIVETRAIN_VELOCITY;
+import static org.firstinspires.ftc.teamcode.constants.DrivetrainConstants.IMU_PARAMS;
+import static org.firstinspires.ftc.teamcode.constants.DrivetrainConstants.M;
+import static org.firstinspires.ftc.teamcode.enums.Dir.BACKWARD;
+import static org.firstinspires.ftc.teamcode.enums.Dir.FORWARD;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.DRIVETRAIN_LEFT_BACK_MOTOR;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.DRIVETRAIN_LEFT_FRONT_MOTOR;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.DRIVETRAIN_RIGHT_BACK_MOTOR;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.DRIVETRAIN_RIGHT_FRONT_MOTOR;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.SPARKFUN_OTOS;
 import static java.lang.Math.abs;
 import static java.lang.Math.signum;
 
@@ -33,6 +31,7 @@ import androidx.annotation.Nullable;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.util.Timer;
 import com.qualcomm.hardware.lynx.LynxI2cDeviceSynch;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
@@ -44,8 +43,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.enums.Dir;
+import org.firstinspires.ftc.teamcode.enums.Hardware;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
@@ -93,7 +93,7 @@ public class Drivetrain {
         follower = Constants.createFollower(hardwareMap);
         otos = HardwareInitializer.init(hardwareMap, tm, SPARKFUN_OTOS);
 
-        imu = HardwareInitializer.init(hardwareMap, tm, RobotConstants.Hardware.IMU);
+        imu = HardwareInitializer.init(hardwareMap, tm, Hardware.IMU);
         if (imu != null) {
             imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
@@ -192,15 +192,15 @@ public class Drivetrain {
         setMotorModes(RUN_USING_ENCODER);
 
         // reset the timeout time and start motion.
+        Timer runtime = new Timer();
         if (inches != 0) {
-            runtime.reset();
             setMotorVelocities(DRIVETRAIN_VELOCITY * signum(inches) * dir);
             inches = signum(inches) * (abs(inches) + B) / M;
         } else setMotorVelocities(DRIVETRAIN_VELOCITY * dir);
 
         double duration = abs(inches * COUNTS_PER_INCH / DRIVETRAIN_VELOCITY);
 
-        while (runtime.seconds() < duration && inches != 0) {
+        while (runtime.getElapsedTimeSeconds() < duration && inches != 0) {
             // Display it for the driver.
             tm.print("Angle", imu == null ? 0 : imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
             tm.print("Running to", " " + lfTarget + ":" + rfTarget);

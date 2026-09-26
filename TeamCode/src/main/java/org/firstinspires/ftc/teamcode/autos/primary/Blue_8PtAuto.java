@@ -3,13 +3,12 @@ package org.firstinspires.ftc.teamcode.autos.primary;
 import static java.lang.Math.toRadians;
 
 import com.pedropathing.geometry.BezierCurve;
-import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.autos.BaseAuto;
+import org.firstinspires.ftc.teamcode.enums.Color;
 
 @Autonomous(name = "(Blue) 8 Points")
 public class Blue_8PtAuto extends BaseAuto<Blue_8PtAuto.State> {
@@ -47,7 +46,7 @@ public class Blue_8PtAuto extends BaseAuto<Blue_8PtAuto.State> {
     @Override
     protected void configure() {
         super.startPose = start;
-        super.color = RobotConstants.Color.BLUE;
+        super.color = Color.BLUE;
         super.initialState = initialState;
     }
 }

@@ -129,18 +129,6 @@ public class RobotConstants {
     }
 
     @Configurable
-    public static class LaunchController {
-        public static double MAX_LAUNCHER_SPIN_WAIT = 5;
-        public static double MAX_DROOP_WAIT = 3;
-        public static double MAX_FEEDER_DOWN_WAIT = .35;
-        public static double MIN_FEEDER_DOWN_WAIT = .15;
-        public static double ARTIFACT_LAUNCH_WAIT = .15;
-        public static int MAX_FAILED_ATTEMPTS = 5;
-        public static double STOP_LAUNCHER_WAIT = 0.25;
-        public static int MAX_ARTIFACT_PRESENT_COUNT = 1;
-    }
-
-    @Configurable
     public static class Reset {
         public static double SOFT_RESET_WAIT = .5;
         public static double HARD_RESET_WAIT = 1;

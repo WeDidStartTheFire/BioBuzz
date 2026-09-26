@@ -183,7 +183,7 @@ public class TeleOpController {
 
     /**
      * Updates launcher controls during TeleOp mode.
-     * Handles manual spin, intake, and artifact launching.
+     * Handles manual spin, intake, and launching.
      */
     public void updateLauncherTeleOp() {
         if (gamepad2.dpadUpWasPressed()) launcherVelModifier += 25;

@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.autos;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.runtime;
-import static org.firstinspires.ftc.teamcode.RobotState.motif;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
@@ -78,7 +77,6 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         robot.drivetrain.follower.setPose(startPose);
         robot.limelight.start();
         robot.turret.setTarget(Turret.Target.GOAL);
-        RobotState.motif = robot.limelight.getMotif();
         setState(initialState);
         onStart();
     }
@@ -97,7 +95,6 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         tm.drawRobot(robot.drivetrain.follower, 250);
         tm.print("Path State", state);
         tm.print("Intake State", intakeController.getState());
-        tm.print("Motif", motif);
         if (pose != null) tm.print(pose);
         tm.print("Motor Goal Vel", robot.launcher.getGoalVel(shootPose, null));
         tm.print("Launcher Vel", robot.launcher.getCachedVel());

@@ -65,7 +65,7 @@ public class IntakeController {
     }
 
     /**
-     * @return Whether the robot is actively intaking artifacts
+     * @return Whether the robot is actively intaking
      */
     public boolean isBusy() {
         return isBusy;

@@ -24,7 +24,7 @@ public class ProjectileSolver {
     public static class LaunchSolution {
         public double w; // Launch speed magnitude (relative to robot motion)
         public double phi; // Horizontal azimuth (radians, degrees?)
-        public double t; // Time from launch for artifact to reach target
+        public double t; // Time from launch for projectile to reach target
 
         LaunchSolution(double w, double phi, double t) {
             this.w = w;
@@ -120,7 +120,7 @@ public class ProjectileSolver {
         double t = findPositiveRoot(a, b, c, d);
         if (t <= 0) return null;
 
-        // Compute horizontal velocity of the artifact
+        // Compute horizontal velocity of the projectile
         double ux = (dx / t) - vx;
         double uy = (dy / t) - vy;
 

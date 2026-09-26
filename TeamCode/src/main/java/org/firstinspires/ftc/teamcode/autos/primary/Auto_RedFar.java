@@ -1,14 +1,14 @@
 package org.firstinspires.ftc.teamcode.autos.primary;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.Autonomous.INTAKE_AFTER_LAUNCH_WAIT;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Autonomous.INTAKE_MOVE_MAX_SPEED;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Autonomous.MAX_INTAKE_PATH_WAIT;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Autonomous.MAX_MOTIF_DETECT_WAIT;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Autonomous.slowIntakePathConstraints;
-import static org.firstinspires.ftc.teamcode.RobotConstants.RED_TELEOP_NAME;
 import static org.firstinspires.ftc.teamcode.RobotState.motif;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
+import static org.firstinspires.ftc.teamcode.constants.AutoConstants.INTAKE_AFTER_LAUNCH_WAIT;
+import static org.firstinspires.ftc.teamcode.constants.AutoConstants.INTAKE_MOVE_MAX_SPEED;
+import static org.firstinspires.ftc.teamcode.constants.AutoConstants.MAX_INTAKE_PATH_WAIT;
+import static org.firstinspires.ftc.teamcode.constants.AutoConstants.MAX_MOTIF_DETECT_WAIT;
+import static org.firstinspires.ftc.teamcode.constants.AutoConstants.slowIntakePathConstraints;
+import static org.firstinspires.ftc.teamcode.constants.TeleOpConstants.RED_TELEOP_NAME;
 import static java.lang.Math.toRadians;
 
 import com.pedropathing.geometry.BezierLine;
@@ -16,8 +16,9 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.autos.BaseAuto;
+import org.firstinspires.ftc.teamcode.enums.Color;
+import org.firstinspires.ftc.teamcode.enums.Motif;
 
 
 @Autonomous(name = Auto_RedFar.name, group = "A", preselectTeleOp = RED_TELEOP_NAME)
@@ -27,7 +28,7 @@ public final class Auto_RedFar extends BaseAuto<Auto_RedFar.State> {
             intake2, intakeToShoot2, shootToEnd;
     private double launchRound = 0;
     static final String name = "🟥Red🟥 Far";
-    private final RobotConstants.Color color = RobotConstants.Color.RED;
+    private final Color color = Color.RED;
     private final State initialState = State.START_TO_SHOOT;
 
     protected enum State {
@@ -97,9 +98,9 @@ public final class Auto_RedFar extends BaseAuto<Auto_RedFar.State> {
         switch (state) {
             case START_TO_SHOOT:
                 robot.indexer.setPos(0);
-                RobotConstants.Motif m = robot.limelight.getMotif();
-                if (m != RobotConstants.Motif.UNKNOWN) motif = m;
-                if (motif == RobotConstants.Motif.UNKNOWN &&
+                Motif m = robot.limelight.getMotif();
+                if (m != Motif.UNKNOWN) motif = m;
+                if (motif == Motif.UNKNOWN &&
                         stateTimer.getElapsedTimeSeconds() < MAX_MOTIF_DETECT_WAIT) break;
                 robot.drivetrain.follower.followPath(startToShoot, true);
                 launchController.manualSpin();

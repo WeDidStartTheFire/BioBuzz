@@ -4,8 +4,8 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADI
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.normalizeRadians;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.LIMELIGHT;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.SPARKFUN_OTOS;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.LIMELIGHT;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.SPARKFUN_OTOS;
 import static java.lang.Math.abs;
 import static java.lang.Math.toDegrees;
 import static java.lang.Math.toRadians;
@@ -32,7 +32,7 @@ import org.ejml.dense.row.CommonOps_DDRM;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-import org.firstinspires.ftc.teamcode.RobotConstants;
+import org.firstinspires.ftc.teamcode.enums.Hardware;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
@@ -93,7 +93,7 @@ public class KalmanLocalizer implements Localizer {
     }
 
     public KalmanLocalizer(@NonNull HardwareMap map, Pose startPose) {
-        IMU _imu = HardwareInitializer.init(map, null, RobotConstants.Hardware.IMU);
+        IMU _imu = HardwareInitializer.init(map, null, Hardware.IMU);
         if (_imu == null) {
             throw new RuntimeException("Failed to initialize IMU. It seems to be disconnected or " +
                 "have a mismatched name. Cannot run Kalman Localizer without this.");

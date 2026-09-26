@@ -1,10 +1,10 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.INTAKE_MOTOR;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.INTAKE_SERVO_A;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.INTAKE_SERVO_B;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.INTAKE_SERVO_C;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_MOTOR;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_SERVO_A;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_SERVO_B;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_SERVO_C;
 import static java.lang.Math.abs;
 
 import androidx.annotation.Nullable;

@@ -11,10 +11,11 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.constants.TurretConstants;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
+import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
 
@@ -50,7 +51,7 @@ public class TeleOp_TuneTurretPIDF extends OpMode {
 
     @Override
     public void init() {
-        RobotState.color = RobotConstants.Color.BLUE;
+        RobotState.color = Color.BLUE;
         Pose pose = loadOdometryPosition();
         validStartPose = pose != null;
         RobotState.pose = validStartPose ? pose : new Pose();
@@ -82,7 +83,7 @@ public class TeleOp_TuneTurretPIDF extends OpMode {
         if (gamepad1.y) encoderGoal -= (int) (increase * dt);
 
         if (robot.turret.turretMotor == null) return;
-        RobotConstants.Turret.TURRET_MAX_POWER = maxPower;
+        TurretConstants.TURRET_MAX_POWER = maxPower;
         pidf = new PIDFCoefficients(P, 0, D, F);
         robot.turret.turretPIDController.setCoefficients(pidf);
         robot.turret.turretPIDController.setTargetPosition(encoderGoal);

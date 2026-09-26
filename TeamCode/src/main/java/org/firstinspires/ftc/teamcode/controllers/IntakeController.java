@@ -1,12 +1,12 @@
 package org.firstinspires.ftc.teamcode.controllers;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.EMPTY;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
-import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_ARTIFACT_DETECTION_WAIT;
-import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.AZURE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.BLUE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.GREEN;
-import static org.firstinspires.ftc.teamcode.RobotConstants.PARTIAL_INDEXER_ARTIFACT_DETECTION_WAIT;
+import static org.firstinspires.ftc.teamcode.constants.IntakeControllerConstants.INDEXER_ARTIFACT_DETECTION_WAIT;
+import static org.firstinspires.ftc.teamcode.constants.IntakeControllerConstants.PARTIAL_INDEXER_ARTIFACT_DETECTION_WAIT;
+import static org.firstinspires.ftc.teamcode.enums.Artifact.EMPTY;
+import static org.firstinspires.ftc.teamcode.enums.Artifact.UNKNOWN;
+import static org.firstinspires.ftc.teamcode.enums.LEDColors.AZURE;
+import static org.firstinspires.ftc.teamcode.enums.LEDColors.BLUE;
+import static org.firstinspires.ftc.teamcode.enums.LEDColors.GREEN;
 
 import com.pedropathing.util.Timer;
 

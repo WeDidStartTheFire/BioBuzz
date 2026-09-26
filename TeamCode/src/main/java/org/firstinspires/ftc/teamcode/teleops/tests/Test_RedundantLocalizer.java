@@ -10,10 +10,10 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
+import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 @TeleOp(name = "Redundant Localizer Test", group = "Test")
@@ -25,7 +25,7 @@ public class Test_RedundantLocalizer extends OpMode {
 
     @Override
     public void init() {
-        RobotState.color = RobotConstants.Color.BLUE;
+        RobotState.color = Color.BLUE;
         Pose pose = loadOdometryPosition();
         RobotState.auto = false;
         validStartPose = pose != null;

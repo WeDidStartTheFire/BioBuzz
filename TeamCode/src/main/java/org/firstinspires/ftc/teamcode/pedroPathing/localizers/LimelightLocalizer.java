@@ -21,7 +21,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-import org.firstinspires.ftc.teamcode.RobotConstants;
+import org.firstinspires.ftc.teamcode.enums.Hardware;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
 
@@ -47,14 +47,14 @@ public class LimelightLocalizer implements Localizer {
     }
 
     public LimelightLocalizer(@NonNull HardwareMap map, @Nullable Pose startPose) {
-        imu = HardwareInitializer.init(map, null, RobotConstants.Hardware.IMU);
+        imu = HardwareInitializer.init(map, null, Hardware.IMU);
         if (imu != null) {
             imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
                 RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
             imu.resetYaw();
         }
-        limelight = HardwareInitializer.init(map, null, RobotConstants.Hardware.LIMELIGHT);
+        limelight = HardwareInitializer.init(map, null, Hardware.LIMELIGHT);
         if (limelight == null) throw new RuntimeException("Limelight not found");
         limelight.setPollRateHz(100);
         limelight.pipelineSwitch(0);

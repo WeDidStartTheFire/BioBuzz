@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.pedroPathing.localizers;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.normalizeRadians;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.LIMELIGHT;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.LIMELIGHT;
 import static java.lang.Math.abs;
 import static java.lang.Math.hypot;
 import static java.lang.Math.toDegrees;

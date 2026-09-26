@@ -1,10 +1,10 @@
 package org.firstinspires.ftc.teamcode.autos.secondary;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.Autonomous.MAX_MOTIF_DETECT_WAIT;
-import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_TELEOP_NAME;
 import static org.firstinspires.ftc.teamcode.RobotState.motif;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
+import static org.firstinspires.ftc.teamcode.constants.AutoConstants.MAX_MOTIF_DETECT_WAIT;
+import static org.firstinspires.ftc.teamcode.constants.TeleOpConstants.BLUE_TELEOP_NAME;
 import static java.lang.Math.toRadians;
 
 import com.pedropathing.geometry.BezierLine;
@@ -12,8 +12,9 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.autos.BaseAuto;
+import org.firstinspires.ftc.teamcode.enums.Color;
+import org.firstinspires.ftc.teamcode.enums.Motif;
 
 
 @Autonomous(name = Auto_BlueFar_3_Only.name, group = "B", preselectTeleOp = BLUE_TELEOP_NAME)
@@ -21,7 +22,7 @@ public final class Auto_BlueFar_3_Only extends BaseAuto<Auto_BlueFar_3_Only.Stat
 
     private PathChain startToShoot, shootToEnd;
     static final String name = "🟦Blue🟦 Far 3 Only";
-    private final RobotConstants.Color color = RobotConstants.Color.BLUE;
+    private final Color color = Color.BLUE;
     private final State initialState = State.START_TO_SHOOT;
 
     protected enum State {
@@ -58,9 +59,9 @@ public final class Auto_BlueFar_3_Only extends BaseAuto<Auto_BlueFar_3_Only.Stat
         switch (state) {
             case START_TO_SHOOT:
                 robot.indexer.setPos(0);
-                RobotConstants.Motif m = robot.limelight.getMotif();
-                if (m != RobotConstants.Motif.UNKNOWN) motif = m;
-                if (motif == RobotConstants.Motif.UNKNOWN &&
+                Motif m = robot.limelight.getMotif();
+                if (m != Motif.UNKNOWN) motif = m;
+                if (motif == Motif.UNKNOWN &&
                         stateTimer.getElapsedTimeSeconds() < MAX_MOTIF_DETECT_WAIT) break;
                 robot.drivetrain.follower.followPath(startToShoot, true);
                 launchController.manualSpin();

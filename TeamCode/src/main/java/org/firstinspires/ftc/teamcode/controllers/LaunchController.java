@@ -1,29 +1,30 @@
 package org.firstinspires.ftc.teamcode.controllers;
 
 import static org.firstinspires.ftc.teamcode.ProjectileSolver.getLaunchSolution;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.EMPTY;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
-import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.GREEN;
-import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.ORANGE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.YELLOW;
-import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.ARTIFACT_LAUNCH_WAIT;
-import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.MAX_ARTIFACT_PRESENT_COUNT;
-import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.MAX_DROOP_WAIT;
-import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.MAX_FAILED_ATTEMPTS;
-import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.MAX_FEEDER_DOWN_WAIT;
-import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.MAX_LAUNCHER_SPIN_WAIT;
-import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.MIN_FEEDER_DOWN_WAIT;
-import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.STOP_LAUNCHER_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotState.auto;
 import static org.firstinspires.ftc.teamcode.RobotState.motif;
+import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.ARTIFACT_LAUNCH_WAIT;
+import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.MAX_ARTIFACT_PRESENT_COUNT;
+import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.MAX_DROOP_WAIT;
+import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.MAX_FAILED_ATTEMPTS;
+import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.MAX_FEEDER_DOWN_WAIT;
+import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.MAX_LAUNCHER_SPIN_WAIT;
+import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.MIN_FEEDER_DOWN_WAIT;
+import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.STOP_LAUNCHER_WAIT;
+import static org.firstinspires.ftc.teamcode.enums.Artifact.EMPTY;
+import static org.firstinspires.ftc.teamcode.enums.Artifact.UNKNOWN;
+import static org.firstinspires.ftc.teamcode.enums.LEDColors.GREEN;
+import static org.firstinspires.ftc.teamcode.enums.LEDColors.ORANGE;
+import static org.firstinspires.ftc.teamcode.enums.LEDColors.YELLOW;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 import com.pedropathing.util.Timer;
 
-import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.enums.Artifact;
+import org.firstinspires.ftc.teamcode.enums.LEDColors;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.LED;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
@@ -40,7 +41,7 @@ public class LaunchController {
     private boolean isBusy;
     private int numLaunched = 0;
     private int failedCount = 0;
-    private final ArrayList<RobotConstants.Artifact> launchQueue = new ArrayList<>(6);
+    private final ArrayList<Artifact> launchQueue = new ArrayList<>(6);
     private boolean anyExpected = false;
     private double intakePercent;
     private boolean intaking;
@@ -94,7 +95,7 @@ public class LaunchController {
         boolean overSpeed = robot.launcher.overSpeed(vel);
         boolean toSpeed = robot.launcher.toSpeed(vel) && !overSpeed;
         if (getLaunchSolution() == null)
-            robot.led.setColor(RobotConstants.LEDColors.RED, isBusy || robot.launcher.isSpinning(vel)
+            robot.led.setColor(LEDColors.RED, isBusy || robot.launcher.isSpinning(vel)
                 ? LED.Priority.HIGH : LED.Priority.LOW);
         else if (toSpeed) robot.led.setColor(YELLOW, LED.Priority.CRITICAL);
         else if (overSpeed) robot.led.setColor(GREEN, LED.Priority.CRITICAL);
@@ -113,7 +114,7 @@ public class LaunchController {
             framesUnder = 0;
         }
 
-        RobotConstants.Artifact desired, current;
+        Artifact desired, current;
         double pos;
         switch (state) {
             case IDLE:
@@ -259,7 +260,7 @@ public class LaunchController {
      *
      * @param artifact Artifact to launch
      */
-    public void launchArtifact(RobotConstants.Artifact artifact) {
+    public void launchArtifact(Artifact artifact) {
         launchQueue.add(artifact);
     }
 
@@ -342,7 +343,7 @@ public class LaunchController {
      *
      * @return Launch queue
      */
-    public List<RobotConstants.Artifact> getQueue() {
+    public List<Artifact> getQueue() {
         return Collections.unmodifiableList(launchQueue);
     }
 }

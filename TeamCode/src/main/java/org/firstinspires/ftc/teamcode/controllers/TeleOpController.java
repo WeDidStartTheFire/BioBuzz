@@ -1,30 +1,30 @@
 package org.firstinspires.ftc.teamcode.controllers;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Color.BLUE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Positions.BLUE_BASE_ZONE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Positions.BLUE_FAR_LAUNCH;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Positions.BLUE_HUMAN_PLAYER;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Positions.RED_BASE_ZONE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Positions.RED_FAR_LAUNCH;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Positions.RED_HUMAN_PLAYER;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Reset.HARD_RESET_WAIT;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Reset.SOFT_RESET_WAIT;
-import static org.firstinspires.ftc.teamcode.RobotConstants.runtime;
 import static org.firstinspires.ftc.teamcode.RobotState.launcherVelModifier;
 import static org.firstinspires.ftc.teamcode.RobotState.motif;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.robotCentric;
 import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
+import static org.firstinspires.ftc.teamcode.constants.Positions.BLUE_BASE_ZONE;
+import static org.firstinspires.ftc.teamcode.constants.Positions.BLUE_FAR_LAUNCH;
+import static org.firstinspires.ftc.teamcode.constants.Positions.BLUE_HUMAN_PLAYER;
+import static org.firstinspires.ftc.teamcode.constants.Positions.RED_BASE_ZONE;
+import static org.firstinspires.ftc.teamcode.constants.Positions.RED_FAR_LAUNCH;
+import static org.firstinspires.ftc.teamcode.constants.Positions.RED_HUMAN_PLAYER;
+import static org.firstinspires.ftc.teamcode.constants.ResetConstants.HARD_RESET_WAIT;
+import static org.firstinspires.ftc.teamcode.constants.ResetConstants.SOFT_RESET_WAIT;
+import static org.firstinspires.ftc.teamcode.enums.Color.BLUE;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.enums.Artifact;
+import org.firstinspires.ftc.teamcode.enums.LEDColors;
+import org.firstinspires.ftc.teamcode.enums.Motif;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.LED;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
@@ -72,7 +72,7 @@ public class TeleOpController {
         robot.feeder.retract();
         robot.indexer.setPos(0);
         robot.limelight.start();
-        if (motif == RobotConstants.Motif.UNKNOWN) motif = robot.limelight.getMotif();
+        if (motif == Motif.UNKNOWN) motif = robot.limelight.getMotif();
     }
 
     /**
@@ -81,7 +81,7 @@ public class TeleOpController {
      */
     public void update() {
         tm.print("Motif", motif);
-        long t = runtime.nanoseconds();
+        long t = System.nanoTime();
         int ms = 0;
         if (lastUpdateTime != 0) {
             ms = Math.toIntExact((t - lastUpdateTime) / 1_000_000);
@@ -101,7 +101,7 @@ public class TeleOpController {
         }
         robot.turret.rotateManual(gamepad2.right_stick_x * .001 * ms);
         robot.turret.update(true);
-        if (motif == RobotConstants.Motif.UNKNOWN) motif = robot.limelight.getMotif();
+        if (motif == Motif.UNKNOWN) motif = robot.limelight.getMotif();
         robot.led.update();
         tm.updateOnlyPanels(10);
     }
@@ -151,13 +151,13 @@ public class TeleOpController {
             softResetDone = false;
         }
         if (gamepad1.dpad_down) {
-            robot.led.setColor(RobotConstants.LEDColors.GREEN, LED.Priority.CRITICAL);
+            robot.led.setColor(LEDColors.GREEN, LED.Priority.CRITICAL);
             if (softZeroTimer.getElapsedTimeSeconds() < SOFT_RESET_WAIT)
-                robot.led.setColor(RobotConstants.LEDColors.WHITE, LED.Priority.CRITICAL);
+                robot.led.setColor(LEDColors.WHITE, LED.Priority.CRITICAL);
             else if (!softResetDone) {
                 softResetDone = driveController.softReset();
                 if (!softResetDone)
-                    robot.led.setColor(RobotConstants.LEDColors.RED, LED.Priority.CRITICAL);
+                    robot.led.setColor(LEDColors.RED, LED.Priority.CRITICAL);
             }
         }
         if (gamepad1.dpadUpWasPressed()) {
@@ -165,9 +165,9 @@ public class TeleOpController {
             hardResetDone = false;
         }
         if (gamepad1.dpad_up) {
-            robot.led.setColor(RobotConstants.LEDColors.GREEN, LED.Priority.CRITICAL);
+            robot.led.setColor(LEDColors.GREEN, LED.Priority.CRITICAL);
             if (hardZeroTimer.getElapsedTimeSeconds() < HARD_RESET_WAIT)
-                robot.led.setColor(RobotConstants.LEDColors.WHITE, LED.Priority.CRITICAL);
+                robot.led.setColor(LEDColors.WHITE, LED.Priority.CRITICAL);
             else if (!hardResetDone) {
                 hardResetDone = true;
                 driveController.hardReset();

@@ -1,11 +1,11 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.EMPTY;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.GREEN;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.PURPLE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.COLOR_SENSOR_A;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Hardware.COLOR_SENSOR_B;
+import static org.firstinspires.ftc.teamcode.enums.Artifact.EMPTY;
+import static org.firstinspires.ftc.teamcode.enums.Artifact.GREEN;
+import static org.firstinspires.ftc.teamcode.enums.Artifact.PURPLE;
+import static org.firstinspires.ftc.teamcode.enums.Artifact.UNKNOWN;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.COLOR_SENSOR_A;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.COLOR_SENSOR_B;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,8 +16,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.enums.Artifact;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 import org.opencv.core.Scalar;
 
@@ -25,7 +25,7 @@ public class ColorSensor {
 
     private final @Nullable RevColorSensorV3 colorSensorA, colorSensorB;
     private @Nullable Scalar colorA, colorB;
-    private @NonNull RobotConstants.Artifact color = UNKNOWN;
+    private @NonNull Artifact color = UNKNOWN;
     private final TelemetryUtils tm;
     private boolean aLast, lastSkipped = true;
 
@@ -125,7 +125,7 @@ public class ColorSensor {
      *
      * @return The detected color
      */
-    public RobotConstants.Artifact getColor(boolean bothSensors) {
+    public Artifact getColor(boolean bothSensors) {
         Scalar color = getRGB(bothSensors);
         if (color == null) return UNKNOWN;
         double g = color.val[1];
@@ -142,7 +142,7 @@ public class ColorSensor {
      *
      * @return The artifact color. Returns UNKNOWN if sensor is disconnected.
      */
-    public RobotConstants.Artifact getArtifact() {
+    public Artifact getArtifact() {
         return color;
     }
 

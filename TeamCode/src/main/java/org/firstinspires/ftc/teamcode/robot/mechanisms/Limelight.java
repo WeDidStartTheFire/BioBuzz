@@ -7,9 +7,10 @@ import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.RobotConstants;
-import org.firstinspires.ftc.teamcode.RobotConstants.HivePosition;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.enums.Hardware;
+import org.firstinspires.ftc.teamcode.enums.HivePosition;
+import org.firstinspires.ftc.teamcode.enums.Motif;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public class Limelight {
     private final @Nullable Limelight3A limelight;
 
     public Limelight(HardwareMap hardwareMap, TelemetryUtils tm) {
-        limelight = HardwareInitializer.init(hardwareMap, tm, RobotConstants.Hardware.LIMELIGHT);
+        limelight = HardwareInitializer.init(hardwareMap, tm, Hardware.LIMELIGHT);
         if (limelight != null) limelight.pipelineSwitch(0);
     }
 
@@ -43,23 +44,23 @@ public class Limelight {
      * @return Detected motif. If it doesn't detect a valid ID or multiple motif IDs, will return
      * Motif.UNKNOWN.
      */
-    public RobotConstants.Motif getMotif() {
+    public Motif getMotif() {
         List<LLResultTypes.FiducialResult> fiducials = getFiducials();
-        if (fiducials == null) return RobotConstants.Motif.UNKNOWN;
-        RobotConstants.Motif motif = RobotConstants.Motif.UNKNOWN;
+        if (fiducials == null) return Motif.UNKNOWN;
+        Motif motif = Motif.UNKNOWN;
         for (LLResultTypes.FiducialResult fiducial : fiducials) {
             switch (fiducial.getFiducialId()) {
                 case 21:
-                    if (motif == RobotConstants.Motif.UNKNOWN) motif = RobotConstants.Motif.GPP;
-                    else return RobotConstants.Motif.UNKNOWN;
+                    if (motif == Motif.UNKNOWN) motif = Motif.GPP;
+                    else return Motif.UNKNOWN;
                     break;
                 case 22:
-                    if (motif == RobotConstants.Motif.UNKNOWN) motif = RobotConstants.Motif.PGP;
-                    else return RobotConstants.Motif.UNKNOWN;
+                    if (motif == Motif.UNKNOWN) motif = Motif.PGP;
+                    else return Motif.UNKNOWN;
                     break;
                 case 23:
-                    if (motif == RobotConstants.Motif.UNKNOWN) motif = RobotConstants.Motif.PPG;
-                    else return RobotConstants.Motif.UNKNOWN;
+                    if (motif == Motif.UNKNOWN) motif = Motif.PPG;
+                    else return Motif.UNKNOWN;
                     break;
             }
         }

@@ -7,8 +7,9 @@ import androidx.annotation.Nullable;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.enums.Hardware;
+import org.firstinspires.ftc.teamcode.enums.LEDColors;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
 public class LED {
@@ -30,12 +31,12 @@ public class LED {
     }
 
     public LED(HardwareMap hardwareMap, TelemetryUtils tm) {
-        led = HardwareInitializer.init(hardwareMap, tm, RobotConstants.Hardware.LED);
+        led = HardwareInitializer.init(hardwareMap, tm, Hardware.LED);
         if (led == null)
             tm.warn(LOW, "LED disconnected. Check Control Hub servo port 0.");
     }
 
-    private void setColor(RobotConstants.LEDColors color) {
+    private void setColor(LEDColors color) {
         this.color = color.position();
     }
 
@@ -54,7 +55,7 @@ public class LED {
      * @param color    LED color
      * @param priority Priority
      */
-    public void setColor(RobotConstants.LEDColors color, Priority priority) {
+    public void setColor(LEDColors color, Priority priority) {
         if (priority.value < highestPriorityThisLoop) return;
         highestPriorityThisLoop = priority.value;
         setColor(color);

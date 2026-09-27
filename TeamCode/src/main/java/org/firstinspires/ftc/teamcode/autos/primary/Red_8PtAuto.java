@@ -2,51 +2,52 @@ package org.firstinspires.ftc.teamcode.autos.primary;
 
 import static java.lang.Math.toRadians;
 
-import com.pedropathing.geometry.BezierCurve;
-import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.PathChain;
+import com.pedropathing.api.Paths;
+import com.pedropathing.api.PoseFactory;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.math.Pose;
+import com.pedropathing.paths.Path;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.autos.BaseAuto;
 import org.firstinspires.ftc.teamcode.enums.Color;
+import org.firstinspires.ftc.teamcode.pedro.Constants;
+
+import com.pedropathing.ivy.Scheduler;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+import static com.pedropathing.ivy.Scheduler.schedule;
+import static com.pedropathing.ivy.pedro.PedroCommands.follow;
+
+import androidx.annotation.NonNull;
 
 @Autonomous(name = "(Red) 8 Points")
-public class Red_8PtAuto extends BaseAuto<Red_8PtAuto.State> {
-    private final State initialState = State.START_TO_PARK;
-    private PathChain startToPark;
-    protected enum State {
-        FINISHED,
-        START_TO_PARK
-    }
-    private final Pose start = new Pose(56, 8, toRadians(90));
-    private final Pose end = new Pose(14, 94.8822, toRadians(180));
-    private final Pose control = new Pose(8.2178, 54.2803, 0);
+public class Red_8PtAuto extends OpMode {
+
+    // Constants.create needs to be updated after we do tuning
+    @NonNull private final Follower follower = Constants.create(hardwareMap);
+
+    private final PoseFactory poseFactory = PoseFactory.degrees();
+
+    private final Pose start = poseFactory.of(103.1667, 133.4205, 90);
+    private final Pose end = poseFactory.of(14.2858, 101.3141, 180);
 
 
-    @Override
-    protected void buildPaths() {
-        startToPark = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierCurve(start, control, end))
-                .setLinearHeadingInterpolation(start.getHeading(), end.getHeading())
-                .build();
+    public Path path1() {
+        return Paths.line(start, end).linear(start, end);
     }
 
     @Override
-    protected void pathUpdate() {
-        robot.drivetrain.follower.update();
-        switch (state) {
-            case START_TO_PARK:
-                robot.drivetrain.follower.followPath(startToPark, true);
-                setState(State.FINISHED);
-                break;
-            case FINISHED:
-                break;
-        }
+    public void init() {
+        Scheduler.reset();
+    }
+
+    public void start() {
+        schedule(follow(follower, path1()));
     }
     @Override
-    protected void configure() {
-        super.startPose = start;
-        super.color = Color.RED;
-        super.initialState = initialState;
+    public void loop() {
+        follower.update();
+        Scheduler.execute();
     }
 }

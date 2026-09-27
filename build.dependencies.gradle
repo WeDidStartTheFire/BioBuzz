@@ -20,6 +20,7 @@ dependencies {
     // Pedro Pathing
     implementation 'com.pedropathing:revhub:3.0.1'
     implementation 'com.pedropathing:tuning:1.0.0'
+    implementation 'com.pedropathing.ivy:pedro:1.1.1'
     implementation("com.bylazar.sloth:fullpanels:0.3.2+1.0.13")
 
     // EJML, for Kalman filter

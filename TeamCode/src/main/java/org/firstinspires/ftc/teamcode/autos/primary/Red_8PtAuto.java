@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.pedro.Constants;
 import com.pedropathing.ivy.Scheduler;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
@@ -25,7 +26,7 @@ import androidx.annotation.NonNull;
 public class Red_8PtAuto extends OpMode {
 
     // Constants.create needs to be updated after we do tuning
-    @NonNull private final Follower follower = Constants.create(hardwareMap);
+    private Follower follower;
 
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
@@ -40,6 +41,8 @@ public class Red_8PtAuto extends OpMode {
     @Override
     public void init() {
         Scheduler.reset();
+
+        follower = Constants.create(hardwareMap);
     }
 
     public void start() {

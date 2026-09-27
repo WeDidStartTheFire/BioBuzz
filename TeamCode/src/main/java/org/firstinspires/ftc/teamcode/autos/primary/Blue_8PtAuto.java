@@ -25,7 +25,7 @@ import androidx.annotation.NonNull;
 public class Blue_8PtAuto extends OpMode {
 
     // Constants.create needs to be updated after we do tuning
-    @NonNull private final Follower follower = Constants.create(hardwareMap);
+    private Follower follower;
 
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
@@ -40,6 +40,8 @@ public class Blue_8PtAuto extends OpMode {
     @Override
     public void init() {
         Scheduler.reset();
+
+        follower = Constants.create(hardwareMap);
     }
 
     public void start() {

@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp
+@TeleOp(name="JCTest")
 public class TeleOp_JCTest extends OpMode {
     DcMotorEx rightBack, rightFront, leftBack, leftFront;
     Servo servoOne;

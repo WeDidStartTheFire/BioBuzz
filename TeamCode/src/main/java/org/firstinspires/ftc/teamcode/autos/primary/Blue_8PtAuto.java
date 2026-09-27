@@ -9,7 +9,6 @@ import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
 import com.pedropathing.ivy.Scheduler;

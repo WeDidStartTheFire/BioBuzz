@@ -10,7 +10,7 @@ import static java.lang.Math.sqrt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.pedropathing.geometry.Pose;
+import com.pedropathing.math.Pose;
 import com.pedropathing.math.Vector;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -43,8 +43,8 @@ public class ProjectileSolver {
                                                              @Nullable Vector vel) {
         Pose3D targetPose = new Pose3D(new Position(),
             new YawPitchRollAngles(AngleUnit.RADIANS, 0, 0, 0, 0));
-        return solveLaunch(pose.getX(), pose.getY(), LAUNCHER_HEIGHT,
-            vel == null ? 0 : vel.getXComponent(), vel == null ? 0 : vel.getYComponent(),
+        return solveLaunch(pose.x(), pose.y(), LAUNCHER_HEIGHT,
+            vel == null ? 0 : vel.toVector2D().x(), vel == null ? 0 : vel.toVector2D().y(),
             targetPose.getPosition().x, targetPose.getPosition().y, targetPose.getPosition().z,
             LAUNCHER_ANGLE);
     }
@@ -68,7 +68,7 @@ public class ProjectileSolver {
         if (pose == null) return null;
         Pose3D targetPose = new Pose3D(new Position(),
             new YawPitchRollAngles(AngleUnit.RADIANS, 0, 0, 0, 0));
-        return solveLaunch(pose.getX(), pose.getY(), LAUNCHER_HEIGHT, 0, 0,
+        return solveLaunch(pose.x(), pose.y(), LAUNCHER_HEIGHT, 0, 0,
             targetPose.getPosition().x, targetPose.getPosition().y, targetPose.getPosition().z,
             LAUNCHER_ANGLE);
     }

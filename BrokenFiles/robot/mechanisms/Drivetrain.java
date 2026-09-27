@@ -90,7 +90,7 @@ public class Drivetrain {
     public Drivetrain(HardwareMap hardwareMap, TelemetryUtils tm, MatchContext context) {
         this.tm = tm;
         this.hardwareMap = hardwareMap;
-        follower = Constants.createFollower(hardwareMap);
+        follower = Constants.create(hardwareMap);
         otos = HardwareInitializer.init(hardwareMap, tm, SPARKFUN_OTOS);
 
         imu = HardwareInitializer.init(hardwareMap, tm, Hardware.IMU);

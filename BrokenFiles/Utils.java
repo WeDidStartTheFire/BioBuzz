@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.pedropathing.geometry.Pose;
+import com.pedropathing.math.Pose;
 
 import java.io.BufferedWriter;
 

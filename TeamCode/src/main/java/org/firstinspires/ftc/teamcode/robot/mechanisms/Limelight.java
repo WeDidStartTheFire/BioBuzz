@@ -10,6 +10,7 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.enums.Hive;
 import org.firstinspires.ftc.teamcode.enums.HivePosition;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
@@ -52,32 +53,40 @@ public class Limelight {
         return limelight.getLatestResult();
     }
 
-    public double getAverageHiveY() {
+    public double getAverageHiveY(Hive hive) {
         double total = 0;
         int number = 0;
 
         if (limelight != null && getFiducials() != null) {
             for (LLResultTypes.FiducialResult fiducial : getFiducials()) {
-                number++;
-                total += fiducial.getTargetPoseRobotSpace().getPosition().y;
+                if (Hive.ifTagMatchesHive(fiducial.getFiducialId(), hive)) {
+                    number++;
+                    total += fiducial.getTargetPoseRobotSpace().getPosition().y;
+                }
             }
         }
 
         return total / number;
     }
 
-    public HivePosition getHivePosition() {
+    public HivePosition getHivePosition(Hive hive) {
         if (limelight != null && getFiducials() != null) {
             for (LLResultTypes.FiducialResult fiducial : getFiducials()) {
-                if (getAverageHiveY() <= -1.40 && fiducial.getFiducialId() == 21)
-                    return HivePosition.STAGE;
-                else if (getAverageHiveY() >= -1.1 &&
-                    fiducial.getFiducialId() == 21) return HivePosition.AUDIENCE;
-                else return HivePosition.TRANSITIONING;
+                if (hive == Hive.BLUE_AUDIENCE || hive == Hive.RED_AUDIENCE) {
+                    if (getAverageHiveY(hive) <= -1.40 && Hive.ifTagMatchesHive(fiducial.getFiducialId(), hive))
+                        return HivePosition.AUDIENCE;
+                    else if (getAverageHiveY(hive) >= -1.1 && Hive.ifTagMatchesHive(fiducial.getFiducialId(), hive))
+                        return HivePosition.STAGE;
+                    else return HivePosition.TRANSITIONING;
+                } else if (hive == Hive.BLUE_STAGE || hive == Hive.RED_STAGE) {
+                    if (getAverageHiveY(hive) <= -1.40 && Hive.ifTagMatchesHive(fiducial.getFiducialId(), hive))
+                        return HivePosition.STAGE;
+                    else if (getAverageHiveY(hive) >= -1.1 && Hive.ifTagMatchesHive(fiducial.getFiducialId(), hive))
+                        return HivePosition.AUDIENCE;
+                    else return HivePosition.TRANSITIONING;
+                }
             }
         }
         return HivePosition.UNKNOWN;
     }
-
-
 }

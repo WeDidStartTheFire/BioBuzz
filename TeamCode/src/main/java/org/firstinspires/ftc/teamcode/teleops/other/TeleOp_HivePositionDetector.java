@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.enums.Hive;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Limelight;
 
 @TeleOp(name = "TeleOp_HivePositionDetector", group = "C")
@@ -21,7 +22,7 @@ public class TeleOp_HivePositionDetector extends OpMode {
 
     @Override
     public void loop() {
-        tm.print(limelight.getHivePosition());
+        tm.print(limelight.getHivePosition(Hive.BLUE_AUDIENCE));
         tm.update();
     }
 }

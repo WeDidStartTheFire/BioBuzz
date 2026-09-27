@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.MatchContext;
-import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.enums.Color;
@@ -40,9 +39,8 @@ public class TeleOp_CollectColorSensorData extends OpMode {
         File file = new File(dir, "colors_0.csv");
         Pose pose = loadOdometryPosition();
         validStartPose = pose != null;
-        RobotState.pose = validStartPose ? pose : new Pose();
         robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
-        robot.drivetrain.follower.setPose(RobotState.pose);
+        robot.drivetrain.setPose(pose);
         robot.drivetrain.follower.startTeleopDrive();
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
         tm = robot.drivetrain.tm;

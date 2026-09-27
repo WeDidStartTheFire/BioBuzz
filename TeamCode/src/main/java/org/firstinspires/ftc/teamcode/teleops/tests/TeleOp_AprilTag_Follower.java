@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.MatchContext;
-import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.enums.Color;
@@ -31,10 +30,9 @@ public class TeleOp_AprilTag_Follower extends OpMode {
         gamepad.left_stick_x = 0;
         Pose pose = loadOdometryPosition();
         validStartPose = pose != null;
-        RobotState.pose = validStartPose ? pose : new Pose();
         robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
         robot.drivetrain.useLimelightFollower();
-        robot.drivetrain.follower.setPose(RobotState.pose);
+        robot.drivetrain.setPose(pose);
         robot.drivetrain.follower.startTeleopDrive();
         teleop = new TeleOpController(robot, gamepad, gamepad2);
         tm = robot.drivetrain.tm;

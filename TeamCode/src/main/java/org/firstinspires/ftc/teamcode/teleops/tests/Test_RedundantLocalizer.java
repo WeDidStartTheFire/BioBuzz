@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.teleops.tests;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
-import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 
@@ -12,7 +11,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.MatchContext;
-import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.enums.Color;
@@ -29,10 +27,9 @@ public class Test_RedundantLocalizer extends OpMode {
     public void init() {
         Pose pose = loadOdometryPosition();
         validStartPose = pose != null;
-        RobotState.pose = validStartPose ? pose : new Pose();
         robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
         robot.drivetrain.useRedundantFollower();
-        robot.drivetrain.follower.setPose(RobotState.pose);
+        robot.drivetrain.setPose(pose);
         robot.drivetrain.follower.startTeleopDrive();
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
         tm = robot.drivetrain.tm;
@@ -41,7 +38,7 @@ public class Test_RedundantLocalizer extends OpMode {
     @Override
     public void init_loop() {
         teleop.update();
-        if (pose != null) tm.print(pose);
+        if (robot.drivetrain.getPose() != null) tm.print(robot.drivetrain.getPose());
     }
 
     @Override

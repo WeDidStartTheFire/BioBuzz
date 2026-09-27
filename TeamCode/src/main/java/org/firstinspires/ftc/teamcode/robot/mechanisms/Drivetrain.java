@@ -9,7 +9,6 @@ import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
-import static org.firstinspires.ftc.teamcode.RobotState.auto;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.CRITICAL;
 import static org.firstinspires.ftc.teamcode.constants.DrivetrainConstants.B;
@@ -43,6 +42,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.MatchContext;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.enums.Dir;
 import org.firstinspires.ftc.teamcode.enums.Hardware;
@@ -87,7 +87,7 @@ public class Drivetrain {
      * @param hardwareMap HardwareMap containing motor and sensor configurations
      * @param tm          TelemetryUtils instance for debugging output
      */
-    public Drivetrain(HardwareMap hardwareMap, TelemetryUtils tm) {
+    public Drivetrain(HardwareMap hardwareMap, TelemetryUtils tm, MatchContext context) {
         this.tm = tm;
         this.hardwareMap = hardwareMap;
         follower = Constants.createFollower(hardwareMap);
@@ -118,7 +118,7 @@ public class Drivetrain {
             rf.setDirection(DcMotorEx.Direction.FORWARD);
             rb.setDirection(DcMotorEx.Direction.FORWARD);
 
-            if (auto) setZeroPowerBehavior(BRAKE);
+            if (context.isAuto()) setZeroPowerBehavior(BRAKE);
             else setZeroPowerBehavior(FLOAT);
 
             lb.setTargetPosition(lb.getCurrentPosition());

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.autos;
 
+import static org.firstinspires.ftc.teamcode.MatchContext.Mode.AUTO;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
@@ -8,7 +9,7 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.RobotState;
+import org.firstinspires.ftc.teamcode.MatchContext;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.IntakeController;
 import org.firstinspires.ftc.teamcode.enums.Color;
@@ -57,9 +58,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
     @Override
     public final void init() {
         configure();
-        RobotState.auto = true;
-        RobotState.color = color;
-        robot = new Robot(hardwareMap, telemetry);
+        robot = new Robot(hardwareMap, telemetry, new MatchContext(AUTO, color));
         robot.drivetrain.follower.setStartingPose(startPose);
         tm = robot.drivetrain.tm;
         buildPaths();

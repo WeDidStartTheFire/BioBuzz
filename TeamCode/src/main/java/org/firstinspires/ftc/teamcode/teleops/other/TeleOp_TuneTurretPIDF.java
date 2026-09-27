@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.teleops.other;
 
+import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
 import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 import static java.lang.Thread.sleep;
@@ -11,7 +12,9 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.MatchContext;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.constants.TurretConstants;
@@ -53,12 +56,10 @@ public class TeleOp_TuneTurretPIDF extends OpMode {
 
     @Override
     public void init() {
-        RobotState.color = Color.BLUE;
         Pose pose = loadOdometryPosition();
         validStartPose = pose != null;
         RobotState.pose = validStartPose ? pose : new Pose();
-        RobotState.auto = false;
-        robot = new Robot(hardwareMap, telemetry);
+        robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
         robot.drivetrain.follower.setPose(RobotState.pose);
         robot.drivetrain.follower.startTeleopDrive();
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
@@ -84,13 +85,12 @@ public class TeleOp_TuneTurretPIDF extends OpMode {
         if (gamepad1.x) encoderGoal += (int) (increase * dt);
         if (gamepad1.y) encoderGoal -= (int) (increase * dt);
 
-        if (robot.turret.turretMotor == null) return;
         TurretConstants.TURRET_MAX_POWER = maxPower;
         pidf = new PIDFCoefficients(P, 0, D, F);
         robot.turret.turretPIDController.setCoefficients(pidf);
         robot.turret.turretPIDController.setTargetPosition(encoderGoal);
         robot.turret.update(gamepad2.left_stick_button);
-        double pos = robot.turret.turretMotor.getCurrentPosition();
+        double pos = robot.turret.getEncoderPosition();
         double error = pos - encoderGoal;
         tm.print("Position", pos);
         tm.print("Target", encoderGoal);
@@ -101,7 +101,8 @@ public class TeleOp_TuneTurretPIDF extends OpMode {
         tm.print("Increment", increments[incIdx]);
         tm.print("---------------------------");
         tm.print("PIDF", pidf);
-        tm.print("Run Mode", robot.turret.turretMotor.getMode());
+        DcMotor.RunMode turretMode = robot.turret.getRunMode();
+        if (turretMode != null) tm.print("Run Mode", turretMode);
         tm.print("dt (ms)", dt * 1000);
         tm.update();
         try {

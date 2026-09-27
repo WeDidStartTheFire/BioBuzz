@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.controllers;
 
-import static org.firstinspires.ftc.teamcode.RobotState.launcherVelModifier;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
-import static org.firstinspires.ftc.teamcode.RobotState.robotCentric;
 import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.constants.ResetConstants.HARD_RESET_WAIT;
@@ -12,7 +10,6 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.enums.LEDColors;
 import org.firstinspires.ftc.teamcode.robot.Robot;
@@ -31,6 +28,7 @@ public class TeleOpController {
     private int totalUpdates;
     private final Timer softZeroTimer = new Timer(), hardZeroTimer = new Timer();
     private boolean softResetDone = false, hardResetDone = false;
+    private boolean robotCentric = false;
 
     /**
      * Initializes the TeleOpController with robot hardware and gamepads. To be called in the init()
@@ -44,8 +42,7 @@ public class TeleOpController {
         this.robot = robot;
         this.robot.initBulkCache();
         intakeController = new IntakeController(robot);
-        RobotState.launcherVelModifier = 0;
-        driveController = new DriveController(robot);
+        driveController = new DriveController(robot, robot.context());
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
         follower = robot.drivetrain.follower;
@@ -81,7 +78,7 @@ public class TeleOpController {
         vel = follower.getVelocity();
         if (gamepad2.rightStickButtonWasPressed()) {
             robot.turret.setTarget(Turret.Target.MANUAL);
-            robot.turret.changeable = !robot.turret.changeable;
+            robot.turret.toggleTargetChangeable();
         }
         robot.turret.rotateManual(gamepad2.right_stick_x * .001 * ms);
         robot.turret.update(true);
@@ -97,7 +94,6 @@ public class TeleOpController {
         driveController.stop();
         intakeController.stop();
         robot.limelight.stop();
-        RobotState.launcherVelModifier = 0;
         tm.showLogs();
         tm.update();
     }
@@ -185,8 +181,8 @@ public class TeleOpController {
      * Handles manual spin, intake, and launching.
      */
     public void updateLauncherTeleOp() {
-        if (gamepad2.dpadUpWasPressed()) launcherVelModifier += 25;
-        if (gamepad2.dpadDownWasPressed()) launcherVelModifier -= 25;
+        if (gamepad2.dpadUpWasPressed()) robot.launcher.increaseVelocityModifier(25);
+        if (gamepad2.dpadDownWasPressed()) robot.launcher.increaseVelocityModifier(-25);
 
         tm.print("Launcher Vel", robot.launcher.getCachedVel());
         tm.print("Goal", robot.launcher.getGoalVel());

@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
-import static org.firstinspires.ftc.teamcode.RobotState.panelsResetTurret;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.constants.TurretConstants.MAX_TIMES_NOT_RESET;
@@ -29,6 +28,7 @@ import static java.lang.Math.toDegrees;
 
 import androidx.annotation.Nullable;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.control.PIDFController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -40,15 +40,18 @@ import org.firstinspires.ftc.teamcode.ProjectileSolver;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
+@Configurable
 public class Turret {
-    public final @Nullable DcMotorEx turretMotor;
-    public final @Nullable TouchSensor turretTouchSensor;
+    public static boolean panelsResetTurret = false;
+
+    private final @Nullable DcMotorEx turretMotor;
+    private final @Nullable TouchSensor turretTouchSensor;
     private final VoltageSensor voltageSensor;
     private Target target = Target.HOLD;
     public final PIDFController turretPIDController = new PIDFController(turretMotorPID);
     private final PIDFController velocityPIDController = new PIDFController(turretVelocityPID);
     private final TelemetryUtils tm;
-    public boolean changeable = true;
+    private boolean targetChangeable = true;
     private double offset = 0;
     private int timesNotReset = 0;
     private boolean reset = false;
@@ -71,6 +74,21 @@ public class Turret {
         turretTouchSensor = HardwareInitializer.init(hardwareMap, tm, TURRET_TOUCH_SENSOR);
     }
 
+    public void toggleTargetChangeable() {
+        targetChangeable = !targetChangeable;
+    }
+
+    public int getEncoderPosition() {
+        if (turretMotor == null) return 0;
+        return turretMotor.getCurrentPosition();
+    }
+
+    @Nullable
+    public DcMotor.RunMode getRunMode() {
+        if (turretMotor == null) return null;
+        return turretMotor.getMode();
+    }
+
     /**
      * Sets the target for the turret
      *
@@ -78,7 +96,7 @@ public class Turret {
      * @see Target
      */
     public void setTarget(Target target) {
-        if (changeable) this.target = target;
+        if (targetChangeable) this.target = target;
     }
 
     public void rotateManual(double speed) {

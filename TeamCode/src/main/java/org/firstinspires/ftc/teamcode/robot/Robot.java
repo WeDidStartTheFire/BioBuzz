@@ -6,6 +6,7 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.MatchContext;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.ColorSensor;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Drivetrain;
@@ -24,11 +25,14 @@ public class Robot {
     public LED led;
     public Turret turret;
     public HardwareMap hardwareMap;
+    private final MatchContext context;
 
-    public Robot(@NonNull HardwareMap hardwareMap, @NonNull Telemetry telemetry) {
+    public Robot(@NonNull HardwareMap hardwareMap, @NonNull Telemetry telemetry,
+                 MatchContext context) {
+        this.context = context;
         this.hardwareMap = hardwareMap;
         TelemetryUtils tm = new TelemetryUtils(telemetry);
-        drivetrain = new Drivetrain(hardwareMap, tm);
+        drivetrain = new Drivetrain(hardwareMap, tm, this.context);
         intake = new Intake(hardwareMap, tm);
         colorSensor = new ColorSensor(hardwareMap, tm);
         led = new LED(hardwareMap, tm);
@@ -45,5 +49,9 @@ public class Robot {
     public void updateBulkCache() {
         for (LynxModule module : hardwareMap.getAll(LynxModule.class))
             module.clearBulkCache();
+    }
+
+    public MatchContext context() {
+        return context;
     }
 }

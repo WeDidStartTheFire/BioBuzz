@@ -24,7 +24,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
-import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
@@ -41,6 +40,7 @@ public class Launcher {
     private final VoltageSensor voltageSensor;
     private final TelemetryUtils tm;
     private double cachedVel;
+    private double velocityModifier;
 
     /**
      * Initializes the launcher with hardware components.
@@ -66,7 +66,11 @@ public class Launcher {
             launcherMotorB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
         spinningTimer = new Timer();
-        RobotState.launcherVelModifier = 0;
+        velocityModifier = 0;
+    }
+
+    public void increaseVelocityModifier(double increment) {
+        velocityModifier += increment;
     }
 
     /**
@@ -87,12 +91,12 @@ public class Launcher {
     public double getGoalVel(@Nullable Pose pose, @Nullable Vector vel) {
         if (pose == null) return 0;
         if (pose.equals(lastPose) && ((vel == null && lastVel == null) || vel != null && vel.equals(lastVel)))
-            return lastGoalVel + RobotState.launcherVelModifier;
+            return lastGoalVel + velocityModifier;
         ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolution(pose, vel);
         lastPose = pose;
         lastVel = vel;
         lastGoalVel = sol != null ? ballVelToMotorVel(sol.w) : 0;
-        return lastGoalVel + RobotState.launcherVelModifier;
+        return lastGoalVel + velocityModifier;
     }
 
     /**

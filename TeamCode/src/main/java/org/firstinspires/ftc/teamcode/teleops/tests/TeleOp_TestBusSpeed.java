@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.teleops.tests;
 
+import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
 import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 import static java.lang.Thread.sleep;
@@ -11,6 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.MatchContext;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.enums.Color;
@@ -31,12 +33,10 @@ public class TeleOp_TestBusSpeed extends OpMode {
 
     @Override
     public void init() {
-        RobotState.color = Color.BLUE;
         Pose pose = loadOdometryPosition();
         validStartPose = pose != null;
         RobotState.pose = validStartPose ? pose : new Pose();
-        RobotState.auto = false;
-        robot = new Robot(hardwareMap, telemetry);
+        robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
         robot.drivetrain.follower.setPose(RobotState.pose);
         robot.drivetrain.follower.startTeleopDrive();
         tm = robot.drivetrain.tm;

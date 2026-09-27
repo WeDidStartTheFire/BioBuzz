@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.teleops.debug;
 
+import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.LOW;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -7,7 +8,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.MatchContext;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
@@ -35,7 +38,7 @@ public class TeleOp_Debug extends OpMode {
 
     @Override
     public void init() {
-        robot = new Robot(hardwareMap, telemetry);
+        robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
 
         tm = robot.drivetrain.tm;
         servoA = HardwareInitializer.init(hardwareMap, Servo.class, "servoA");

@@ -5,7 +5,6 @@ import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.FLOAT;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.normalizeRadians;
 import static org.firstinspires.ftc.teamcode.ProjectileSolver.getLaunchSolution;
-import static org.firstinspires.ftc.teamcode.RobotState.color;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.Utils.lerp;
@@ -30,6 +29,7 @@ import com.pedropathing.paths.Path;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+import org.firstinspires.ftc.teamcode.MatchContext;
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.robot.Robot;
@@ -40,14 +40,16 @@ public class DriveController {
     private final PIDFController headingPIDController = new PIDFController(teleopHeadingPID);
     private final Timer driveInputTimer = new Timer();
     private boolean aiming = false, holding = false, following = false;
+    private final MatchContext context;
 
     /**
      * Initializes the DriveController with robot instance.
      *
      * @param robot Robot instance containing drivetrain hardware
      */
-    public DriveController(Robot robot) {
+    public DriveController(Robot robot, MatchContext context) {
         this.robot = robot;
+        this.context = context;
     }
 
     /**
@@ -65,8 +67,8 @@ public class DriveController {
      * Resets the robots position to the corner of the human player zone facing the human player
      */
     public void hardReset() {
-        double heading = (RobotState.color == BLUE ? 0 : PI);
-        double x = (RobotState.color == BLUE ? WALL_HIGH - 2 : WALL_LOW + 2);
+        double heading = (context.alliance() == BLUE ? 0 : PI);
+        double x = (context.alliance() == BLUE ? WALL_HIGH - 2 : WALL_LOW + 2);
         double y = WALL_LOW;
         resetPose(new Pose(x, y, heading));
     }
@@ -77,13 +79,13 @@ public class DriveController {
      * getting zeroed (human player zone corner facing human player, like in {@link #hardReset()})
      */
     public boolean softReset() {
-        double heading = pose == null ? (RobotState.color == BLUE ? 0 : PI) : pose.getHeading();
+        double heading = pose == null ? (context.alliance() == BLUE ? 0 : PI) : pose.getHeading();
         double newHeading = round(heading * 2 / PI) * PI / 2;
         if (abs(newHeading - heading) > SNAP_THRESHOLD_HEADING) return false;
         heading = newHeading;
         if (heading >= 2 * PI) heading -= 2 * PI;
         else if (heading < 0) heading += 2 * PI;
-        double x = pose == null ? (RobotState.color == BLUE ? WALL_HIGH : WALL_LOW) : pose.getX();
+        double x = pose == null ? (context.alliance() == BLUE ? WALL_HIGH : WALL_LOW) : pose.getX();
         x = abs(x - WALL_LOW) <= SNAP_THRESHOLD_DISTANCE ? WALL_LOW : abs(x - WALL_HIGH) <= SNAP_THRESHOLD_DISTANCE ? WALL_HIGH : x;
         double y = pose == null ? WALL_LOW : pose.getY();
         y = abs(y - WALL_LOW) <= SNAP_THRESHOLD_DISTANCE ? WALL_LOW : abs(y - WALL_HIGH) <= SNAP_THRESHOLD_DISTANCE ? WALL_HIGH : y;
@@ -179,8 +181,10 @@ public class DriveController {
             }
         }
 
-        robot.drivetrain.follower.setTeleOpDrive(gp.left_stick_y * speedMultiplier * (color == RED || !fieldCentric ? -1 : 1),
-            gp.left_stick_x * speedMultiplier * (color == RED || !fieldCentric ? -1 : 1), turn, !fieldCentric);
+        robot.drivetrain.follower.setTeleOpDrive(gp.left_stick_y * speedMultiplier *
+                (context.alliance() == RED || !fieldCentric ? -1 : 1),
+            gp.left_stick_x * speedMultiplier *
+                (context.alliance() == RED || !fieldCentric ? -1 : 1), turn, !fieldCentric);
     }
 
     /**

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.teleops.other;
 
+import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
 import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.Utils.addLine;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
@@ -9,6 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.MatchContext;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
@@ -36,12 +38,10 @@ public class TeleOp_CollectColorSensorData extends OpMode {
     public void init() {
         File dir = new File(hardwareMap.appContext.getFilesDir().toURI());
         File file = new File(dir, "colors_0.csv");
-        RobotState.color = Color.BLUE;
         Pose pose = loadOdometryPosition();
         validStartPose = pose != null;
         RobotState.pose = validStartPose ? pose : new Pose();
-        RobotState.auto = false;
-        robot = new Robot(hardwareMap, telemetry);
+        robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
         robot.drivetrain.follower.setPose(RobotState.pose);
         robot.drivetrain.follower.startTeleopDrive();
         teleop = new TeleOpController(robot, gamepad1, gamepad2);

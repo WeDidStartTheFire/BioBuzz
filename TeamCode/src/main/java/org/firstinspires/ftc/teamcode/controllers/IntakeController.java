@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.controllers;
 
 import com.pedropathing.util.Timer;
 
-import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
@@ -42,23 +41,19 @@ public class IntakeController {
     public void update() {
         switch (state) {
             case IDLE:
-                RobotState.normalIntaking = false;
                 isBusy = false;
                 robot.intake.power(0);
                 break;
             case INNER_INTAKE:
-                RobotState.normalIntaking = false;
                 isBusy = false;
                 robot.intake.powerInside(-1);
                 robot.intake.powerOutside(0);
                 break;
             case MANUAL_INTAKE:
             case INTAKE:
-                RobotState.normalIntaking = true;
                 robot.intake.power(-1);
                 break;
             case OUTTAKE:
-                RobotState.normalIntaking = false;
                 robot.intake.power(1);
                 break;
         }

@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
-import static org.firstinspires.ftc.teamcode.RobotState.pose;
-import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.constants.TurretConstants.MAX_TIMES_NOT_RESET;
 import static org.firstinspires.ftc.teamcode.constants.TurretConstants.TURRET_ADJUST_FOR_VOLTAGE;
 import static org.firstinspires.ftc.teamcode.constants.TurretConstants.TURRET_ENCODERS_PER_DEGREE;
@@ -26,10 +24,13 @@ import static java.lang.Math.min;
 import static java.lang.Math.signum;
 import static java.lang.Math.toDegrees;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.control.PIDFController;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.math.Vector;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -55,13 +56,15 @@ public class Turret {
     private double offset = 0;
     private int timesNotReset = 0;
     private boolean reset = false;
+    private final @NonNull PoseGetter poseGetter;
 
     public enum Target {
         GOAL, NONE, HOLD, MANUAL
     }
 
-    public Turret(HardwareMap hardwareMap, TelemetryUtils tm) {
+    public Turret(HardwareMap hardwareMap, TelemetryUtils tm, @NonNull PoseGetter poseGetter) {
         this.tm = tm;
+        this.poseGetter = poseGetter;
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
         turretMotor = HardwareInitializer.init(hardwareMap, tm, TURRET_MOTOR);
         if (turretMotor != null) {
@@ -145,13 +148,14 @@ public class Turret {
         if (!reset && timesNotReset < MAX_TIMES_NOT_RESET) return;
 
         if (target == Target.GOAL) {
-            ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolution();
+            ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolution(poseGetter);
             if (sol == null) return;
             setFieldCentricAngle(sol.phi);
         }
 
         double pos = turretMotor.getCurrentPosition();
         turretPIDController.updatePosition(pos);
+        Vector vel = poseGetter.getVel();
         if (vel != null)
             velocityPIDController.setTargetPosition(-toDegrees(vel.getTheta()) * TURRET_ENCODERS_PER_DEGREE);
         velocityPIDController.updatePosition(motorVel);
@@ -216,6 +220,7 @@ public class Turret {
      * @param angle Turret angle, radians
      */
     private void setFieldCentricAngle(double angle) {
+        Pose pose = poseGetter.getPose();
         if (pose != null) setRobotCentricAngle(angle - pose.getHeading());
     }
 }

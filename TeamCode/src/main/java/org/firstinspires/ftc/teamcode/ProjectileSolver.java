@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.RobotState.pose;
-import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.LAUNCHER_ANGLE;
 import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.LAUNCHER_HEIGHT;
 import static java.lang.Math.abs;
@@ -17,6 +15,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.teamcode.robot.mechanisms.PoseGetter;
 
 public class ProjectileSolver {
     static final double g = 386.0885826772; // Constant for gravity in in/s^2
@@ -50,13 +49,14 @@ public class ProjectileSolver {
     }
 
     /**
-     * Gets the launch solution for the current robot pose and velocity ({@link RobotState#pose} and
-     * {@link RobotState#vel})
+     * Gets the launch solution for the current robot pose and velocity
      *
+     * @param poseGetter PoseGetter to get pose and velocity from
      * @return LaunchSolution containing launch parameters, or null if no solution exists
      */
-    public static @Nullable LaunchSolution getLaunchSolution() {
-        return pose == null ? null : getLaunchSolution(pose, vel);
+    public static @Nullable LaunchSolution getLaunchSolution(PoseGetter poseGetter) {
+        Pose pose = poseGetter.getPose();
+        return pose == null ? null : getLaunchSolution(pose, poseGetter.getVel());
     }
 
     /**
@@ -64,7 +64,7 @@ public class ProjectileSolver {
      *
      * @return LaunchSolution containing launch parameters, or null if no solution exists
      */
-    public static @Nullable LaunchSolution getLaunchSolutionStationary() {
+    public static @Nullable LaunchSolution getLaunchSolutionStationary(Pose pose) {
         if (pose == null) return null;
         Pose3D targetPose = new Pose3D(new Position(),
             new YawPitchRollAngles(AngleUnit.RADIANS, 0, 0, 0, 0));

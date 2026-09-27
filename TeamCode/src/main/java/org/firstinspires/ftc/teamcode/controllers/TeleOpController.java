@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.controllers;
 
-import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
-import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.constants.ResetConstants.HARD_RESET_WAIT;
 import static org.firstinspires.ftc.teamcode.constants.ResetConstants.SOFT_RESET_WAIT;
 
@@ -73,9 +71,7 @@ public class TeleOpController {
         }
         lastUpdateTime = t;
         robot.updateBulkCache();
-        follower.update();
-        if (follower.getPose() != null) pose = follower.getPose();
-        vel = follower.getVelocity();
+        robot.drivetrain.update();
         if (gamepad2.rightStickButtonWasPressed()) {
             robot.turret.setTarget(Turret.Target.MANUAL);
             robot.turret.toggleTargetChangeable();
@@ -156,7 +152,7 @@ public class TeleOpController {
         tm.print("Robot Centric", robotCentric);
         tm.print("Field Centric", fieldCentric);
         tm.drawRobot(follower, 250);
-        if (pose != null) tm.print(pose);
+        if (robot.drivetrain.getPose() != null) tm.print(robot.drivetrain.getPose());
         if (usePedro) driveController.updateTeleOp(gamepad1, fieldCentric);
         else driveController.updateTeleOpNoPedro(gamepad1, fieldCentric);
     }

@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.autos;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.AUTO;
-import static org.firstinspires.ftc.teamcode.RobotState.pose;
-import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
 
 import com.pedropathing.geometry.Pose;
@@ -82,9 +80,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
     @Override
     public final void loop() {
         robot.updateBulkCache();
-        robot.drivetrain.follower.update();
-        pose = robot.drivetrain.follower.getPose();
-        vel = robot.drivetrain.follower.getVelocity();
+        robot.drivetrain.update();
         pathUpdate();
         robot.turret.update(true);
         intakeController.update();
@@ -93,7 +89,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         tm.drawRobot(robot.drivetrain.follower, 250);
         tm.print("Path State", state);
         tm.print("Intake State", intakeController.getState());
-        if (pose != null) tm.print(pose);
+        if (robot.drivetrain.getPose() != null) tm.print(robot.drivetrain.getPose());
         tm.print("Motor Goal Vel", robot.launcher.getGoalVel(shootPose, null));
         tm.print("Launcher Vel", robot.launcher.getCachedVel());
         double t = getRuntime();
@@ -110,10 +106,9 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
 
     @Override
     public final void stop() {
-        robot.drivetrain.follower.update();
+        robot.drivetrain.update();
         robot.drivetrain.follower.breakFollowing();
-        pose = robot.drivetrain.follower.getPose();
-        if (pose != null) saveOdometryPosition(pose);
+        if (robot.drivetrain.getPose() != null) saveOdometryPosition(robot.drivetrain.getPose());
         intakeController.stop();
         robot.limelight.stop();
         tm.showLogs();

@@ -9,7 +9,6 @@ import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
-import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.CRITICAL;
 import static org.firstinspires.ftc.teamcode.constants.DrivetrainConstants.B;
 import static org.firstinspires.ftc.teamcode.constants.DrivetrainConstants.COUNTS_PER_INCH;
@@ -30,6 +29,7 @@ import androidx.annotation.Nullable;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.math.Vector;
 import com.pedropathing.util.Timer;
 import com.qualcomm.hardware.lynx.LynxI2cDeviceSynch;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -49,11 +49,13 @@ import org.firstinspires.ftc.teamcode.enums.Hardware;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
-public class Drivetrain {
+public class Drivetrain extends PoseGetter {
     private DcMotorEx lf, lb, rf, rb;
     private final @Nullable IMU imu;
     public Follower follower;
     public final @Nullable SparkFunOTOS otos;
+    private @Nullable Pose pose;
+    private @Nullable Vector vel;
 
     public volatile boolean loop = false;
 
@@ -126,6 +128,52 @@ public class Drivetrain {
             lf.setTargetPosition(lf.getCurrentPosition());
             rf.setTargetPosition(rf.getCurrentPosition());
         }
+    }
+
+
+    public PoseGetter getPoseGetter() {
+        return new PoseGetter() {
+            PoseGetter poseGetter;
+
+            PoseGetter init(PoseGetter poseGetter) {
+                this.poseGetter = poseGetter;
+                return this;
+            }
+
+            @Nullable
+            @Override
+            public Pose getPose() {
+                if (poseGetter == null) return null;
+                return poseGetter.getPose();
+            }
+
+            @Nullable
+            @Override
+            public Vector getVel() {
+                if (poseGetter == null) return null;
+                return poseGetter.getVel();
+            }
+        }.init(this);
+    }
+
+    public @Nullable Pose getPose() {
+        return pose;
+    }
+
+    public void setPose(Pose pose) {
+        follower.setPose(pose);
+        this.pose = pose;
+    }
+
+    public void update() {
+        if (follower == null) return;
+        follower.update();
+        pose = follower.getPose();
+        vel = follower.getVelocity();
+    }
+
+    public @Nullable Vector getVel() {
+        return vel;
     }
 
     public boolean isMotorDisconnected() {

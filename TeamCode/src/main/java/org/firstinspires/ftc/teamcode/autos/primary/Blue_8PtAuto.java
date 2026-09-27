@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.autos.primary;
 import static java.lang.Math.toRadians;
 
 import com.pedropathing.geometry.BezierCurve;
+import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -18,15 +19,14 @@ public class Blue_8PtAuto extends BaseAuto<Blue_8PtAuto.State> {
         FINISHED,
         START_TO_PARK
     }
-    private final Pose start = new Pose(85.7472, 132.8845, toRadians(90));
-    private final Pose end = new Pose(124, 46.3756, toRadians(180));
-    private final Pose control = new Pose(122.9186, 94.7472, 0);
+    private final Pose start = new Pose(38.5909, 8.358, toRadians(90));
+    private final Pose end = new Pose(123.0907, 35.9239, toRadians(180));
 
 
     @Override
     protected void buildPaths() {
         startToPark = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierCurve(start, control, end))
+                .addPath(new BezierLine(start, end))
                 .setLinearHeadingInterpolation(start.getHeading(), end.getHeading())
                 .build();
     }

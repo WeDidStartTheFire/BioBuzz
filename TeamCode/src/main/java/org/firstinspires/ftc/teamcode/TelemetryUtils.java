@@ -13,6 +13,7 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.pedroPathing.Drawing;
 
 import java.util.ArrayList;
 
@@ -28,6 +29,7 @@ public class TelemetryUtils {
         this.telemetry = telemetry;
         telemetry.setAutoClear(true);
         telemetry.setMsTransmissionInterval(50);
+        Drawing.init();
     }
 
     /**

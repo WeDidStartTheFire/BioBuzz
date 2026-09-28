@@ -38,12 +38,12 @@ public class TeleOpController {
     public TeleOpController(Robot robot, Gamepad gamepad1, Gamepad gamepad2) {
         this.robot = robot;
         this.robot.initBulkCache();
-        intakeController = new IntakeController(robot);
-        driveController = new DriveController(robot, robot.context());
+        tm = robot.drivetrain.tm;
+        intakeController = new IntakeController(robot.intake, tm);
+        driveController = new DriveController(robot.drivetrain, robot.context());
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
         follower = robot.drivetrain.follower;
-        tm = robot.drivetrain.tm;
     }
 
     /**

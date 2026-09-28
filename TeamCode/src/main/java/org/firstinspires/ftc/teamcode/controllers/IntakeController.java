@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.controllers;
 import com.pedropathing.util.Timer;
 
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
-import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.robot.mechanisms.Intake;
 
 public class IntakeController {
 
@@ -11,7 +11,7 @@ public class IntakeController {
     private final Timer stateTimer = new Timer();
 
     private boolean isBusy;
-    private final Robot robot;
+    private final Intake intake;
     private final TelemetryUtils tm;
 
     private enum State {
@@ -21,10 +21,10 @@ public class IntakeController {
         OUTTAKE,
     }
 
-    public IntakeController(Robot robot) {
-        tm = robot.drivetrain.tm;
+    public IntakeController(Intake intake, TelemetryUtils tm) {
+        this.tm = tm;
         setState(State.IDLE);
-        this.robot = robot;
+        this.intake = intake;
         isBusy = false;
     }
 
@@ -41,14 +41,14 @@ public class IntakeController {
         switch (state) {
             case IDLE:
                 isBusy = false;
-                robot.intake.power(0);
+                intake.power(0);
                 break;
             case MANUAL_INTAKE:
             case INTAKE:
-                robot.intake.power(-1);
+                intake.power(-1);
                 break;
             case OUTTAKE:
-                robot.intake.power(1);
+                intake.power(1);
                 break;
         }
     }

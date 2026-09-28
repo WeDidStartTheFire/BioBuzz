@@ -29,11 +29,11 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.MatchContext;
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
-import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.robot.mechanisms.Drivetrain;
 
 public class DriveController {
 
-    private final Robot robot;
+    private final Drivetrain drivetrain;
     private final PIDFController headingPIDController = new PIDFController(teleopHeadingPID);
     private final Timer driveInputTimer = new Timer();
     private boolean aiming = false, holding = false, following = false;
@@ -42,10 +42,10 @@ public class DriveController {
     /**
      * Initializes the DriveController with robot instance.
      *
-     * @param robot Robot instance containing drivetrain hardware
+     * @param drivetrain Drivetrain instance
      */
-    public DriveController(Robot robot, MatchContext context) {
-        this.robot = robot;
+    public DriveController(Drivetrain drivetrain, MatchContext context) {
+        this.drivetrain = drivetrain;
         this.context = context;
     }
 
@@ -56,8 +56,8 @@ public class DriveController {
         aiming = false;
         holding = false;
         following = false;
-        robot.drivetrain.follower.breakFollowing();
-        robot.drivetrain.stop();
+        drivetrain.follower.breakFollowing();
+        drivetrain.stop();
     }
 
     /**
@@ -76,7 +76,7 @@ public class DriveController {
      * getting zeroed (human player zone corner facing human player, like in {@link #hardReset()})
      */
     public boolean softReset() {
-        Pose pose = robot.drivetrain.getPose();
+        Pose pose = drivetrain.getPose();
         double heading = pose == null ? (context.alliance() == BLUE ? 0 : PI) : pose.getHeading();
         double newHeading = round(heading * 2 / PI) * PI / 2;
         if (abs(newHeading - heading) > SNAP_THRESHOLD_HEADING) return false;
@@ -101,7 +101,7 @@ public class DriveController {
      * @param pose Pose to set
      */
     public void resetPose(Pose pose) {
-        robot.drivetrain.setPose(pose);
+        drivetrain.setPose(pose);
         if (holding) holdPosition();
     }
 
@@ -111,8 +111,8 @@ public class DriveController {
     public void toggleAiming() {
         aiming = !aiming;
         ProjectileSolver.LaunchSolution sol =
-            ProjectileSolver.getLaunchSolutionStationary(robot.drivetrain.getPose());
-        if (aiming && holding && sol != null) robot.drivetrain.holdCurrentPose(sol.phi);
+            ProjectileSolver.getLaunchSolutionStationary(drivetrain.getPose());
+        if (aiming && holding && sol != null) drivetrain.holdCurrentPose(sol.phi);
     }
 
     /**
@@ -121,23 +121,23 @@ public class DriveController {
     public void holdPosition() {
         this.holding = true;
         ProjectileSolver.LaunchSolution sol =
-            ProjectileSolver.getLaunchSolutionStationary(robot.drivetrain.getPose());
-        if (aiming && sol != null) robot.drivetrain.holdCurrentPose(sol.phi);
-        else robot.drivetrain.holdCurrentPose();
+            ProjectileSolver.getLaunchSolutionStationary(drivetrain.getPose());
+        if (aiming && sol != null) drivetrain.holdCurrentPose(sol.phi);
+        else drivetrain.holdCurrentPose();
     }
 
     /**
      * Automatically moves the robot to the closest waypoint
      */
     public void follow(Pose endPose) {
-        Pose currPose = robot.drivetrain.getPose();
+        Pose currPose = drivetrain.getPose();
         if (currPose == null) return;
         following = true;
         holding = false;
         aiming = false;
         Path path = new Path(new BezierLine(currPose, endPose));
         path.setLinearHeadingInterpolation(currPose.getHeading(), endPose.getHeading());
-        robot.drivetrain.follower.followPath(path, true);
+        drivetrain.follower.followPath(path, true);
     }
 
     /**
@@ -152,20 +152,20 @@ public class DriveController {
         if ((abs(gp.left_stick_y) > .05 ||
             abs(gp.left_stick_x) > .05 || abs(gp.right_stick_x) > .05)) {
             driveInputTimer.resetTimer();
-            if (following || holding) robot.drivetrain.follower.startTeleopDrive();
+            if (following || holding) drivetrain.follower.startTeleopDrive();
             following = holding = false;
         } else if (driveInputTimer.getElapsedTimeSeconds() > 0.5 && !holding && !following) {
             ProjectileSolver.LaunchSolution sol =
-                ProjectileSolver.getLaunchSolutionStationary(robot.drivetrain.getPose());
-            if (aiming && sol != null) robot.drivetrain.holdCurrentPose(sol.phi);
-            else robot.drivetrain.holdCurrentPose();
+                ProjectileSolver.getLaunchSolutionStationary(drivetrain.getPose());
+            if (aiming && sol != null) drivetrain.holdCurrentPose(sol.phi);
+            else drivetrain.holdCurrentPose();
             holding = true;
         }
 
-        if (holding || following) robot.drivetrain.setZeroPowerBehavior(BRAKE);
-        else robot.drivetrain.setZeroPowerBehavior(FLOAT);
+        if (holding || following) drivetrain.setZeroPowerBehavior(BRAKE);
+        else drivetrain.setZeroPowerBehavior(FLOAT);
 
-        if (!robot.drivetrain.follower.isBusy() && following) {
+        if (!drivetrain.follower.isBusy() && following) {
             following = false;
             holding = true;
         }
@@ -173,15 +173,15 @@ public class DriveController {
         aiming = aiming && abs(gp.right_stick_x) <= .05;
         double turn = -gp.right_stick_x * speedMultiplier;
         if (aiming && !holding) {
-            ProjectileSolver.LaunchSolution sol = getLaunchSolution(robot.drivetrain);
-            if (sol != null && robot.drivetrain.getPose() != null) {
-                double error = normalizeRadians(sol.phi - robot.drivetrain.getPose().getHeading());
+            ProjectileSolver.LaunchSolution sol = getLaunchSolution(drivetrain);
+            if (sol != null && drivetrain.getPose() != null) {
+                double error = normalizeRadians(sol.phi - drivetrain.getPose().getHeading());
                 headingPIDController.updateError(error);
                 turn = headingPIDController.run();
             }
         }
 
-        robot.drivetrain.follower.setTeleOpDrive(gp.left_stick_y * speedMultiplier *
+        drivetrain.follower.setTeleOpDrive(gp.left_stick_y * speedMultiplier *
                 (context.alliance() == RED || !fieldCentric ? -1 : 1),
             gp.left_stick_x * speedMultiplier *
                 (context.alliance() == RED || !fieldCentric ? -1 : 1), turn, !fieldCentric);
@@ -198,7 +198,7 @@ public class DriveController {
         double speedMultiplier = lerp(gp.left_trigger, speeds[2], speeds[0]);
 
         if (fieldCentric) {
-            double angle = PI / 2 - robot.drivetrain.getYaw(RADIANS);
+            double angle = PI / 2 - drivetrain.getYaw(RADIANS);
 
             double joystickAngle = Math.atan2(gp.left_stick_y, gp.left_stick_x);
             double moveAngle = joystickAngle - angle;
@@ -231,11 +231,11 @@ public class DriveController {
         }
 
         if (abs(leftFrontPower) > .05 || abs(rightFrontPower) > .05 || abs(leftBackPower) > .05 ||
-            abs(rightBackPower) > .05) robot.drivetrain.follower.breakFollowing();
+            abs(rightBackPower) > .05) drivetrain.follower.breakFollowing();
 
         // Send calculated power to wheels
-        if (!robot.drivetrain.follower.isBusy())
-            robot.drivetrain.setMotorVelocities(
+        if (!drivetrain.follower.isBusy())
+            drivetrain.setMotorVelocities(
                 leftBackPower * 5000 * speedMultiplier,
                 rightBackPower * 5000 * speedMultiplier,
                 leftFrontPower * 5000 * speedMultiplier,

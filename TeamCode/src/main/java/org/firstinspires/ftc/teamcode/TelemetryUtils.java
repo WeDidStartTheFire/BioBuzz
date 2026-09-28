@@ -167,25 +167,21 @@ public class TelemetryUtils {
     }
 
     public enum ErrorLevel {
-        LOW,
-        MEDIUM,
-        HIGH,
-        CRITICAL;
+        LOW("⚠️LOW WARNING⚠️"),
+        MEDIUM("⚠️MEDIUM WARNING⚠️"),
+        HIGH("🚨HIGH WARNING🚨"),
+        CRITICAL("🚨CRITICAL WARNING🚨");
+
+        private final String name;
+
+        ErrorLevel(String name) {
+            this.name = name;
+        }
 
         @NonNull
         @Override
         public String toString() {
-            switch (this) {
-                case LOW:
-                    return "⚠️LOW WARNING⚠️";
-                case MEDIUM:
-                    return "⚠️MEDIUM WARNING⚠️";
-                case HIGH:
-                    return "🚨HIGH WARNING🚨";
-                case CRITICAL:
-                    return "🚨CRITICAL WARNING🚨";
-            }
-            return "⚠️WARNING⚠️";
+            return name;
         }
     }
 }

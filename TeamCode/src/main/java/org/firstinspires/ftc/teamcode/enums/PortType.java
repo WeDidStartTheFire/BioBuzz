@@ -3,23 +3,20 @@ package org.firstinspires.ftc.teamcode.enums;
 import androidx.annotation.NonNull;
 
 public enum PortType {
-    SERVO, MOTOR, DIGITAL, I2C, USB;
+    SERVO("Servo Port"),
+    MOTOR("Motor Port"),
+    DIGITAL("Digital Port"),
+    I2C("I2C Port"),
+    USB("USB Port");
+
+    private final String name;
+
+    PortType(String name) {
+        this.name = name;
+    }
 
     @NonNull
     public String toString() {
-        switch (this) {
-            case SERVO:
-                return "Servo Port";
-            case MOTOR:
-                return "Motor Port";
-            case DIGITAL:
-                return "Digital Port";
-            case I2C:
-                return "I2C Port";
-            case USB:
-                return "USB Port";
-            default:
-                return "Unknown Port";
-        }
+        return name;
     }
 }

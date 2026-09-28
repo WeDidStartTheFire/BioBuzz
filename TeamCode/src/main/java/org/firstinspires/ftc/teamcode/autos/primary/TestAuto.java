@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.autos.primary;
 
-import static java.lang.Math.toRadians;
-
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;

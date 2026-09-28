@@ -198,7 +198,7 @@ public class Drivetrain extends PoseGetter {
     }
 
     /**
-     * Holds the current robot position in a certain orientation (based on SavedVariables.pose)
+     * Holds the current robot position in a certain orientation
      *
      * @param heading Orientation for the robot to point at
      */

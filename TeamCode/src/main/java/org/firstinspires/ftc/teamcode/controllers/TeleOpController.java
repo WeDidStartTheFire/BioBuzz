@@ -174,8 +174,6 @@ public class TeleOpController {
         else if (gamepad1.left_bumper) intakeController.manualIntake();
         else if (intakeController.isBusy()) intakeController.stop();
         intakeController.update();
-        // Stops innerIntake if it isn't called by the next call to updateIntake()
-        intakeController.stopInnerIntake();
     }
 
 

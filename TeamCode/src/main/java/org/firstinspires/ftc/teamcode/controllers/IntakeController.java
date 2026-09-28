@@ -16,7 +16,6 @@ public class IntakeController {
 
     private enum State {
         IDLE,
-        INNER_INTAKE,
         INTAKE,
         MANUAL_INTAKE,
         OUTTAKE,
@@ -33,8 +32,8 @@ public class IntakeController {
      * Updates the LEDs and the IntakeController state machine:<p>
      * INTAKE -> IDLE: When indexer is full<p>
      * Other transitions controlled via calling methods
+     *
      * @see #intake()
-     * @see #innerIntake()
      * @see #outtake()
      * @see #stop()
      */
@@ -43,11 +42,6 @@ public class IntakeController {
             case IDLE:
                 isBusy = false;
                 robot.intake.power(0);
-                break;
-            case INNER_INTAKE:
-                isBusy = false;
-                robot.intake.powerInside(-1);
-                robot.intake.powerOutside(0);
                 break;
             case MANUAL_INTAKE:
             case INTAKE:
@@ -85,21 +79,6 @@ public class IntakeController {
     public void manualIntake() {
         isBusy = true;
         setState(State.MANUAL_INTAKE);
-    }
-
-    /**
-     * Turns on intaking the inner intake only
-     */
-    public void innerIntake() {
-        setStateNoWait(State.INNER_INTAKE);
-        isBusy = false;
-    }
-
-    /**
-     * Stops the intake only if it is inner intaking
-     */
-    public void stopInnerIntake() {
-        if (state == State.INNER_INTAKE) setStateNoWait(State.IDLE);
     }
 
     /**

@@ -3,17 +3,18 @@ package org.firstinspires.ftc.teamcode.enums;
 import androidx.annotation.NonNull;
 
 public enum Hub {
-    CONTROL, EXPANSION, UNKNOWN;
+    CONTROL("Control Hub"),
+    EXPANSION("Expansion Hub"),
+    UNKNOWN("Unknown Hub");
+
+    private final String name;
+
+    Hub(String name) {
+        this.name = name;
+    }
 
     @NonNull
     public String toString() {
-        switch (this) {
-            case CONTROL:
-                return "Control Hub";
-            case EXPANSION:
-                return "Expansion Hub";
-            default:
-                return "Unknown Hub";
-        }
+        return name;
     }
 }

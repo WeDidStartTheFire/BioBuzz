@@ -1,10 +1,8 @@
 package org.firstinspires.ftc.teamcode.teleops.tests;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
-import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 
-import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -25,11 +23,9 @@ public class Test_Limelight extends OpMode {
 
     @Override
     public void init() {
-        Pose pose = loadOdometryPosition();
-        validStartPose = pose != null;
         robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
         robot.drivetrain.useLimelightFollower();
-        robot.drivetrain.setPose(pose);
+        robot.drivetrain.setPose(loadOdometryPosition());
         robot.drivetrain.follower.startTeleopDrive();
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
         tm = robot.drivetrain.tm;
@@ -48,7 +44,7 @@ public class Test_Limelight extends OpMode {
 
     @Override
     public void loop() {
-        teleop.drivetrainLogic(validStartPose);
+        teleop.drivetrainLogic();
         teleop.updateIntake();
         teleop.updateLauncherTeleOp();
         LLResult result = robot.limelight.getLatestResult();

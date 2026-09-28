@@ -1,12 +1,10 @@
 package org.firstinspires.ftc.teamcode.teleops.other;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
-import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.configurables.annotations.IgnoreConfigurable;
-import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -47,10 +45,8 @@ public class TeleOp_TuneFlywheelPIDF extends OpMode {
 
     @Override
     public void init() {
-        Pose pose = loadOdometryPosition();
-        validStartPose = pose != null;
         robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
-        robot.drivetrain.setPose(pose);
+        robot.drivetrain.setPose(loadOdometryPosition());
         robot.drivetrain.follower.startTeleopDrive();
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
         tm = robot.drivetrain.tm;

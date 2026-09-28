@@ -43,6 +43,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.MatchContext;
+import org.firstinspires.ftc.teamcode.PoseGetter;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.enums.Dir;
 import org.firstinspires.ftc.teamcode.enums.Hardware;
@@ -56,6 +57,7 @@ public class Drivetrain extends PoseGetter {
     public final @Nullable SparkFunOTOS otos;
     private @Nullable Pose pose;
     private @Nullable Vector vel;
+    private boolean validPose = false;
 
     public volatile boolean loop = false;
 
@@ -162,7 +164,12 @@ public class Drivetrain extends PoseGetter {
 
     public void setPose(Pose pose) {
         follower.setPose(pose);
+        validPose = pose != null;
         this.pose = pose;
+    }
+
+    public boolean isPoseValid() {
+        return validPose;
     }
 
     public void update() {
@@ -191,7 +198,7 @@ public class Drivetrain extends PoseGetter {
     }
 
     /**
-     * Holds the current robot position in a certain orientation (based on RobotState.pose)
+     * Holds the current robot position in a certain orientation (based on SavedVariables.pose)
      *
      * @param heading Orientation for the robot to point at
      */

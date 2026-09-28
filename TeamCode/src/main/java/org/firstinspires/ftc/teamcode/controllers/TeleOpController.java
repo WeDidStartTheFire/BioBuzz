@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.controllers;
 
-import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.constants.ResetConstants.HARD_RESET_WAIT;
 import static org.firstinspires.ftc.teamcode.constants.ResetConstants.SOFT_RESET_WAIT;
 
@@ -95,7 +94,15 @@ public class TeleOpController {
     }
 
     /**
-     * Logic for the drivetrain during TeleOp
+     * Logic for the drivetrain during TeleOp. Defaults to using field centric driving if current
+     * position is valid. Defaults to using Pedro Pathing for movement.
+     */
+    public void drivetrainLogic() {
+        drivetrainLogic(robot.drivetrain.isPoseValid());
+    }
+
+    /**
+     * Logic for the drivetrain during TeleOp. Defaults to using Pedro Pathing for movement.
      *
      * @param fieldCentric Whether to use field centric driving
      */
@@ -110,13 +117,13 @@ public class TeleOpController {
      * @param usePedro     Whether to use Pedro Pathing
      */
     public void drivetrainLogic(boolean fieldCentric, boolean usePedro) {
-        if (validStartPose && usePedro) {
+        if (robot.drivetrain.isPoseValid() && usePedro) {
 //            if (gamepad1.xWasPressed())
-//                driveController.follow(RobotState.color == BLUE ? BLUE_FAR_LAUNCH : RED_FAR_LAUNCH);
+//                driveController.follow(robot.context().alliance() == BLUE ? BLUE_FAR_LAUNCH : RED_FAR_LAUNCH);
 //            if (gamepad1.aWasPressed())
-//                driveController.follow(RobotState.color == BLUE ? BLUE_HUMAN_PLAYER : RED_HUMAN_PLAYER);
+//                driveController.follow(robot.context().alliance() == BLUE ? BLUE_HUMAN_PLAYER : RED_HUMAN_PLAYER);
 //            if (gamepad1.yWasPressed())
-//                driveController.follow(RobotState.color == BLUE ? BLUE_BASE_ZONE : RED_BASE_ZONE);
+//                driveController.follow(robot.context().alliance() == BLUE ? BLUE_BASE_ZONE : RED_BASE_ZONE);
             if (gamepad1.bWasPressed()) driveController.toggleAiming();
         }
         if (gamepad1.dpadDownWasPressed()) {

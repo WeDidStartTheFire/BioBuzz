@@ -1,10 +1,8 @@
 package org.firstinspires.ftc.teamcode.teleops.tests;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
-import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 
-import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -25,15 +23,13 @@ public class TeleOp_KalmanTest extends OpMode {
 
     @Override
     public void init() {
-        Pose pose = loadOdometryPosition();
-        validStartPose = pose != null;
         robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
         robot.drivetrain.useKalmanFollower();
-        robot.drivetrain.setPose(pose);
+        robot.drivetrain.setPose(loadOdometryPosition());
         robot.drivetrain.follower.startTeleopDrive();
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
         tm = robot.drivetrain.tm;
-        if (!validStartPose)
+        if (!robot.drivetrain.isPoseValid())
             tm.warn(TelemetryUtils.ErrorLevel.MEDIUM, "Robot Centric driving will be used until the position is reset");
         else tm.print("Field Centric Driving", "✅");
         tm.print("Color", "🟦🟦Blue🟦🟦");
@@ -52,7 +48,7 @@ public class TeleOp_KalmanTest extends OpMode {
 
     @Override
     public void loop() {
-        teleop.drivetrainLogic(validStartPose);
+        teleop.drivetrainLogic();
         teleop.updateIntake();
         teleop.updateLauncherTeleOp();
         LLResult result = robot.limelight.getLatestResult();

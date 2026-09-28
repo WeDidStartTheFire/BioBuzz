@@ -5,7 +5,6 @@ import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.FLOAT;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.normalizeRadians;
 import static org.firstinspires.ftc.teamcode.ProjectileSolver.getLaunchSolution;
-import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.Utils.lerp;
 import static org.firstinspires.ftc.teamcode.constants.ResetConstants.SNAP_THRESHOLD_DISTANCE;
 import static org.firstinspires.ftc.teamcode.constants.ResetConstants.SNAP_THRESHOLD_HEADING;
@@ -73,7 +72,7 @@ public class DriveController {
 
     /**
      * Snaps to closest 90° angle or wall position if close enough, otherwise keeps the current
-     * angle. If {@code RobotState.pose == null} (unlikely) it makes an assumption about where it's
+     * angle. If {@code pose == null} (unlikely) it makes an assumption about where it's
      * getting zeroed (human player zone corner facing human player, like in {@link #hardReset()})
      */
     public boolean softReset() {
@@ -102,7 +101,6 @@ public class DriveController {
      * @param pose Pose to set
      */
     public void resetPose(Pose pose) {
-        validStartPose = true;
         robot.drivetrain.setPose(pose);
         if (holding) holdPosition();
     }

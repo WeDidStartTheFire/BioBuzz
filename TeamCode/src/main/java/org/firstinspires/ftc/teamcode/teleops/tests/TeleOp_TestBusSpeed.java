@@ -1,12 +1,10 @@
 package org.firstinspires.ftc.teamcode.teleops.tests;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
-import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 import static java.lang.Thread.sleep;
 
 import com.bylazar.configurables.annotations.Configurable;
-import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.lynx.LynxI2cDeviceSynch;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -32,13 +30,11 @@ public class TeleOp_TestBusSpeed extends OpMode {
 
     @Override
     public void init() {
-        Pose pose = loadOdometryPosition();
-        validStartPose = pose != null;
         robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
-        robot.drivetrain.setPose(pose);
+        robot.drivetrain.setPose(loadOdometryPosition());
         robot.drivetrain.follower.startTeleopDrive();
         tm = robot.drivetrain.tm;
-        if (!validStartPose)
+        if (!robot.drivetrain.isPoseValid())
             tm.warn(TelemetryUtils.ErrorLevel.LOW, "Robot Centric driving will be used until the position is reset");
         else tm.print("Field Centric Driving", "✅");
         tm.print("Color", "🟦Blue🟦");

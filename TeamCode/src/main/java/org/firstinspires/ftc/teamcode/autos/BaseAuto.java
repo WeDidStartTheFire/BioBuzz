@@ -44,9 +44,9 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
     }
 
     protected void setState(S state) {
-        stateTimer.resetTimer();
         tm.log(this.state + " -> " + state, stateTimer.getElapsedTimeSeconds());
         setStateNoWait(state);
+        stateTimer.resetTimer();
     }
 
     protected void setStateNoWait(S state) {

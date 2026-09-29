@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.controllers.DriveController;
 import org.firstinspires.ftc.teamcode.controllers.IntakeController;
 import org.firstinspires.ftc.teamcode.controllers.LaunchController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
@@ -22,6 +23,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
     protected Robot robot;
     protected LaunchController launchController;
     protected IntakeController intakeController;
+    protected DriveController driveController;
     protected Pose startPose, shootPose;
     protected TelemetryUtils tm;
     protected Timer stateTimer = new Timer();
@@ -46,6 +48,22 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
     }
 
     protected void onStop() {
+        driveController.stop();
+        intakeController.forceStop();
+        launchController.stop();
+    }
+
+    protected void onUpdate() {
+        robot.updateBulkCache();
+        robot.drivetrain.follower.update();
+        pose = robot.drivetrain.follower.getPose();
+        vel = robot.drivetrain.follower.getVelocity();
+        pathUpdate();
+        robot.turret.update(true);
+        robot.indexer.update();
+        launchController.update();
+        intakeController.update();
+        robot.led.update();
     }
 
     protected void setState(S state) {
@@ -70,6 +88,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         buildPaths();
         launchController = new LaunchController(robot);
         intakeController = new IntakeController(robot);
+        driveController = new DriveController(robot);
         tm.print(name + " auto initialized");
         tm.update();
         setStateNoWait(initialState);
@@ -91,17 +110,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
 
     @Override
     public final void loop() {
-        robot.updateBulkCache();
-        robot.drivetrain.follower.update();
-        pose = robot.drivetrain.follower.getPose();
-        vel = robot.drivetrain.follower.getVelocity();
-        pathUpdate();
-        robot.turret.update(true);
-        robot.indexer.update();
-        launchController.update();
-        intakeController.update();
-        robot.led.update();
-
+        onUpdate();
         tm.drawRobot(robot.drivetrain.follower, 250);
         tm.print("Path State", state);
         tm.print("Launcher State", launchController.getState());

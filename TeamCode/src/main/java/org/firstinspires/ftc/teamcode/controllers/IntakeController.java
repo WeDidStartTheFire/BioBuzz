@@ -147,6 +147,14 @@ public class IntakeController {
         isBusy = false;
     }
 
+    /**
+     * Manually stops the motor instead of just changing the state.
+     */
+    public void forceStop() {
+        robot.intake.power(0);
+        setState(State.IDLE);
+    }
+
     private void setState(State state) {
         if (state != null && state != this.state)
             tm.log("IntakeController: " + this.state + " -> " + state, stateTimer.getElapsedTimeSeconds());

@@ -32,7 +32,6 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
 import org.firstinspires.ftc.teamcode.RobotState;
-import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.RobotRefactor;
 
 public class DriveController {

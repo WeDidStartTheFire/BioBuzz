@@ -1,16 +1,10 @@
 package org.firstinspires.ftc.teamcode.teleops;
 
-import static org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta.Flavor.TELEOP;
-import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_TELEOP_NAME;
-import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
-
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
-import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.RobotRefactor;
 
 @TeleOp(name = "TeleOp_Refactor_Testing", group = "B")

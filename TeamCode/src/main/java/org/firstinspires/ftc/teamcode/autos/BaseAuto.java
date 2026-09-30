@@ -16,7 +16,6 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.DriveController;
 import org.firstinspires.ftc.teamcode.controllers.IntakeController;
 import org.firstinspires.ftc.teamcode.controllers.LaunchController;
-import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.RobotRefactor;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
 

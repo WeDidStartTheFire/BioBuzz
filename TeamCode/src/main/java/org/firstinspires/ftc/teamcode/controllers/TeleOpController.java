@@ -25,7 +25,6 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
-import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.RobotRefactor;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.LED;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;

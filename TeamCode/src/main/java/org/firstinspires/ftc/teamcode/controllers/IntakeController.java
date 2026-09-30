@@ -1,19 +1,18 @@
 package org.firstinspires.ftc.teamcode.controllers;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.EMPTY;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
-import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_ARTIFACT_DETECTION_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.AZURE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.BLUE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.GREEN;
-import static org.firstinspires.ftc.teamcode.RobotConstants.PARTIAL_INDEXER_ARTIFACT_DETECTION_WAIT;
 
 import com.pedropathing.util.Timer;
 
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.robot.RobotRefactor;
+import org.firstinspires.ftc.teamcode.robot.mechanisms.IntakeRefactor;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.LED;
+import org.jetbrains.annotations.UnknownNullability;
 
 public class IntakeController {
 
@@ -21,19 +20,17 @@ public class IntakeController {
     private final Timer stateTimer = new Timer();
 
     private boolean isBusy;
-    private final Robot robot;
+    private final RobotRefactor robot;
     private final Timer artifactDetectedTimer = new Timer();
     private final TelemetryUtils tm;
 
     private enum State {
         IDLE,
-        INNER_INTAKE,
         INTAKE,
-        MANUAL_INTAKE,
         OUTTAKE,
     }
 
-    public IntakeController(Robot robot) {
+    public IntakeController(RobotRefactor robot) {
         tm = robot.drivetrain.tm;
         setState(State.IDLE);
         this.robot = robot;
@@ -45,7 +42,6 @@ public class IntakeController {
      * INTAKE -> IDLE: When indexer is full<p>
      * Other transitions controlled via calling methods
      * @see #intake()
-     * @see #innerIntake()
      * @see #outtake()
      * @see #stop()
      */
@@ -60,38 +56,15 @@ public class IntakeController {
             case IDLE:
                 RobotState.normalIntaking = false;
                 isBusy = false;
-                robot.intake.power(0);
-                break;
-            case INNER_INTAKE:
-                RobotState.normalIntaking = false;
-                isBusy = false;
-                robot.intake.powerInside(-1);
-                robot.intake.powerOutside(0);
-                break;
-            case MANUAL_INTAKE:
-                RobotState.normalIntaking = true;
-                robot.intake.power(-1);
+                robot.intake.setBehavior(IntakeRefactor.Behavior.OFF);
                 break;
             case INTAKE:
                 RobotState.normalIntaking = true;
-                robot.intake.power(-1);
-                if (!robot.indexer.isStill()) {
-                    robot.intake.powerInside(1);
-                    robot.intake.powerOutside(0);
-                }
-                if (robot.indexer.isActiveSlotEmpty()) {
-                    artifactDetectedTimer.resetTimer();
-                } else if (artifactDetectedTimer.getElapsedTimeSeconds() > INDEXER_ARTIFACT_DETECTION_WAIT) {
-                    robot.intake.powerOutside(.5);
-                    if (!robot.indexer.rotateToArtifact(EMPTY))
-                        robot.indexer.rotateToArtifact(UNKNOWN);
-                } else if (artifactDetectedTimer.getElapsedTimeSeconds() > PARTIAL_INDEXER_ARTIFACT_DETECTION_WAIT) {
-                    robot.intake.powerOutside(0);
-                }
+                robot.intake.setBehavior(IntakeRefactor.Behavior.INTAKE);
                 break;
             case OUTTAKE:
                 RobotState.normalIntaking = false;
-                robot.intake.power(1);
+                robot.intake.setBehavior(IntakeRefactor.Behavior.OUTTAKE);
                 break;
         }
     }
@@ -119,25 +92,9 @@ public class IntakeController {
         setState(State.INTAKE);
     }
 
-    public void manualIntake() {
-        isBusy = true;
-        setState(State.MANUAL_INTAKE);
-    }
-
-    /**
-     * Turns on intaking the inner intake only
-     */
-    public void innerIntake() {
-        setStateNoWait(State.INNER_INTAKE);
-        isBusy = false;
-    }
-
     /**
      * Stops the intake only if it is inner intaking
      */
-    public void stopInnerIntake() {
-        if (state == State.INNER_INTAKE) setStateNoWait(State.IDLE);
-    }
 
     /**
      * Stops the intake
@@ -151,7 +108,7 @@ public class IntakeController {
      * Manually stops the motor instead of just changing the state.
      */
     public void forceStop() {
-        robot.intake.power(0);
+        robot.intake.stop();
         setState(State.IDLE);
     }
 

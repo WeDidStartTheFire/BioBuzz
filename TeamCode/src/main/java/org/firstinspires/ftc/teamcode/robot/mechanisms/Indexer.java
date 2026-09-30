@@ -23,10 +23,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
+import org.firstinspires.ftc.teamcode.robot.Subsystem;
 
 import java.util.Arrays;
 
-public class Indexer {
+public class Indexer implements Subsystem {
 
     private final @Nullable Servo indexerServo;
     private double minIndexerPos = -.25, maxIndexerPos = 1.25, goalIndexerPos = -1;
@@ -70,6 +71,11 @@ public class Indexer {
         tm.print("ColorSensor Update (ms)", t1 - t0);
         tm.print("Artifact", artifact);
         setCurrentArtifact(artifact);
+    }
+
+    @Override
+    public void stop() {
+        setPos(0);
     }
 
     private void setCurrentArtifact(RobotConstants.Artifact artifact) {

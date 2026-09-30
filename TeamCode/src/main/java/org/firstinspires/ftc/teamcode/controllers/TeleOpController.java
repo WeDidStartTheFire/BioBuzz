@@ -26,6 +26,7 @@ import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.robot.RobotRefactor;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.LED;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
 
@@ -34,7 +35,7 @@ public class TeleOpController {
     private final IntakeController intakeController;
     private final LaunchController launchController;
     private final DriveController driveController;
-    private final Robot robot;
+    private final RobotRefactor robot;
     private final Follower follower;
     private final boolean useOdometry;
     private final TelemetryUtils tm;
@@ -52,7 +53,7 @@ public class TeleOpController {
      * @param gamepad1 Primary gamepad for drivetrain control
      * @param gamepad2 Secondary gamepad for launcher/intake control
      */
-    public TeleOpController(Robot robot, Gamepad gamepad1, Gamepad gamepad2) {
+    public TeleOpController(RobotRefactor robot, Gamepad gamepad1, Gamepad gamepad2) {
         this.robot = robot;
         this.robot.initBulkCache();
         intakeController = new IntakeController(robot);
@@ -195,7 +196,6 @@ public class TeleOpController {
 
         if (gamepad2.dpadRightWasPressed()) robot.indexer.rotateClockwise();
         else if (gamepad2.dpadLeftWasPressed()) robot.indexer.rotateCounterclockwise();
-        if (!intakeController.isBusy() && !robot.indexer.isStill()) intakeController.innerIntake();
     }
 
 
@@ -214,11 +214,8 @@ public class TeleOpController {
     public void updateIntake() {
         if (gamepad1.right_trigger > 0.3) intakeController.intake();
         else if (gamepad1.right_bumper) intakeController.outtake();
-        else if (gamepad1.left_bumper) intakeController.manualIntake();
         else if (intakeController.isBusy()) intakeController.stop();
         intakeController.update();
-        // Stops innerIntake if it isn't called by the next call to updateIntake()
-        intakeController.stopInnerIntake();
     }
 
 
@@ -254,7 +251,6 @@ public class TeleOpController {
         if (gamepad2.right_bumper && (launchController.isBusy() || gamepad2.right_trigger >= 0.5)
             && robot.indexer.isStill()) {
             launchController.manualRaise();
-            intakeController.innerIntake();
         } else launchController.manualRetract();
     }
 }

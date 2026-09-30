@@ -10,11 +10,14 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
+import org.firstinspires.ftc.teamcode.robot.Subsystem;
 
-public class LED {
+public class LED implements Subsystem {
     private final @Nullable Servo led;
     private int highestPriorityThisLoop = -1;
     private double color;
+
+
 
     public enum Priority {
         LOW(0),
@@ -42,9 +45,15 @@ public class LED {
     /**
      * Shows the highest and most recent color that has been set since last update
      */
+    @Override
     public void update() {
         if (led != null) led.setPosition(color);
         highestPriorityThisLoop = -1;
+    }
+
+    @Override
+    public void stop() {
+        if (led != null) led.setPosition(RobotConstants.LEDColors.OFF.position());
     }
 
     /**

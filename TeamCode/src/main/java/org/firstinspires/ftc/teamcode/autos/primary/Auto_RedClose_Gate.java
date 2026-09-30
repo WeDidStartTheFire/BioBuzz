@@ -106,7 +106,6 @@ public final class Auto_RedClose_Gate extends BaseAuto<Auto_RedClose_Gate.State>
                 robot.indexer.setPos(0);
                 robot.drivetrain.follower.followPath(startToMotif, true);
                 launchController.manualSpin();
-                intakeController.innerIntake();
                 setState(State.MOTIF_TO_SHOOT);
                 break;
             case MOTIF_TO_SHOOT:
@@ -120,7 +119,6 @@ public final class Auto_RedClose_Gate extends BaseAuto<Auto_RedClose_Gate.State>
                 break;
             case LAUNCH_ARTIFACTS:
                 if (robot.drivetrain.follower.isBusy()) break;
-                intakeController.innerIntake();
                 launchController.launchArtifacts(3, true);
                 launchRound++;
                 setState(launchRound <= 2 ? State.SHOOT_TO_INTAKE : State.SHOOT_TO_END);

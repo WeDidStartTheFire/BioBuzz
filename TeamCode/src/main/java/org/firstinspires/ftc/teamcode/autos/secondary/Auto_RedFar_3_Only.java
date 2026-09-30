@@ -65,12 +65,10 @@ public final class Auto_RedFar_3_Only extends BaseAuto<Auto_RedFar_3_Only.State>
                         stateTimer.getElapsedTimeSeconds() < MAX_MOTIF_DETECT_WAIT) break;
                 robot.drivetrain.follower.followPath(startToShoot, true);
                 launchController.manualSpin();
-                intakeController.innerIntake();
                 setState(State.LAUNCH_ARTIFACTS);
                 break;
             case LAUNCH_ARTIFACTS:
                 if (robot.drivetrain.follower.isBusy()) break;
-                intakeController.innerIntake();
                 launchController.launchArtifacts(3, true);
                 setState(State.SHOOT_TO_END);
                 break;

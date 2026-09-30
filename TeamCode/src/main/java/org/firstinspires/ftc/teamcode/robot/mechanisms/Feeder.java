@@ -11,11 +11,13 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
+import org.firstinspires.ftc.teamcode.robot.Subsystem;
 
-public class Feeder {
+public class Feeder implements Subsystem {
     private final @Nullable Servo feederServoA, feederServoB;
     private final @Nullable TouchSensor touchSensorA, touchSensorB;
     private double feederPos = -1;
+    private double feederPosTarget;
 
     public Feeder(HardwareMap hardwareMap, TelemetryUtils tm) {
         feederServoA = HardwareInitializer.init(hardwareMap, Servo.class, "feederServoA");
@@ -70,8 +72,7 @@ public class Feeder {
     public void raise() {
         if (feederServoA == null || feederServoB == null || feederPos == 1) return;
         feederPos = 1;
-        feederServoB.setPosition(.85);
-        feederServoA.setPosition(.85);
+        feederPosTarget = .85;
     }
 
     /**
@@ -80,7 +81,18 @@ public class Feeder {
     public void retract() {
         if (feederServoA == null || feederServoB == null || feederPos == 0) return;
         feederPos = 0;
-        feederServoA.setPosition(0.05);
-        feederServoB.setPosition(0.05);
+        feederPosTarget = 0.05;
+    }
+
+    @Override
+    public void update() {
+        if (feederServoA != null) feederServoA.setPosition(feederPosTarget);
+        if (feederServoB != null) feederServoB.setPosition(feederPosTarget);
+    }
+
+    @Override
+    public void stop() {
+        if (feederServoA != null) feederServoA.setPosition(0);
+        if (feederServoB != null) feederServoB.setPosition(0);
     }
 }

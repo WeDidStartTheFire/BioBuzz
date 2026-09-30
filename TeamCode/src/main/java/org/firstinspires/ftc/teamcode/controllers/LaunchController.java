@@ -25,8 +25,10 @@ import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.robot.RobotRefactor;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.LED;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,7 +36,7 @@ import java.util.List;
 
 public class LaunchController {
 
-    private final Robot robot;
+    private final RobotRefactor robot;
     private State state;
     private final Timer stateTimer = new Timer();
     private boolean isBusy;
@@ -60,7 +62,7 @@ public class LaunchController {
         FEEDER_DOWN_WAIT
     }
 
-    public LaunchController(Robot robot) {
+    public LaunchController(RobotRefactor robot) {
         this.robot = robot;
         tm = robot.drivetrain.tm;
         setState(State.IDLE);

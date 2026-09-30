@@ -18,9 +18,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
+import org.firstinspires.ftc.teamcode.robot.Subsystem;
 import org.opencv.core.Scalar;
 
-public class ColorSensor {
+public class ColorSensor implements Subsystem {
 
     private final @Nullable RevColorSensorV3 colorSensorA, colorSensorB;
     private @Nullable Scalar colorA, colorB;
@@ -147,5 +148,15 @@ public class ColorSensor {
 
     public void skipLoop() {
         lastSkipped = true;
+    }
+
+    @Override
+    public void update() {
+        update(true);
+    }
+
+    @Override
+    public void stop() {
+
     }
 }

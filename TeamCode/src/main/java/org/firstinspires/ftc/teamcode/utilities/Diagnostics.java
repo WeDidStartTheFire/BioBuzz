@@ -1,5 +1,6 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.utilities;
 
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.VERBOSE;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.COLOR_SENSOR_A;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.COLOR_SENSOR_B;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.DRIVETRAIN_LEFT_BACK_MOTOR;
@@ -28,6 +29,8 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.enums.RobotEnvironment;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
 @Utility(name = "Diagnostics")
@@ -43,6 +46,8 @@ public class Diagnostics extends LinearOpMode {
 
     public void runOpMode() {
         tm = new TelemetryUtils(telemetry);
+        tm.setEnvironment(RobotEnvironment.PRACTICE);
+
         lf = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_LEFT_FRONT_MOTOR);
         lb = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_LEFT_BACK_MOTOR);
         rf = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_RIGHT_FRONT_MOTOR);
@@ -87,8 +92,8 @@ public class Diagnostics extends LinearOpMode {
         actionTm("Spinning launcher motors", "End");
         resetRuntime();
         while (getRuntime() < 5.0 && launcherMotorA != null && launcherMotorB != null) {
-            tm.print("Launcher Motor A Velocity", launcherMotorA.getVelocity());
-            tm.print("Launcher Motor B Velocity", launcherMotorB.getVelocity());
+            tm.print("Launcher Motor A Velocity", launcherMotorA.getVelocity(), VERBOSE);
+            tm.print("Launcher Motor B Velocity", launcherMotorB.getVelocity(), VERBOSE);
             tm.update();
         }
 
@@ -97,8 +102,8 @@ public class Diagnostics extends LinearOpMode {
     }
 
     private void actionTm(String current, String next) {
-        tm.print("Currently", current);
-        tm.print("Next", next);
+        tm.print("Currently", current, VERBOSE);
+        tm.print("Next", next, VERBOSE);
         tm.update();
     }
 }

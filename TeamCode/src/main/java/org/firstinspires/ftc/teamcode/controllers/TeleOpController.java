@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.controllers;
 
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.DEBUG;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.VERBOSE;
 import static org.firstinspires.ftc.teamcode.constants.ResetConstants.HARD_RESET_WAIT;
 import static org.firstinspires.ftc.teamcode.constants.ResetConstants.SOFT_RESET_WAIT;
 
@@ -65,8 +68,8 @@ public class TeleOpController {
             ms = Math.toIntExact((t - lastUpdateTime) / 1_000_000);
             totalMs += ms;
             totalUpdates++;
-            tm.print("dt (ms)", ms);
-            tm.print("avg dt (ms)", totalMs / totalUpdates);
+            tm.print("dt (ms)", ms, VERBOSE);
+            tm.print("avg dt (ms)", totalMs / totalUpdates, VERBOSE);
         }
         lastUpdateTime = t;
         robot.updateBulkCache();
@@ -156,10 +159,10 @@ public class TeleOpController {
         if (gamepad1.dpadLeftWasPressed()) robotCentric = true;
         else if (gamepad1.dpadRightWasPressed()) robotCentric = false;
         fieldCentric = fieldCentric && !robotCentric;
-        tm.print("Robot Centric", robotCentric);
-        tm.print("Field Centric", fieldCentric);
+        tm.print("Robot Centric", robotCentric, INFO);
+        tm.print("Field Centric", fieldCentric, INFO);
         tm.drawRobot(follower, 250);
-        if (robot.drivetrain.getPose() != null) tm.print(robot.drivetrain.getPose());
+        if (robot.drivetrain.getPose() != null) tm.print(robot.drivetrain.getPose(), DEBUG);
         if (usePedro) driveController.updateTeleOp(gamepad1, fieldCentric);
         else driveController.updateTeleOpNoPedro(gamepad1, fieldCentric);
     }
@@ -185,7 +188,7 @@ public class TeleOpController {
         if (gamepad2.dpadUpWasPressed()) robot.launcher.increaseVelocityModifier(25);
         if (gamepad2.dpadDownWasPressed()) robot.launcher.increaseVelocityModifier(-25);
 
-        tm.print("Launcher Vel", robot.launcher.getCachedVel());
-        tm.print("Goal", robot.launcher.getGoalVel());
+        tm.print("Launcher Vel", robot.launcher.getCachedVel(), VERBOSE);
+        tm.print("Goal", robot.launcher.getGoalVel(), VERBOSE);
     }
 }

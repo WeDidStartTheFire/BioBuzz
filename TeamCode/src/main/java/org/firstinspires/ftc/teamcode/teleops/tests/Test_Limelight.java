@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleops.tests;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.VERBOSE;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
@@ -34,7 +35,7 @@ public class Test_Limelight extends OpMode {
     @Override
     public void init_loop() {
         teleop.update();
-        if (robot.drivetrain.getPose() != null) tm.print(robot.drivetrain.getPose());
+        if (robot.drivetrain.getPose() != null) tm.print(robot.drivetrain.getPose(), VERBOSE);
     }
 
     @Override
@@ -49,15 +50,15 @@ public class Test_Limelight extends OpMode {
         teleop.updateLauncherTeleOp();
         LLResult result = robot.limelight.getLatestResult();
         if (result != null) {
-            tm.print("LL Pose MT1", result.getBotpose());
-            tm.print("LL Std Dev MT1 X", result.getStddevMt1()[0]);
-            tm.print("LL Std Dev MT1 Y", result.getStddevMt1()[1]);
-            tm.print("LL Std Dev MT1 Heading", result.getStddevMt1()[5]);
-            tm.print("====================");
-            tm.print("LL Pose MT2", result.getBotpose_MT2());
-            tm.print("LL Std Dev MT2 X", result.getStddevMt2()[0]);
-            tm.print("LL Std Dev MT2 Y", result.getStddevMt2()[1]);
-            tm.print("LL Std Dev MT2 Heading", result.getStddevMt2()[5]);
+            tm.print("LL Pose MT1", result.getBotpose(), VERBOSE);
+            tm.print("LL Std Dev MT1 X", result.getStddevMt1()[0], VERBOSE);
+            tm.print("LL Std Dev MT1 Y", result.getStddevMt1()[1], VERBOSE);
+            tm.print("LL Std Dev MT1 Heading", result.getStddevMt1()[5], VERBOSE);
+            tm.print("====================", VERBOSE);
+            tm.print("LL Pose MT2", result.getBotpose_MT2(), VERBOSE);
+            tm.print("LL Std Dev MT2 X", result.getStddevMt2()[0], VERBOSE);
+            tm.print("LL Std Dev MT2 Y", result.getStddevMt2()[1], VERBOSE);
+            tm.print("LL Std Dev MT2 Heading", result.getStddevMt2()[5], VERBOSE);
         }
         teleop.update();
     }

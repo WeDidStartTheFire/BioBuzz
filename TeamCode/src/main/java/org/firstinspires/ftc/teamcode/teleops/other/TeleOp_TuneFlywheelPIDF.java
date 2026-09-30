@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.teleops.other;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.VERBOSE;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 
 import com.bylazar.configurables.annotations.Configurable;
@@ -14,6 +16,7 @@ import org.firstinspires.ftc.teamcode.MatchContext;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.enums.Color;
+import org.firstinspires.ftc.teamcode.enums.RobotEnvironment;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 
@@ -50,7 +53,8 @@ public class TeleOp_TuneFlywheelPIDF extends OpMode {
         robot.drivetrain.follower.startTeleopDrive();
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
         tm = robot.drivetrain.tm;
-        tm.print("Tune Flywheel PIDF Initialized");
+        tm.setEnvironment(RobotEnvironment.DEBUG);
+        tm.print("Tune Flywheel PIDF Initialized", INFO);
         tm.update();
 //        if (robot.drivetrain.areMotorsConnected())
 //            defaultpidf = robot.launcher.launcherMotorA.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -76,20 +80,20 @@ public class TeleOp_TuneFlywheelPIDF extends OpMode {
 //        double BVel = robot.launcherMotorB.getVelocity();
 //        double errorA = AVel - goalVel;
 //        double errorB = BVel - goalVel;
-        tm.print("Target Vel", goalVel);
+        tm.print("Target Vel", goalVel, INFO);
 //        tm.print("A Vel", robot.launcherMotorA.getVelocity());
 //        tm.print("B Vel", robot.launcherMotorB.getVelocity());
 //        tm.print("A Error", errorA);
 //        tm.print("B Error", errorB);
-        tm.print("---------------------------");
-        tm.print("P", P);
-        tm.print("F", F);
-        tm.print("Increment", increments[incIdx]);
-        tm.print("---------------------------");
-        tm.print("PIDF", pidf);
+        tm.print("---------------------------", VERBOSE);
+        tm.print("P", P, VERBOSE);
+        tm.print("F", F, VERBOSE);
+        tm.print("Increment", increments[incIdx], VERBOSE);
+        tm.print("---------------------------", VERBOSE);
+        tm.print("PIDF", pidf, VERBOSE);
 //        tm.print("PIDF A", robot.launcherMotorA.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
 //        tm.print("PIDF B", robot.launcherMotorB.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
-        tm.print("Default PIDF", defaultpidf);
-        tm.update();
+        tm.print("Default PIDF", defaultpidf, VERBOSE);
+        tm.updateOnlyPanels();
     }
 }

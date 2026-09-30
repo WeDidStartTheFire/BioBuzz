@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleops.other;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
 import static org.firstinspires.ftc.teamcode.constants.TeleOpConstants.speeds;
 import static java.lang.Math.abs;
 
@@ -61,6 +62,6 @@ public class TeleOp_Slow extends OpMode {
 
         robot.drivetrain.setMotorPowers(leftBackPower, rightBackPower, leftFrontPower, rightFrontPower);
 
-        tm.print("Speed Multiplier", speedMultiplier);
+        tm.print("Speed Multiplier", speedMultiplier, INFO);
     }
 }

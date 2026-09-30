@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.teleops.tests;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.VERBOSE;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
@@ -12,6 +14,7 @@ import org.firstinspires.ftc.teamcode.MatchContext;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.enums.Color;
+import org.firstinspires.ftc.teamcode.enums.RobotEnvironment;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 @TeleOp(name = "Kalman Test", group = "Test")
@@ -29,15 +32,16 @@ public class TeleOp_KalmanTest extends OpMode {
         robot.drivetrain.follower.startTeleopDrive();
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
         tm = robot.drivetrain.tm;
+        tm.setEnvironment(RobotEnvironment.DEBUG);
         if (!robot.drivetrain.isPoseValid())
             tm.warn(TelemetryUtils.ErrorLevel.MEDIUM, "Robot Centric driving will be used until the position is reset");
-        else tm.print("Field Centric Driving", "✅");
-        tm.print("Color", "🟦🟦Blue🟦🟦");
+        else tm.print("Field Centric Driving", "✅", INFO);
+        tm.print("Color", "🟦🟦Blue🟦🟦", INFO);
     }
 
     @Override
     public void init_loop() {
-        if (robot.drivetrain.getPose() != null) tm.print(robot.drivetrain.getPose());
+        if (robot.drivetrain.getPose() != null) tm.print(robot.drivetrain.getPose(), INFO);
         teleop.update();
     }
 
@@ -53,15 +57,15 @@ public class TeleOp_KalmanTest extends OpMode {
         teleop.updateLauncherTeleOp();
         LLResult result = robot.limelight.getLatestResult();
         if (result != null) {
-            tm.print("LL Pose MT1", result.getBotpose());
-            tm.print("LL Std Dev MT1 X", result.getStddevMt1()[0]);
-            tm.print("LL Std Dev MT1 Y", result.getStddevMt1()[1]);
-            tm.print("LL Std Dev MT1 Heading", result.getStddevMt1()[5]);
-            tm.print("====================");
-            tm.print("LL Pose MT2", result.getBotpose_MT2());
-            tm.print("LL Std Dev MT2 X", result.getStddevMt2()[0]);
-            tm.print("LL Std Dev MT2 Y", result.getStddevMt2()[1]);
-            tm.print("LL Std Dev MT2 Heading", result.getStddevMt2()[5]);
+            tm.print("LL Pose MT1", result.getBotpose(), VERBOSE);
+            tm.print("LL Std Dev MT1 X", result.getStddevMt1()[0], VERBOSE);
+            tm.print("LL Std Dev MT1 Y", result.getStddevMt1()[1], VERBOSE);
+            tm.print("LL Std Dev MT1 Heading", result.getStddevMt1()[5], VERBOSE);
+            tm.print("====================", VERBOSE);
+            tm.print("LL Pose MT2", result.getBotpose_MT2(), VERBOSE);
+            tm.print("LL Std Dev MT2 X", result.getStddevMt2()[0], VERBOSE);
+            tm.print("LL Std Dev MT2 Y", result.getStddevMt2()[1], VERBOSE);
+            tm.print("LL Std Dev MT2 Heading", result.getStddevMt2()[5], VERBOSE);
         }
         teleop.update();
     }

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleops.tests;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
 
 import com.bylazar.gamepad.GamepadManager;
 import com.bylazar.gamepad.PanelsGamepad;
@@ -24,17 +25,17 @@ public class TeleOp_PanelsVCTest extends OpMode {
         robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
         tm = robot.drivetrain.tm;
         vgamepad1 = PanelsGamepad.INSTANCE.getFirstManager();
-        tm.print("Panels Virtual Controller Test Initialized");
+        tm.print("Panels Virtual Controller Test Initialized", INFO);
         tm.update();
     }
 
     @Override
     public void loop() {
         vgamepad1.update$Gamepad_release(vgamepad1.getCurrentState$Gamepad_release());
-        tm.print("A Button: ", vgamepad1.getCross());
-        tm.print("B Button: ", vgamepad1.getCircle());
-        tm.print("X Button: ", vgamepad1.getSquare());
-        tm.print("Y Button: ", vgamepad1.getTriangle());
-        tm.updateOnlyPanels(3);
+        tm.print("A Button: ", vgamepad1.getCross(), INFO);
+        tm.print("B Button: ", vgamepad1.getCircle(), INFO);
+        tm.print("X Button: ", vgamepad1.getSquare(), INFO);
+        tm.print("Y Button: ", vgamepad1.getTriangle(), INFO);
+        tm.updateOnlyPanels();
     }
 }

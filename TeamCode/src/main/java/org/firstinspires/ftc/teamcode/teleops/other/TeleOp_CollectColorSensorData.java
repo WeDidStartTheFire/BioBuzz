@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.teleops.other;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.CRITICAL;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
 import static org.firstinspires.ftc.teamcode.Utils.addLine;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 
@@ -45,7 +47,7 @@ public class TeleOp_CollectColorSensorData extends OpMode {
             try {
                 if (file.createNewFile()) break;
             } catch (IOException e) {
-                tm.print(Arrays.toString(e.getStackTrace()));
+                tm.warn(CRITICAL, Arrays.toString(e.getStackTrace()));
                 tm.update();
                 throw new RuntimeException(e);
             }
@@ -60,8 +62,8 @@ public class TeleOp_CollectColorSensorData extends OpMode {
         }
         if (!robot.drivetrain.isPoseValid())
             tm.warn(TelemetryUtils.ErrorLevel.MEDIUM, "Robot Centric driving will be used until the position is reset");
-        else tm.print("Field Centric Driving", "✅");
-        tm.print("Color", "🟦🟦Blue🟦🟦");
+        else tm.print("Field Centric Driving", "✅", INFO);
+        tm.print("Color", "🟦🟦Blue🟦🟦", INFO);
     }
 
     @Override

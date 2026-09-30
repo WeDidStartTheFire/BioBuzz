@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleops.debug;
 
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.LOW;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -49,20 +50,20 @@ public class TeleOp_Debug_AdjustableRPM extends OpMode {
         if (gamepad1.dpadDownWasPressed()) MOTOR_RPM -= 100;
         MOTOR_VEL = MOTOR_RPM / TICKS_PER_REVOLUTION;
 
-        tm.print("Goal RPM", MOTOR_RPM);
+        tm.print("Goal RPM", MOTOR_RPM, INFO);
 
         if (motorA != null) {
             if (gamepad1.left_stick_y < -.05) motorA.setVelocity(MOTOR_VEL); // Up
             else if (gamepad1.left_stick_y > .05) motorA.setVelocity(-MOTOR_VEL); // Down
             else motorA.setVelocity(0);
-            tm.print("Motor A RPM", motorA.getVelocity(AngleUnit.DEGREES) / 360 * 60);
+            tm.print("Motor A RPM", motorA.getVelocity(AngleUnit.DEGREES) / 360 * 60, INFO);
         } else tm.addLastActionTelemetry("motorA disconnected");
 
         if (motorB != null) {
             if (gamepad1.right_stick_y < -.05) motorB.setVelocity(MOTOR_VEL); // Up
             else if (gamepad1.right_stick_y > .05) motorB.setVelocity(-MOTOR_VEL); // Down
             else motorB.setVelocity(0);
-            tm.print("Motor B RPM", motorB.getVelocity(AngleUnit.DEGREES) / 360 * 60);
+            tm.print("Motor B RPM", motorB.getVelocity(AngleUnit.DEGREES) / 360 * 60, INFO);
         } else tm.addLastActionTelemetry("motorB disconnected");
 
         tm.addLastActionTelemetry("");

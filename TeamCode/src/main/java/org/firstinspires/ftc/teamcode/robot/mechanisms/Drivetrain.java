@@ -10,6 +10,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGR
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.CRITICAL;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.DEBUG;
 import static org.firstinspires.ftc.teamcode.constants.DrivetrainConstants.B;
 import static org.firstinspires.ftc.teamcode.constants.DrivetrainConstants.COUNTS_PER_INCH;
 import static org.firstinspires.ftc.teamcode.constants.DrivetrainConstants.DRIVETRAIN_VELOCITY;
@@ -256,10 +257,10 @@ public class Drivetrain extends PoseGetter {
         double duration = abs(inches * COUNTS_PER_INCH / DRIVETRAIN_VELOCITY);
 
         while (runtime.getElapsedTimeSeconds() < duration && inches != 0) {
-            // Display it for the driver.
-            tm.print("Angle", imu == null ? 0 : imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
-            tm.print("Running to", " " + lfTarget + ":" + rfTarget);
-            tm.print("Currently at", lf.getCurrentPosition() + ":" + rf.getCurrentPosition());
+            /* Display it for the driver. */
+            tm.print("Angle", imu == null ? 0 : imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle, DEBUG);
+            tm.print("Running to", " " + lfTarget + ":" + rfTarget, DEBUG);
+            tm.print("Currently at", lf.getCurrentPosition() + ":" + rf.getCurrentPosition(), DEBUG);
             if (!loop) tm.update();
         }
         if (inches != 0) stop();

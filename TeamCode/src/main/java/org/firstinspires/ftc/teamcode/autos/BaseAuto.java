@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.autos;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.AUTO;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.DEBUG;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.VERBOSE;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
 
 import com.pedropathing.geometry.Pose;
@@ -61,7 +64,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         tm = robot.drivetrain.tm;
         buildPaths();
         intakeController = new IntakeController(robot.intake, tm);
-        tm.print(name + " auto initialized");
+        tm.print(name + " auto initialized", INFO);
         tm.update();
         setStateNoWait(initialState);
         robot.initBulkCache();
@@ -87,18 +90,18 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         robot.led.update();
 
         tm.drawRobot(robot.drivetrain.follower, 250);
-        tm.print("Path State", state);
-        tm.print("Intake State", intakeController.getState());
-        if (robot.drivetrain.getPose() != null) tm.print(robot.drivetrain.getPose());
-        tm.print("Motor Goal Vel", robot.launcher.getGoalVel(shootPose, null));
-        tm.print("Launcher Vel", robot.launcher.getCachedVel());
+        tm.print("Path State", state, INFO);
+        tm.print("Intake State", intakeController.getState(), INFO);
+        if (robot.drivetrain.getPose() != null) tm.print(robot.drivetrain.getPose(), DEBUG);
+        tm.print("Motor Goal Vel", robot.launcher.getGoalVel(shootPose, null), VERBOSE);
+        tm.print("Launcher Vel", robot.launcher.getCachedVel(), VERBOSE);
         double t = getRuntime();
         if (lastUpdateTime != 0) {
             int ms = (int) ((t - lastUpdateTime) * 1000);
             totalMs += ms;
             totalUpdates++;
-            tm.print("dt (ms)", ms);
-            tm.print("avg dt (ms)", totalMs / totalUpdates);
+            tm.print("dt (ms)", ms, VERBOSE);
+            tm.print("avg dt (ms)", totalMs / totalUpdates, VERBOSE);
         }
         lastUpdateTime = t;
         tm.updateOnlyPanels(5);

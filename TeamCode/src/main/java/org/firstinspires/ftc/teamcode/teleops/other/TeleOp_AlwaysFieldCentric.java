@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleops.other;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -26,9 +27,9 @@ public class TeleOp_AlwaysFieldCentric extends OpMode {
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
         tm = robot.drivetrain.tm;
         if (!robot.drivetrain.isPoseValid())
-            tm.print("Field Centric Driving️", "☑️Will be used without valid position");
-        else tm.print("Field Centric Driving", "✅");
-        tm.print("Color", "\uD83D\uDFE6Blue\uD83D\uDFE6 (Default)");
+            tm.print("Field Centric Driving️", "☑️Will be used without valid position", INFO);
+        else tm.print("Field Centric Driving", "✅", INFO);
+        tm.print("Color", "\uD83D\uDFE6Blue\uD83D\uDFE6 (Default)", INFO);
     }
 
     @Override

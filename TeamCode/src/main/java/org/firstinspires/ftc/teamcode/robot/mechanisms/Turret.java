@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.DEBUG;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.VERBOSE;
 import static org.firstinspires.ftc.teamcode.constants.TurretConstants.MAX_TIMES_NOT_RESET;
 import static org.firstinspires.ftc.teamcode.constants.TurretConstants.TURRET_ADJUST_FOR_VOLTAGE;
 import static org.firstinspires.ftc.teamcode.constants.TurretConstants.TURRET_ENCODERS_PER_DEGREE;
@@ -160,10 +163,10 @@ public class Turret {
         if (vel != null)
             velocityPIDController.setTargetPosition(-toDegrees(vel.getTheta()) * TURRET_ENCODERS_PER_DEGREE);
         velocityPIDController.updatePosition(motorVel);
-        tm.print("Turret Pos", pos);
-        tm.print("Turret Goal", turretPIDController.getTargetPosition());
-        tm.print("Turret Offset", offset);
-        tm.print("Turret Vel", motorVel);
+        tm.print("Turret Pos", pos, VERBOSE);
+        tm.print("Turret Goal", turretPIDController.getTargetPosition(), VERBOSE);
+        tm.print("Turret Offset", offset, INFO);
+        tm.print("Turret Vel", motorVel, DEBUG);
         if (target == Target.NONE) return;
         double feedforward = vel == null ? 0 : -vel.getTheta() * TURRET_FEEDFORWARD;
         feedforward *= min(1, min(max(0, pos - TURRET_MIN_POS), max(0, TURRET_MAX_POS - pos)) / TURRET_FEEDFORWARD_SLOW_START);

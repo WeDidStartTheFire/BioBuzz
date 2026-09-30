@@ -51,7 +51,7 @@ import org.firstinspires.ftc.teamcode.enums.Hardware;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
-public class Drivetrain extends PoseGetter {
+public class Drivetrain implements PoseGetter {
     private DcMotorEx lf, lb, rf, rb;
     private final @Nullable IMU imu;
     public Follower follower;

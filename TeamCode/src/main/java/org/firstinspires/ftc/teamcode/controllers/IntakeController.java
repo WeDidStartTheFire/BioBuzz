@@ -91,10 +91,6 @@ public class IntakeController {
     }
 
     /**
-     * Stops the intake only if it is inner intaking
-     */
-
-    /**
      * Stops the intake
      */
     public void stop() {

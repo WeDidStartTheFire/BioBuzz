@@ -12,10 +12,11 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
+import org.firstinspires.ftc.teamcode.robot.Subsystem;
 
 import java.util.List;
 
-public class Limelight {
+public class Limelight implements Subsystem {
 
     private final @Nullable Limelight3A limelight;
 
@@ -31,6 +32,11 @@ public class Limelight {
      */
     public void start() {
         if (limelight != null) limelight.start();
+    }
+
+    @Override
+    public void update() {
+        // Nothing much to update.}
     }
 
     /**

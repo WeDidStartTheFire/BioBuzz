@@ -27,8 +27,9 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
+import org.firstinspires.ftc.teamcode.robot.Subsystem;
 
-public class Launcher {
+public class Launcher implements Subsystem {
 
     private final @Nullable DcMotorEx launcherMotorA, launcherMotorB;
     private final @NonNull Timer spinningTimer;
@@ -41,6 +42,7 @@ public class Launcher {
     private final VoltageSensor voltageSensor;
     private final TelemetryUtils tm;
     private double cachedVel;
+    private double power;
 
     /**
      * Initializes the launcher with hardware components.
@@ -117,9 +119,7 @@ public class Launcher {
         double manualPidf = pidfController.P() * pidfController.getError() + pidfController.F() * goalVel
             + pidfController.D() * pidfController.getErrorDerivative();
         double pidf = pidfController.run();
-        double power = (Double.isNaN(pidf) ? manualPidf : pidf) * 12.0 / voltage;
-        if (launcherMotorA != null) launcherMotorA.setPower(power);
-        if (launcherMotorB != null) launcherMotorB.setPower(power);
+        power = (Double.isNaN(pidf) ? manualPidf : pidf) * 12.0 / voltage;
     }
 
     /**
@@ -162,8 +162,7 @@ public class Launcher {
         if (!spinning && abs(cachedPower + percent * .4) <= .005) return;
         spinning = false;
         cachedPower = -percent * .4;
-        if (launcherMotorA != null) launcherMotorA.setPower(-percent * .4);
-        if (launcherMotorB != null) launcherMotorB.setPower(-percent * .4);
+        power = -percent * .4;
     }
 
     /**
@@ -184,9 +183,16 @@ public class Launcher {
         return vel > motorVel + 50;
     }
 
+    @Override
+    public void update() {
+        if (launcherMotorA != null) launcherMotorA.setPower(power);
+        if (launcherMotorB != null) launcherMotorB.setPower(power);
+    }
+
     /**
      * Stops the launch motors
      */
+    @Override
     public void stop() {
         if (!spinning && cachedPower == 0) return;
         spinning = false;

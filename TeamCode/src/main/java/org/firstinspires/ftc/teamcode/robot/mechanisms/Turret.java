@@ -44,8 +44,9 @@ import org.firstinspires.ftc.teamcode.ProjectileSolver;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
+import org.firstinspires.ftc.teamcode.robot.Subsystem;
 
-public class Turret {
+public class Turret implements Subsystem {
     public final @Nullable DcMotorEx turretMotor;
     public final @Nullable TouchSensor turretTouchSensor;
     private final VoltageSensor voltageSensor;
@@ -57,6 +58,7 @@ public class Turret {
     private double offset = 0;
     private int timesNotReset = 0;
     private boolean reset = false;
+    private double power, modifier;
 
     public enum Target {
         GOAL, HUMAN_PLAYER, NONE, HOLD, MANUAL
@@ -162,10 +164,16 @@ public class Turret {
         double pid = turretPIDController.run();
         if (USE_TURRET_VELOCITY_PID) pid += velocityPIDController.run();
         double staticFeedforward = TURRET_STATIC_FEEDFORWARD * signum(pid);
-        double power = pid + feedforward + staticFeedforward;
-        double modifier = TURRET_ADJUST_FOR_VOLTAGE ? 12 / Math.max(voltageSensor.getVoltage(), 1e-6) : 1;
+        power = pid + feedforward + staticFeedforward;
+        modifier = TURRET_ADJUST_FOR_VOLTAGE ? 12 / Math.max(voltageSensor.getVoltage(), 1e-6) : 1;
         power *= modifier;
-        turretMotor.setPower(Math.clamp(power, -TURRET_MAX_POWER * modifier, TURRET_MAX_POWER * modifier));
+    }
+
+    @Override
+    public void update() {
+        update(true);
+        if (turretMotor != null)
+            turretMotor.setPower(Math.clamp(power, -TURRET_MAX_POWER * modifier, TURRET_MAX_POWER * modifier));
     }
 
     /**

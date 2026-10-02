@@ -42,6 +42,9 @@ public class Robot implements Subsystem {
         feeder = new Feeder(hardwareMap, tm);
         colorSensor = new ColorSensor(hardwareMap, tm);
         indexer = new Indexer(hardwareMap, tm, colorSensor, feeder);
+        limelight = new Limelight(hardwareMap, tm);
+        launcher = new Launcher(hardwareMap, tm);
+        turret = new Turret(hardwareMap, tm);
 
         subsystems.add(drivetrain);
         subsystems.add(intake);
@@ -49,6 +52,9 @@ public class Robot implements Subsystem {
         subsystems.add(feeder);
         subsystems.add(indexer);
         subsystems.add(colorSensor);
+        subsystems.add(limelight);
+        subsystems.add(launcher);
+        subsystems.add(turret);
     }
 
     public void initBulkCache() {

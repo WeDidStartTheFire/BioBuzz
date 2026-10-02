@@ -25,7 +25,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
-import org.firstinspires.ftc.teamcode.robot.RobotRefactor;
+import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.LED;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
 
@@ -34,7 +34,7 @@ public class TeleOpController {
     private final IntakeController intakeController;
     private final LaunchController launchController;
     private final DriveController driveController;
-    private final RobotRefactor robot;
+    private final Robot robot;
     private final Follower follower;
     private final boolean useOdometry;
     private final TelemetryUtils tm;
@@ -52,7 +52,7 @@ public class TeleOpController {
      * @param gamepad1 Primary gamepad for drivetrain control
      * @param gamepad2 Secondary gamepad for launcher/intake control
      */
-    public TeleOpController(RobotRefactor robot, Gamepad gamepad1, Gamepad gamepad2) {
+    public TeleOpController(Robot robot, Gamepad gamepad1, Gamepad gamepad2) {
         this.robot = robot;
         this.robot.initBulkCache();
         intakeController = new IntakeController(robot);

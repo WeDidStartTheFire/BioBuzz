@@ -41,9 +41,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
+import org.firstinspires.ftc.teamcode.robot.Subsystem;
 
-public class Drivetrain {
+public class Drivetrain implements Subsystem {
     private DcMotorEx lf, lb, rf, rb;
+    private double lfPower, lbPower, rfPower, rbPower;
     private final @NonNull IMU imu;
     public Follower follower;
     public final @Nullable SparkFunOTOS otos;
@@ -248,11 +250,10 @@ public class Drivetrain {
      * @param rfPower Right front motor velocity
      */
     public void setMotorVelocities(double lbPower, double rbPower, double lfPower, double rfPower) {
-        if (isMotorDisconnected()) return;
-        lf.setVelocity(lfPower);
-        lb.setVelocity(lbPower);
-        rf.setVelocity(rfPower);
-        rb.setVelocity(rbPower);
+        this.lbPower = lbPower;
+        this.rbPower = rbPower;
+        this.lfPower = lfPower;
+        this.rfPower = rfPower;
     }
 
     /**
@@ -268,7 +269,17 @@ public class Drivetrain {
         rb.setZeroPowerBehavior(behavior);
     }
 
+    @Override
+    public void update() {
+        if (isMotorDisconnected()) return;
+        lf.setVelocity(lfPower);
+        lb.setVelocity(lbPower);
+        rf.setVelocity(rfPower);
+        rb.setVelocity(rbPower);
+    }
+
     /** Stops all drive train motors on the robot. */
+    @Override
     public void stop() {
         follower.breakFollowing();
 

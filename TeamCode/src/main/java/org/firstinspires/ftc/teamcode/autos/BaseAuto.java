@@ -16,11 +16,11 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.DriveController;
 import org.firstinspires.ftc.teamcode.controllers.IntakeController;
 import org.firstinspires.ftc.teamcode.controllers.LaunchController;
-import org.firstinspires.ftc.teamcode.robot.RobotRefactor;
+import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
 
 public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
-    protected RobotRefactor robot;
+    protected Robot robot;
     protected LaunchController launchController;
     protected IntakeController intakeController;
     protected DriveController driveController;
@@ -81,7 +81,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         configure();
         RobotState.auto = true;
         RobotState.color = color;
-        robot = new RobotRefactor(hardwareMap, telemetry, true);
+        robot = new Robot(hardwareMap, telemetry, true);
         robot.drivetrain.follower.setStartingPose(startPose);
         robot.indexer.markAllUnknown();
         tm = robot.drivetrain.tm;

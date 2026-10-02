@@ -24,7 +24,7 @@ import com.pedropathing.util.Timer;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
-import org.firstinspires.ftc.teamcode.robot.RobotRefactor;
+import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.LED;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
 
@@ -34,7 +34,7 @@ import java.util.List;
 
 public class LaunchController {
 
-    private final RobotRefactor robot;
+    private final Robot robot;
     private State state;
     private final Timer stateTimer = new Timer();
     private boolean isBusy;
@@ -60,7 +60,7 @@ public class LaunchController {
         FEEDER_DOWN_WAIT
     }
 
-    public LaunchController(RobotRefactor robot) {
+    public LaunchController(Robot robot) {
         this.robot = robot;
         tm = robot.drivetrain.tm;
         setState(State.IDLE);

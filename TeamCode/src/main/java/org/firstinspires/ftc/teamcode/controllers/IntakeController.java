@@ -8,8 +8,8 @@ import com.pedropathing.util.Timer;
 
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
-import org.firstinspires.ftc.teamcode.robot.RobotRefactor;
-import org.firstinspires.ftc.teamcode.robot.mechanisms.IntakeRefactor;
+import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.robot.mechanisms.Intake;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.LED;
 
 public class IntakeController {
@@ -18,7 +18,7 @@ public class IntakeController {
     private final Timer stateTimer = new Timer();
 
     private boolean isBusy;
-    private final RobotRefactor robot;
+    private final Robot robot;
     private final Timer artifactDetectedTimer = new Timer();
     private final TelemetryUtils tm;
 
@@ -28,7 +28,7 @@ public class IntakeController {
         OUTTAKE,
     }
 
-    public IntakeController(RobotRefactor robot) {
+    public IntakeController(Robot robot) {
         tm = robot.drivetrain.tm;
         setState(State.IDLE);
         this.robot = robot;
@@ -54,15 +54,15 @@ public class IntakeController {
             case IDLE:
                 RobotState.normalIntaking = false;
                 isBusy = false;
-                robot.intake.setBehavior(IntakeRefactor.Behavior.OFF);
+                robot.intake.setBehavior(Intake.Behavior.OFF);
                 break;
             case INTAKE:
                 RobotState.normalIntaking = true;
-                robot.intake.setBehavior(IntakeRefactor.Behavior.INTAKE);
+                robot.intake.setBehavior(Intake.Behavior.INTAKE);
                 break;
             case OUTTAKE:
                 RobotState.normalIntaking = false;
-                robot.intake.setBehavior(IntakeRefactor.Behavior.OUTTAKE);
+                robot.intake.setBehavior(Intake.Behavior.OUTTAKE);
                 break;
         }
     }

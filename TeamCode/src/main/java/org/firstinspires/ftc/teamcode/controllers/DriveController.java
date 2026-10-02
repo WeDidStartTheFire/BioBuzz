@@ -32,11 +32,11 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
 import org.firstinspires.ftc.teamcode.RobotState;
-import org.firstinspires.ftc.teamcode.robot.RobotRefactor;
+import org.firstinspires.ftc.teamcode.robot.Robot;
 
 public class DriveController {
 
-    private final RobotRefactor robot;
+    private final Robot robot;
     private final PIDFController headingPIDController = new PIDFController(teleopHeadingPID);
     private final Timer driveInputTimer = new Timer();
     private boolean aiming = false, holding = false, following = false;
@@ -46,7 +46,7 @@ public class DriveController {
      *
      * @param robot Robot instance containing drivetrain hardware
      */
-    public DriveController(RobotRefactor robot) {
+    public DriveController(Robot robot) {
         this.robot = robot;
     }
 

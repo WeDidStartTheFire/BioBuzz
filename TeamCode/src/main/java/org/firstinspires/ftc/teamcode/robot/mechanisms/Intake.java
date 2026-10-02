@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.robot.mechanisms;
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.HIGH;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.LOW;
-import static java.lang.Math.abs;
 
 import androidx.annotation.Nullable;
 
@@ -13,13 +12,19 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
+import org.firstinspires.ftc.teamcode.robot.Subsystem;
 
-public class Intake {
-
+public class Intake implements Subsystem {
     private final @Nullable CRServo intakeServoA, intakeServoB, intakeServoC;
     private final @Nullable DcMotorEx intakeMotor;
     private double outsidePower = 0;
     private double insidePower = 0;
+
+    public enum Behavior {
+        OFF, INTAKE, OUTTAKE
+    }
+
+    private Behavior behavior = Behavior.OFF;
 
     public Intake(HardwareMap hardwareMap, TelemetryUtils tm) {
         intakeMotor = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "intakeMotor");
@@ -38,37 +43,45 @@ public class Intake {
         else intakeServoC.setDirection(REVERSE);
     }
 
-    /**
-     * Powers all intake servos and motor
-     *
-     * @param power Power on [-1, 1]. Negative is inward, positive is outward.
-     */
-    public void power(double power) {
-        powerInside(power);
-        powerOutside(power);
+    public void setBehavior(Behavior behavior) {
+        this.behavior = behavior;
     }
 
-    /**
-     * Powers the inside intake servos
-     *
-     * @param power Power on [-1, 1]. Negative is inward, positive is outward.
-     */
-    public void powerInside(double power) {
-        if (abs(insidePower - power) < .02) return;
-        insidePower = power;
-        if (intakeServoA != null) intakeServoA.setPower(power);
-        if (intakeServoC != null) intakeServoC.setPower(power);
+    public Behavior getBehavior() {
+        return behavior;
     }
 
-    /**
-     * Powers the outside intake motor and roller servo
-     *
-     * @param power Power on [-1, 1]. Negative is inward, positive is outward.
-     */
-    public void powerOutside(double power) {
-        if (abs(outsidePower - power) < .02) return;
-        outsidePower = power;
-        if (intakeMotor != null) intakeMotor.setPower(power);
-        if (intakeServoB != null) intakeServoB.setPower(power);
+    @Override
+    public void update() {
+        switch (behavior) {
+            case OFF:
+                insidePower = 0;
+                outsidePower = 0;
+                break;
+
+            case INTAKE:
+                insidePower = -1;
+                outsidePower = -1;
+                break;
+
+            case OUTTAKE:
+                insidePower = 1;
+                outsidePower = 1;
+                break;
+        }
+        if (intakeMotor != null) intakeMotor.setPower(outsidePower);
+        if (intakeServoB != null) intakeServoB.setPower(outsidePower);
+        if (intakeServoA != null) intakeServoA.setPower(insidePower);
+        if (intakeServoC != null) intakeServoC.setPower(insidePower);
     }
+
+    @Override
+    public void stop() {
+        behavior = Behavior.OFF;
+        if (intakeMotor != null) intakeMotor.setPower(0);
+        if (intakeServoB != null) intakeServoB.setPower(0);
+        if (intakeServoA != null) intakeServoA.setPower(0);
+        if (intakeServoC != null) intakeServoC.setPower(0);
+    }
+
 }

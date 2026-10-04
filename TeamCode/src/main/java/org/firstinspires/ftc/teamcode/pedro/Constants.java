@@ -8,4 +8,19 @@ public class Constants {
         // return new Follower(Drivetrain, Localizer, Foresight);
         return null;
     }
+
+    public static Follower createKalmanFollower(HardwareMap h) {
+        // return new Follower(Drivetrain, Localizer, Foresight);
+        return null;
+    }
+
+    public static Follower createLimelightFollower(HardwareMap h) {
+        // return new Follower(Drivetrain, Localizer, Foresight);
+        return null;
+    }
+
+    public static Follower createRedundantFollower(HardwareMap h) {
+        // return new Follower(Drivetrain, Localizer, Foresight);
+        return null;
+    }
 }

@@ -1,27 +1,19 @@
 package org.firstinspires.ftc.teamcode.autos.primary;
 
-import static com.pedropathing.ivy.Scheduler.schedule;
-import static com.pedropathing.ivy.groups.Groups.sequential;
-import static com.pedropathing.ivy.pedro.PedroCommands.follow;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
 
 import com.pedropathing.api.Paths;
 import com.pedropathing.api.PoseFactory;
-import com.pedropathing.follower.Follower;
-import com.pedropathing.ivy.Command;
-import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
 import com.pedropathing.paths.interpolator.Interpolator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.pedro.Constants;
+import org.firstinspires.ftc.teamcode.autos.BaseAuto;
+import org.firstinspires.ftc.teamcode.enums.Color;
 
-@Autonomous(name = "AutoPath", group = "Autonomous")
-public class TestAuto2 extends LinearOpMode {
-
-    private Follower follower;
-
+@Autonomous(name = TestAuto2.name, group = "Autonomous")
+public class TestAuto2 extends BaseAuto<TestAuto2.State> {
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
     private final Pose start = poseFactory.of(132.125, 9.375, 90);
@@ -46,61 +38,72 @@ public class TestAuto2 extends LinearOpMode {
     private final Pose point4Segment2End = poseFactory.of(58.2378, 13.1292, 0);
     private final Pose point5 = poseFactory.of(33, 33, 0);
 
-    // Autonomous routine
-    public Command autoRoutine() {
-        return sequential(
-                follow(follower, path1()),
-                follow(follower, path2()),
-                follow(follower, path3()),
-                follow(follower, path4()),
-                follow(follower, path5())
-        );
+    private Path pa1, pa2, pa3, pa4, pa5;
+
+    public static final String name = "Test Auto 2";
+    private final Color color = Color.BLUE;
+    private final State initialState = State.START;
+
+    protected enum State {
+        START, PATH1, PATH2, PATH3, PATH4, PATH5, END
     }
 
     @Override
-    public void runOpMode() {
-        Scheduler.reset();
-        follower = Constants.create(hardwareMap);
-        follower.setPose(start);
-        follower.update();
+    protected void buildPaths() {
+        pa1 = Paths.line(start, path1).heading(Interpolator.piecewise().until(0.5,
+                Interpolator.facingPoint(path1Segment1Target)).until(1,
+                Interpolator.linear(path1Segment2Start, path1Segment2End)));
+        pa2 = Paths.line(point2Start, point2).linear(point2Start, point2);
+        pa3 = Paths.curve(point2, point3Control1, point3Control2, point3).heading(
+                Interpolator.piecewise().until(0.3567,
+                        Interpolator.linear(point3Segment1Start, point3Segment1End)).until(1,
+                        Interpolator.facingPoint(point3Segment2Target)));
+        pa4 = Paths.curve(point3, point4Control1, point4Control2, point4Control3, point4).heading(
+                Interpolator.piecewise().until(0.6373,
+                        Interpolator.facingPoint(point4Segment1Target)).until(1,
+                        Interpolator.linear(point4Segment2Start, point4Segment2End)));
+        pa5 = Paths.line(point4, point5).constant(point5);
+    }
 
-        waitForStart();
-        schedule(autoRoutine());
+    @Override
+    protected void configure() {
+        super.configure(start, initialState, color, name);
+    }
 
-        while (opModeIsActive()) {
-            follower.update();
-            Scheduler.execute();
-
-            telemetry.addData("x", follower.pose().x());
-            telemetry.addData("y", follower.pose().y());
-            telemetry.addData("heading", follower.pose().heading());
-
-            if (follower.currentPath() != null) {
-                telemetry.addData("Current path distance remaining", follower.distanceToEndpoint());
-                telemetry.addData("Path number", follower.pathIndex());
-            }
-
-            telemetry.update();
+    @Override
+    protected void pathUpdate() {
+        switch (state) {
+            case START:
+                robot.drivetrain.follower.follow(pa1);
+                setState(State.PATH1);
+                break;
+            case PATH1:
+                if (robot.drivetrain.follower.isBusy()) break;
+                robot.drivetrain.follower.follow(pa2);
+                setState(State.PATH2);
+                break;
+            case PATH2:
+                if (robot.drivetrain.follower.isBusy()) break;
+                robot.drivetrain.follower.follow(pa3);
+                setState(State.PATH3);
+                break;
+            case PATH3:
+                if (robot.drivetrain.follower.isBusy()) break;
+                robot.drivetrain.follower.follow(pa4);
+                setState(State.PATH4);
+                break;
+            case PATH4:
+                if (robot.drivetrain.follower.isBusy()) break;
+                robot.drivetrain.follower.follow(pa5);
+                setState(State.PATH5);
+                break;
+            case PATH5:
+                if (robot.drivetrain.follower.isBusy()) break;
+                setState(State.END);
+                break;
+            case END:
+                tm.print("Finished", INFO);
+                break;
         }
-    }
-
-    public Path path1() {
-        return Paths.line(start, path1).heading(Interpolator.piecewise().until(0.5, Interpolator.facingPoint(path1Segment1Target)).until(1, Interpolator.linear(path1Segment2Start, path1Segment2End)));
-    }
-
-    public Path path2() {
-        return Paths.line(point2Start, point2).linear(point2Start, point2);
-    }
-
-    public Path path3() {
-        return Paths.curve(point2, point3Control1, point3Control2, point3).heading(Interpolator.piecewise().until(0.3567, Interpolator.linear(point3Segment1Start, point3Segment1End)).until(1, Interpolator.facingPoint(point3Segment2Target)));
-    }
-
-    public Path path4() {
-        return Paths.curve(point3, point4Control1, point4Control2, point4Control3, point4).heading(Interpolator.piecewise().until(0.6373, Interpolator.facingPoint(point4Segment1Target)).until(1, Interpolator.linear(point4Segment2Start, point4Segment2End)));
-    }
-
-    public Path path5() {
-        return Paths.line(point4, point5).constant(point5);
     }
 }

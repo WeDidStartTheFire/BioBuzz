@@ -9,11 +9,13 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.autos.BaseAuto;
 import org.firstinspires.ftc.teamcode.enums.Color;
 
-@Autonomous(name="Tuning Test")
+@Autonomous(name = TestAuto.name)
 public class TestAuto extends BaseAuto<TestAuto.State> {
     private final TestAuto.State initialState = TestAuto.State.START;
     private final PoseFactory poseFactory = PoseFactory.degrees();
     private Path pa1, pa2, pa3, pa4;
+    private final Color color = Color.BLUE;
+    public static final String name = "Tuning Test";
     protected enum State {
         FINISHED,
         START,
@@ -66,8 +68,6 @@ public class TestAuto extends BaseAuto<TestAuto.State> {
     }
     @Override
     protected void configure() {
-        super.startPose = start;
-        super.color = Color.BLUE;
-        super.initialState = initialState;
+        configure(startPose, initialState, color, name);
     }
 }

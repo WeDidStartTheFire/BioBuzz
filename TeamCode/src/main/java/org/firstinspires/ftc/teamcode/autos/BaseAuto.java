@@ -6,8 +6,9 @@ import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.VERBOSE;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
 
-import com.pedropathing.geometry.Pose;
-import com.pedropathing.util.Timer;
+import com.pedropathing.ivy.Scheduler;
+import com.pedropathing.math.Pose;
+import com.pedropathing.utils.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.MatchContext;
@@ -17,12 +18,14 @@ import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
 
+import java.util.concurrent.TimeUnit;
+
 public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
     protected Robot robot;
     protected IntakeController intakeController;
     protected Pose startPose, shootPose;
     protected TelemetryUtils tm;
-    protected Timer stateTimer = new Timer();
+    protected final Timer stateTimer = new Timer();
     protected S state;
     protected S initialState;
     protected Color color;
@@ -37,6 +40,13 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
 
     protected abstract void configure();
 
+    protected void configure(Pose startPose, S initialState, Color color, String name) {
+        this.startPose = startPose;
+        this.initialState = initialState;
+        this.color = color;
+        this.name = name;
+    }
+
     protected void onInit() {
     }
 
@@ -47,9 +57,9 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
     }
 
     protected void setState(S state) {
-        tm.log(this.state + " -> " + state, stateTimer.getElapsedTimeSeconds());
+        tm.log(this.state + " -> " + state, stateTimer.get(TimeUnit.SECONDS));
         setStateNoWait(state);
-        stateTimer.resetTimer();
+        stateTimer.reset();
     }
 
     protected void setStateNoWait(S state) {
@@ -60,7 +70,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
     public final void init() {
         configure();
         robot = new Robot(hardwareMap, telemetry, new MatchContext(AUTO, color));
-        robot.drivetrain.follower.setStartingPose(startPose);
+        robot.drivetrain.follower.setPose(startPose);
         tm = robot.drivetrain.tm;
         buildPaths();
         intakeController = new IntakeController(robot.intake, tm);
@@ -68,6 +78,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         tm.update();
         setStateNoWait(initialState);
         robot.initBulkCache();
+        Scheduler.reset();
         onInit();
     }
 
@@ -89,10 +100,11 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         intakeController.update();
         robot.led.update();
 
-        tm.drawRobot(robot.drivetrain.follower, 250);
+        tm.drawRobot(robot.drivetrain.follower);
         tm.print("Path State", state, INFO);
         tm.print("Intake State", intakeController.getState(), INFO);
-        if (robot.drivetrain.getPose() != null) tm.print(robot.drivetrain.getPose(), DEBUG);
+        Pose pose = robot.drivetrain.pose();
+        if (pose != null) tm.print(pose, DEBUG);
         tm.print("Motor Goal Vel", robot.launcher.getGoalVel(shootPose, null), VERBOSE);
         tm.print("Launcher Vel", robot.launcher.getCachedVel(), VERBOSE);
         double t = getRuntime();
@@ -110,12 +122,13 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
     @Override
     public final void stop() {
         robot.drivetrain.update();
-        robot.drivetrain.follower.breakFollowing();
-        if (robot.drivetrain.getPose() != null) saveOdometryPosition(robot.drivetrain.getPose());
+        robot.drivetrain.follower.stop();
+        Pose pose = robot.drivetrain.pose();
+        if (pose != null) saveOdometryPosition(pose);
         intakeController.stop();
         robot.limelight.stop();
         tm.showLogs();
-        tm.update();
+        tm.forceUpdate();
         onStop();
     }
 }

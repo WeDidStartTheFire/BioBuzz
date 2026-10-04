@@ -2,41 +2,27 @@ package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
-import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.FLOAT;
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
-import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.CRITICAL;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.DEBUG;
-import static org.firstinspires.ftc.teamcode.constants.DrivetrainConstants.B;
-import static org.firstinspires.ftc.teamcode.constants.DrivetrainConstants.COUNTS_PER_INCH;
-import static org.firstinspires.ftc.teamcode.constants.DrivetrainConstants.DRIVETRAIN_VELOCITY;
 import static org.firstinspires.ftc.teamcode.constants.DrivetrainConstants.IMU_PARAMS;
-import static org.firstinspires.ftc.teamcode.constants.DrivetrainConstants.M;
-import static org.firstinspires.ftc.teamcode.enums.Dir.BACKWARD;
-import static org.firstinspires.ftc.teamcode.enums.Dir.FORWARD;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.DRIVETRAIN_LEFT_BACK_MOTOR;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.DRIVETRAIN_LEFT_FRONT_MOTOR;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.DRIVETRAIN_RIGHT_BACK_MOTOR;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.DRIVETRAIN_RIGHT_FRONT_MOTOR;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.SPARKFUN_OTOS;
-import static java.lang.Math.abs;
-import static java.lang.Math.signum;
 
 import androidx.annotation.Nullable;
 
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.Pose;
-import com.pedropathing.math.Vector;
-import com.pedropathing.util.Timer;
+import com.pedropathing.math.Pose;
+import com.pedropathing.math.Velocity;
 import com.qualcomm.hardware.lynx.LynxI2cDeviceSynch;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -46,9 +32,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.MatchContext;
 import org.firstinspires.ftc.teamcode.PoseGetter;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
-import org.firstinspires.ftc.teamcode.enums.Dir;
 import org.firstinspires.ftc.teamcode.enums.Hardware;
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
 public class Drivetrain implements PoseGetter {
@@ -57,12 +42,10 @@ public class Drivetrain implements PoseGetter {
     public Follower follower;
     public final @Nullable SparkFunOTOS otos;
     private @Nullable Pose pose;
-    private @Nullable Vector vel;
+    private @Nullable Velocity vel;
     private boolean validPose = false;
 
-    public volatile boolean loop = false;
-
-    public TelemetryUtils tm;
+    public final TelemetryUtils tm;
     private final HardwareMap hardwareMap;
 
     /**
@@ -95,14 +78,14 @@ public class Drivetrain implements PoseGetter {
     public Drivetrain(HardwareMap hardwareMap, TelemetryUtils tm, MatchContext context) {
         this.tm = tm;
         this.hardwareMap = hardwareMap;
-        follower = Constants.createFollower(hardwareMap);
+        follower = Constants.create(hardwareMap);
         otos = HardwareInitializer.init(hardwareMap, tm, SPARKFUN_OTOS);
 
         imu = HardwareInitializer.init(hardwareMap, tm, Hardware.IMU);
         if (imu != null) {
             imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
+                    RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                    RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
             if (!imu.initialize(IMU_PARAMS))
                 throw new RuntimeException("IMU initialization failed");
             imu.resetYaw();
@@ -134,33 +117,12 @@ public class Drivetrain implements PoseGetter {
     }
 
 
-    public PoseGetter getPoseGetter() {
-        return new PoseGetter() {
-            PoseGetter poseGetter;
-
-            PoseGetter init(PoseGetter poseGetter) {
-                this.poseGetter = poseGetter;
-                return this;
-            }
-
-            @Nullable
-            @Override
-            public Pose getPose() {
-                if (poseGetter == null) return null;
-                return poseGetter.getPose();
-            }
-
-            @Nullable
-            @Override
-            public Vector getVel() {
-                if (poseGetter == null) return null;
-                return poseGetter.getVel();
-            }
-        }.init(this);
+    public @Nullable Pose pose() {
+        return pose;
     }
 
-    public @Nullable Pose getPose() {
-        return pose;
+    public @Nullable Velocity vel() {
+        return vel;
     }
 
     public void setPose(Pose pose) {
@@ -176,12 +138,8 @@ public class Drivetrain implements PoseGetter {
     public void update() {
         if (follower == null) return;
         follower.update();
-        pose = follower.getPose();
-        vel = follower.getVelocity();
-    }
-
-    public @Nullable Vector getVel() {
-        return vel;
+        pose = follower.pose();
+        vel = follower.velocity();
     }
 
     public boolean isMotorDisconnected() {
@@ -196,74 +154,6 @@ public class Drivetrain implements PoseGetter {
     public void setOtosBusSpeed(LynxI2cDeviceSynch.BusSpeed busSpeed) {
         if (otos == null) return;
         ((LynxI2cDeviceSynch) otos.getDeviceClient()).setBusSpeed(busSpeed);
-    }
-
-    /**
-     * Holds the current robot position in a certain orientation
-     *
-     * @param heading Orientation for the robot to point at
-     */
-    public void holdCurrentPose(double heading) {
-        if (pose == null) return;
-        Pose holdPose = pose.withHeading(heading);
-        follower.holdPoint(holdPose);
-    }
-
-    /**
-     * Holds the current robot position
-     */
-    public void holdCurrentPose() {
-        follower.holdPoint(pose);
-    }
-
-    /**
-     * Drives using encoder velocity. Thus, this function will not work if drivetrain motor encoders
-     * are disconnected. An inches value of zero will cause the robot to drive until manually
-     * stopped.
-     * <p>
-     * <b><u>Do not use this method unless you are using a linear opmode without a loop.</u></b>
-     * It will block the OpMode's loop otherwise and prevent other code from running during
-     * its duration. An error is thrown for this reason if the opmode is not a LinearOpMode.
-     * </p>
-     *
-     * @param inches    Amount of inches to drive.
-     * @param direction Direction to drive.
-     * @param opMode    OpMode instance. To pass this value, use {@code this} in the main opmode
-     *                  file, or pass the opmode instance down a chain to this function (starting
-     *                  with {@code this}).
-     * @throws RuntimeException If opMode is not a LinearOpMode.
-     */
-    public void drive(double inches, Dir direction, OpMode opMode) {
-        if (!(opMode instanceof LinearOpMode))
-            throw new RuntimeException("opMode must be a LinearOpMode to use the Drivetrain.drive " +
-                "method. This method will block the OpMode's loop otherwise and prevent other code " +
-                "from running during its duration, so this restriction is in place.");
-        if (isMotorDisconnected()) return;
-
-        int lfTarget = 0;
-        int rfTarget = 0;
-        int dir = direction == FORWARD ? 1 : direction == BACKWARD ? -1 : 0;
-
-        setMotorModes(STOP_AND_RESET_ENCODER);
-        setMotorModes(RUN_USING_ENCODER);
-
-        // reset the timeout time and start motion.
-        Timer runtime = new Timer();
-        if (inches != 0) {
-            setMotorVelocities(DRIVETRAIN_VELOCITY * signum(inches) * dir);
-            inches = signum(inches) * (abs(inches) + B) / M;
-        } else setMotorVelocities(DRIVETRAIN_VELOCITY * dir);
-
-        double duration = abs(inches * COUNTS_PER_INCH / DRIVETRAIN_VELOCITY);
-
-        while (runtime.getElapsedTimeSeconds() < duration && inches != 0) {
-            /* Display it for the driver. */
-            tm.print("Angle", imu == null ? 0 : imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle, DEBUG);
-            tm.print("Running to", " " + lfTarget + ":" + rfTarget, DEBUG);
-            tm.print("Currently at", lf.getCurrentPosition() + ":" + rf.getCurrentPosition(), DEBUG);
-            if (!loop) tm.update();
-        }
-        if (inches != 0) stop();
     }
 
     /**
@@ -343,9 +233,11 @@ public class Drivetrain implements PoseGetter {
         rb.setZeroPowerBehavior(behavior);
     }
 
-    /** Stops all drive train motors on the robot. */
+    /**
+     * Stops all drive train motors on the robot.
+     */
     public void stop() {
-        follower.breakFollowing();
+        follower.stop();
 
         if (isMotorDisconnected()) return;
         setMotorPowers(0);

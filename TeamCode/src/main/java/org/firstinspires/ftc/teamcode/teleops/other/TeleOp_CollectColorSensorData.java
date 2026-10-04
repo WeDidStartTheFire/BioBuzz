@@ -39,7 +39,6 @@ public class TeleOp_CollectColorSensorData extends OpMode {
         File file = new File(dir, "colors_0.csv");
         robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
         robot.drivetrain.setPose(loadOdometryPosition());
-        robot.drivetrain.follower.startTeleopDrive();
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
         tm = robot.drivetrain.tm;
         int i = 0;

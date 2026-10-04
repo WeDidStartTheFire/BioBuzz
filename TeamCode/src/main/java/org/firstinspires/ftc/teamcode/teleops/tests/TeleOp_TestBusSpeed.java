@@ -29,13 +29,13 @@ public class TeleOp_TestBusSpeed extends OpMode {
     private int totalColorCalls = 0;
     private int totalOTOSCalls = 0;
     private boolean fastMode = false;
+    @SuppressWarnings("CanBeFinal")
     public static int ARTIFICIAL_WAIT = 50;
 
     @Override
     public void init() {
         robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
         robot.drivetrain.setPose(loadOdometryPosition());
-        robot.drivetrain.follower.startTeleopDrive();
         tm = robot.drivetrain.tm;
         tm.setEnvironment(RobotEnvironment.DEBUG);
         if (!robot.drivetrain.isPoseValid())

@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import androidx.annotation.Nullable;
 
 import com.bylazar.configurables.annotations.Configurable;
-import com.pedropathing.geometry.Pose;
+import com.pedropathing.math.Pose;
 
 @Configurable
 public class SavedVariables {

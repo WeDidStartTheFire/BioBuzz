@@ -1,96 +1,106 @@
 package org.firstinspires.ftc.teamcode.autos.primary;
 
-import com.pedropathing.geometry.BezierLine;
-import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.PathChain;
+import static com.pedropathing.ivy.Scheduler.schedule;
+import static com.pedropathing.ivy.groups.Groups.sequential;
+import static com.pedropathing.ivy.pedro.PedroCommands.follow;
+
+import com.pedropathing.api.Paths;
+import com.pedropathing.api.PoseFactory;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.ivy.Command;
+import com.pedropathing.ivy.Scheduler;
+import com.pedropathing.math.Pose;
+import com.pedropathing.paths.Path;
+import com.pedropathing.paths.interpolator.Interpolator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.TelemetryUtils;
-import org.firstinspires.ftc.teamcode.autos.BaseAuto;
-import org.firstinspires.ftc.teamcode.enums.Color;
+import org.firstinspires.ftc.teamcode.pedro.Constants;
 
-@Autonomous (name= TestAuto2.name)
-public class TestAuto2 extends BaseAuto <TestAuto2.State> {
-    public final static String name = "Test Auto 2";
-    private final Color color = Color.BLUE;
-    private final State initialState = State.START;
-    protected enum State {
-        START,
-        FOLLOWING_PATH1,
-        FOLLOWING_PATH2,
-        FOLLOWING_PATH3,
-        FOLLOWING_PATH4,
-        FINISHED
+@Autonomous(name = "AutoPath", group = "Autonomous")
+public class TestAuto2 extends LinearOpMode {
 
-    }
-    private final Pose start = new Pose(132.682, 8.2894, 0);
-    private final Pose pt2 = new Pose(129.7883, 122.2311, 0);
-    private final Pose pt3 = new Pose(21.5184, 121.1493, 0);
-    private final Pose pt4 = new Pose(22.1564, 22.7566, 0);
-    private final Pose end = new Pose(116.682, 8.2894, 0);
+    private Follower follower;
 
-    private PathChain path1, path2, path3, path4;
-    @Override
-    protected void buildPaths() {
-        path1 = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(start, pt2))
-                .setLinearHeadingInterpolation(start.getHeading(), pt2.getHeading())
-                .build();
-        path2 = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(pt2, pt3))
-                .setLinearHeadingInterpolation(pt2.getHeading(), pt3.getHeading())
-                .build();
-        path3 = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(pt3, pt4))
-                .setLinearHeadingInterpolation(pt3.getHeading(), pt4.getHeading())
-                .build();
-        path4 = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(pt4, end))
-                .setLinearHeadingInterpolation(pt4.getHeading(), end.getHeading())
-                .build();
+    private final PoseFactory poseFactory = PoseFactory.degrees();
+
+    private final Pose start = poseFactory.of(132.125, 9.375, 90);
+    private final Pose path1 = poseFactory.of(32, 40, 0);
+    private final Pose path1Segment1Target = poseFactory.of(144, 144, 0);
+    private final Pose path1Segment2Start = poseFactory.of(32, 40, 62.5653);
+    private final Pose path1Segment2End = poseFactory.of(32, 40, 0);
+    private final Pose point2Start = poseFactory.of(32, 40, 0);
+    private final Pose point2 = poseFactory.of(32, 108, 60);
+    private final Pose point3 = poseFactory.of(108.5, 32.5, -163.325);
+    private final Pose point3Control1 = poseFactory.of(170, 175, 0);
+    private final Pose point3Control2 = poseFactory.of(96, 56, 0);
+    private final Pose point3Segment1Start = poseFactory.of(108.5, 32.5, 60);
+    private final Pose point3Segment1End = poseFactory.of(108.5, 32.5, -136);
+    private final Pose point3Segment2Target = poseFactory.of(0, 0, 0);
+    private final Pose point4 = poseFactory.of(58.2378, 13.1292, 0);
+    private final Pose point4Control1 = poseFactory.of(77.9609, 55.4343, 0);
+    private final Pose point4Control2 = poseFactory.of(133.9934, 4.0753, 0);
+    private final Pose point4Control3 = poseFactory.of(134.1824, 70.4505, 0);
+    private final Pose point4Segment1Target = poseFactory.of(0, 0, 0);
+    private final Pose point4Segment2Start = poseFactory.of(58.2378, 13.1292, -166);
+    private final Pose point4Segment2End = poseFactory.of(58.2378, 13.1292, 0);
+    private final Pose point5 = poseFactory.of(33, 33, 0);
+
+    // Autonomous routine
+    public Command autoRoutine() {
+        return sequential(
+                follow(follower, path1()),
+                follow(follower, path2()),
+                follow(follower, path3()),
+                follow(follower, path4()),
+                follow(follower, path5())
+        );
     }
 
     @Override
-    protected void pathUpdate() {
-        switch (state) {
-            case START:
-                robot.drivetrain.follower.followPath(path1);
-                setState(State.FOLLOWING_PATH1);
-                break;
-            case FOLLOWING_PATH1:
-                if (!robot.drivetrain.follower.isBusy()) {
-                    robot.drivetrain.follower.followPath(path2);
-                    setState(State.FOLLOWING_PATH2);
-                }
-                break;
-            case FOLLOWING_PATH2:
-                if (!robot.drivetrain.follower.isBusy()) {
-                    robot.drivetrain.follower.followPath(path3);
-                    setState(State.FOLLOWING_PATH3);
-                }
-                break;
-            case FOLLOWING_PATH3:
-                if (!robot.drivetrain.follower.isBusy()) {
-                    robot.drivetrain.follower.followPath(path4);
-                    setState(State.FOLLOWING_PATH4);
-                }
-                break;
-            case FOLLOWING_PATH4:
-                if (!robot.drivetrain.follower.isBusy()) {
-                    setState(State.FINISHED);
-                }
-                break;
-            case FINISHED:
-                tm.print("Finished following the path sequence.", TelemetryUtils.PrintLevel.INFO);
-                break;
+    public void runOpMode() {
+        Scheduler.reset();
+        follower = Constants.create(hardwareMap);
+        follower.setPose(start);
+        follower.update();
+
+        waitForStart();
+        schedule(autoRoutine());
+
+        while (opModeIsActive()) {
+            follower.update();
+            Scheduler.execute();
+
+            telemetry.addData("x", follower.pose().x());
+            telemetry.addData("y", follower.pose().y());
+            telemetry.addData("heading", follower.pose().heading());
+
+            if (follower.currentPath() != null) {
+                telemetry.addData("Current path distance remaining", follower.distanceToEndpoint());
+                telemetry.addData("Path number", follower.pathIndex());
+            }
+
+            telemetry.update();
         }
     }
 
-    @Override
-    protected void configure() {
-        super.startPose = start;
-        super.color = color;
-        super.initialState = initialState;
-        super.name = name;
+    public Path path1() {
+        return Paths.line(start, path1).heading(Interpolator.piecewise().until(0.5, Interpolator.facingPoint(path1Segment1Target)).until(1, Interpolator.linear(path1Segment2Start, path1Segment2End)));
+    }
+
+    public Path path2() {
+        return Paths.line(point2Start, point2).linear(point2Start, point2);
+    }
+
+    public Path path3() {
+        return Paths.curve(point2, point3Control1, point3Control2, point3).heading(Interpolator.piecewise().until(0.3567, Interpolator.linear(point3Segment1Start, point3Segment1End)).until(1, Interpolator.facingPoint(point3Segment2Target)));
+    }
+
+    public Path path4() {
+        return Paths.curve(point3, point4Control1, point4Control2, point4Control3, point4).heading(Interpolator.piecewise().until(0.6373, Interpolator.facingPoint(point4Segment1Target)).until(1, Interpolator.linear(point4Segment2Start, point4Segment2End)));
+    }
+
+    public Path path5() {
+        return Paths.line(point4, point5).constant(point5);
     }
 }

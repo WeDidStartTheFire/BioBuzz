@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.MatchContext;
+import org.firstinspires.ftc.teamcode.PoseGetter;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.ColorSensor;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Drivetrain;
@@ -17,14 +18,14 @@ import org.firstinspires.ftc.teamcode.robot.mechanisms.Limelight;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
 
 public class Robot {
-    public Drivetrain drivetrain;
-    public ColorSensor colorSensor;
-    public Intake intake;
-    public Limelight limelight;
-    public Launcher launcher;
-    public LED led;
-    public Turret turret;
-    public HardwareMap hardwareMap;
+    public final Drivetrain drivetrain;
+    public final ColorSensor colorSensor;
+    public final Intake intake;
+    public final Limelight limelight;
+    public final Launcher launcher;
+    public final LED led;
+    public final Turret turret;
+    public final HardwareMap hardwareMap;
     private final MatchContext context;
 
     public Robot(@NonNull HardwareMap hardwareMap, @NonNull Telemetry telemetry,
@@ -37,8 +38,8 @@ public class Robot {
         colorSensor = new ColorSensor(hardwareMap, tm);
         led = new LED(hardwareMap, tm);
         limelight = new Limelight(hardwareMap, tm);
-        launcher = new Launcher(hardwareMap, tm, drivetrain.getPoseGetter());
-        turret = new Turret(hardwareMap, tm, drivetrain.getPoseGetter());
+        launcher = new Launcher(hardwareMap, tm, PoseGetter.from(drivetrain));
+        turret = new Turret(hardwareMap, tm, PoseGetter.from(drivetrain));
     }
 
     public void initBulkCache() {

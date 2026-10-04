@@ -19,7 +19,7 @@ public class TeleOp_Debug_No_Driving extends OpMode {
     public Servo servoA, servoB, servoC, servoD;
     public DcMotorEx motorA, motorB;
     //    public final int MOTOR_VEL = 5800 / 28;
-    public TelemetryUtils tm = new TelemetryUtils(telemetry);
+    public final TelemetryUtils tm = new TelemetryUtils(telemetry);
 
     @Override
     public void init() {

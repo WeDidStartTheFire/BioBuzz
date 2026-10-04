@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.pedropathing.geometry.Pose;
+import com.pedropathing.math.Pose;
 
 import java.io.BufferedWriter;
 
@@ -47,10 +47,5 @@ public class Utils {
         } catch (java.io.IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Deprecated
-    public static boolean active() {
-        return true;
     }
 }

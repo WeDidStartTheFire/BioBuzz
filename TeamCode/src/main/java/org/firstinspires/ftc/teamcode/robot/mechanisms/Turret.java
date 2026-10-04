@@ -31,9 +31,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.bylazar.configurables.annotations.Configurable;
-import com.pedropathing.control.PIDFController;
-import com.pedropathing.geometry.Pose;
-import com.pedropathing.math.Vector;
+import com.pedropathing.math.Pose;
+import com.pedropathing.math.Velocity;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -43,6 +42,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import org.firstinspires.ftc.teamcode.PoseGetter;
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.pedro.controllers.PIDFController;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
 @Configurable
@@ -75,8 +75,8 @@ public class Turret {
             turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             int currentPos = turretMotor.getCurrentPosition();
-            turretPIDController.setTargetPosition(abs(currentPos - 7000) < 250 ? 7000 : currentPos);
-            velocityPIDController.setTargetPosition(0);
+            turretPIDController.setTarget(abs(currentPos - 7000) < 250 ? 7000 : currentPos);
+            velocityPIDController.setTarget(0);
         }
         turretTouchSensor = HardwareInitializer.init(hardwareMap, tm, TURRET_TOUCH_SENSOR);
     }
@@ -108,9 +108,9 @@ public class Turret {
 
     public void rotateManual(double speed) {
         if (target == Target.MANUAL) {
-            turretPIDController.setTargetPosition(-turretPIDController.getTargetPosition() +
+            turretPIDController.setTarget(-turretPIDController.target() +
                 speed * TURRET_SPEED_MANUAL);
-            velocityPIDController.setTargetPosition(TURRET_SPEED_MANUAL);
+            velocityPIDController.setTarget(TURRET_SPEED_MANUAL);
             return;
         }
         offset -= TURRET_SPEED_OFFSET * speed;
@@ -124,7 +124,7 @@ public class Turret {
         if (turretMotor == null) return;
         if (abs(turretMotor.getCurrentPosition()) > 50) turretPIDController.reset();
         turretPIDController.updatePosition(0);
-        if (target == Target.MANUAL) turretPIDController.setTargetPosition(0);
+        if (target == Target.MANUAL) turretPIDController.setTarget(0);
         turretPIDController.updatePosition(0);
         turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // sets encoder back to 0
         turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -159,24 +159,24 @@ public class Turret {
 
         double pos = turretMotor.getCurrentPosition();
         turretPIDController.updatePosition(pos);
-        Vector vel = poseGetter.getVel();
+        Velocity vel = poseGetter.vel();
         if (vel != null)
-            velocityPIDController.setTargetPosition(-toDegrees(vel.getTheta()) * TURRET_ENCODERS_PER_DEGREE);
+            velocityPIDController.setTarget(-toDegrees(vel.toVector2D().theta()) * TURRET_ENCODERS_PER_DEGREE);
         velocityPIDController.updatePosition(motorVel);
         tm.print("Turret Pos", pos, VERBOSE);
-        tm.print("Turret Goal", turretPIDController.getTargetPosition(), VERBOSE);
+        tm.print("Turret Goal", turretPIDController.target(), VERBOSE);
         tm.print("Turret Offset", offset, INFO);
         tm.print("Turret Vel", motorVel, DEBUG);
         if (target == Target.NONE) return;
-        double feedforward = vel == null ? 0 : -vel.getTheta() * TURRET_FEEDFORWARD;
+        double feedforward = vel == null ? 0 : -vel.toVector2D().theta() * TURRET_FEEDFORWARD;
         feedforward *= min(1, min(max(0, pos - TURRET_MIN_POS), max(0, TURRET_MAX_POS - pos)) / TURRET_FEEDFORWARD_SLOW_START);
         feedforward = Math.clamp(feedforward, -TURRET_MAX_POWER, TURRET_MAX_POWER);
         if (target == Target.HOLD || target == Target.MANUAL) feedforward = 0;
-        double pid = turretPIDController.run();
-        if (USE_TURRET_VELOCITY_PID) pid += velocityPIDController.run();
+        double pid = turretPIDController.calculate();
+        if (USE_TURRET_VELOCITY_PID) pid += velocityPIDController.calculate();
         double staticFeedforward = TURRET_STATIC_FEEDFORWARD * signum(pid);
         double power = pid + feedforward + staticFeedforward;
-        double modifier = TURRET_ADJUST_FOR_VOLTAGE ? 12 / Math.max(voltageSensor.getVoltage(), 1e-6) : 1;
+        double modifier = TURRET_ADJUST_FOR_VOLTAGE ? 12 / max(voltageSensor.getVoltage(), 1e-6) : 1;
         power *= modifier;
         turretMotor.setPower(Math.clamp(power, -TURRET_MAX_POWER * modifier, TURRET_MAX_POWER * modifier));
     }
@@ -187,7 +187,7 @@ public class Turret {
     public void stop() {
         setTarget(Target.NONE);
         if (turretMotor != null)
-            turretPIDController.setTargetPosition(turretMotor.getCurrentPosition());
+            turretPIDController.setTarget(turretMotor.getCurrentPosition());
     }
 
     /**
@@ -197,7 +197,7 @@ public class Turret {
      */
     private void setRobotCentricAngle(double angle) {
         if (turretMotor == null) return;
-        turretPIDController.setTargetPosition(
+        turretPIDController.setTarget(
             Math.clamp((int) (normalizeAngle(toDegrees(angle) + TURRET_OFFSET)
                     * TURRET_ENCODERS_PER_DEGREE + offset - TURRET_TS_OFFSET_ENC),
                 TURRET_MIN_POS, TURRET_MAX_POS));
@@ -224,7 +224,7 @@ public class Turret {
      * @param angle Turret angle, radians
      */
     private void setFieldCentricAngle(double angle) {
-        Pose pose = poseGetter.getPose();
-        if (pose != null) setRobotCentricAngle(angle - pose.getHeading());
+        Pose pose = poseGetter.pose();
+        if (pose != null) setRobotCentricAngle(angle - pose.heading());
     }
 }

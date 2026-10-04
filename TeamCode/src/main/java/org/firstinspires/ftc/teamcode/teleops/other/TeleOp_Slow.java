@@ -16,10 +16,10 @@ import org.firstinspires.ftc.teamcode.robot.Robot;
 
 @TeleOp(name = "Slow", group = "C")
 public class TeleOp_Slow extends OpMode {
-    public TelemetryUtils tm = new TelemetryUtils(telemetry);
+    public final TelemetryUtils tm = new TelemetryUtils(telemetry);
     public Robot robot;
-    public double baseSpeedMultiplier = .7;
-    public double baseTurnSpeed = .625;
+    public final double baseSpeedMultiplier = .7;
+    public final double baseTurnSpeed = .625;
 
     @Override
     public void init() {

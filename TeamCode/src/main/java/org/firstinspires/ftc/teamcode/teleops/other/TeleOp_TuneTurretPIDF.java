@@ -8,7 +8,6 @@ import static java.lang.Thread.sleep;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.configurables.annotations.IgnoreConfigurable;
-import com.pedropathing.control.PIDFCoefficients;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -17,13 +16,14 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.MatchContext;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.constants.TurretConstants;
-import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.enums.RobotEnvironment;
+import org.firstinspires.ftc.teamcode.pedro.controllers.PIDFCoefficients;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
 
 
+@SuppressWarnings("CanBeFinal")
 @TeleOp(name = "Tune Turret PIDF", group = "D")
 @Configurable
 @Disabled
@@ -33,33 +33,30 @@ public class TeleOp_TuneTurretPIDF extends OpMode {
     Robot robot;
     @IgnoreConfigurable
     TelemetryUtils tm;
-    @IgnoreConfigurable
-    TeleOpController teleop;
 
     // TODO: Set encoder goals based on numbers that make sense from telemetry
-    static int encoderGoalA = 0;
-    static int enocderGoalB = 5000;
-    static int encoderGoal = encoderGoalA;
-    static int increase = 1000;
-    static int delay = 50;
+    public static int encoderGoalA = 0;
+    public static int enocderGoalB = 5000;
+    public static int encoderGoal = encoderGoalA;
+    public static int increase = 1000;
+    public static int delay = 50;
 
-    static double P = 0.00055;
-    static double D = 0.00003;
-    static double F = 0;
-    static double maxPower = 0.75;
+    public static double P = 0.00055;
+    public static double D = 0.00003;
+    public static double F = 0;
+    public static double maxPower = 0.75;
     @IgnoreConfigurable
     PIDFCoefficients pidf = new PIDFCoefficients(P, 0, D, 0);
     @IgnoreConfigurable
     double[] increments = {10, 1, .1, .01, .001};
-    int incIdx = 1;
-    double t;
+    public static int incIdx = 1;
+    private double t;
 
     @Override
     public void init() {
         robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
         robot.drivetrain.setPose(loadOdometryPosition());
-        robot.drivetrain.follower.startTeleopDrive();
-        teleop = new TeleOpController(robot, gamepad1, gamepad2);
+        robot.initBulkCache();
         tm = robot.drivetrain.tm;
         tm.setEnvironment(RobotEnvironment.DEBUG);
         tm.print("Tune Turret PIDF Initialized", INFO);
@@ -86,7 +83,7 @@ public class TeleOp_TuneTurretPIDF extends OpMode {
         TurretConstants.TURRET_MAX_POWER = maxPower;
         pidf = new PIDFCoefficients(P, 0, D, F);
         robot.turret.turretPIDController.setCoefficients(pidf);
-        robot.turret.turretPIDController.setTargetPosition(encoderGoal);
+        robot.turret.turretPIDController.setTarget(encoderGoal);
         robot.turret.update(gamepad2.left_stick_button);
         double pos = robot.turret.getEncoderPosition();
         double error = pos - encoderGoal;

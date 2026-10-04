@@ -11,10 +11,9 @@ import static org.firstinspires.ftc.teamcode.enums.Hardware.LAUNCHER_MOTOR_B;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.pedropathing.control.PIDFController;
-import com.pedropathing.geometry.Pose;
-import com.pedropathing.math.Vector;
-import com.pedropathing.util.Timer;
+import com.pedropathing.math.Pose;
+import com.pedropathing.math.Velocity;
+import com.pedropathing.utils.Timer;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -24,7 +23,10 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import org.firstinspires.ftc.teamcode.PoseGetter;
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.pedro.controllers.PIDFController;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
+
+import java.util.concurrent.TimeUnit;
 
 public class Launcher {
 
@@ -32,10 +34,10 @@ public class Launcher {
     private final @NonNull Timer spinningTimer;
     private boolean spinning = false;
     private @Nullable Pose lastPose;
-    private @Nullable Vector lastVel;
+    private @Nullable Velocity lastVel;
     private double lastGoalVel;
     private double cachedPower = 0;
-    private final PIDFController pidfController = new PIDFController(launcherPIDF);
+    private final PIDFController pidController = new PIDFController(launcherPIDF);
     private final VoltageSensor voltageSensor;
     private final TelemetryUtils tm;
     private double cachedVel;
@@ -80,7 +82,7 @@ public class Launcher {
      * @return The target velocity in ticks/sec
      */
     public double getGoalVel() {
-        return getGoalVel(poseGetter.getPose(), poseGetter.getVel());
+        return getGoalVel(poseGetter.pose(), poseGetter.vel());
     }
 
     /**
@@ -89,7 +91,7 @@ public class Launcher {
      * @param pose Launch position
      * @return The target velocity in ticks/sec
      */
-    public double getGoalVel(@Nullable Pose pose, @Nullable Vector vel) {
+    public double getGoalVel(@Nullable Pose pose, @Nullable Velocity vel) {
         if (pose == null) return 0;
         if (pose.equals(lastPose) && ((vel == null && lastVel == null) || vel != null && vel.equals(lastVel)))
             return lastGoalVel + velocityModifier;
@@ -108,17 +110,14 @@ public class Launcher {
         if (launcherMotorA != null) launcherMotorA.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         if (launcherMotorB != null) launcherMotorB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         double goalVel = getGoalVel();
-        if (!spinning) spinningTimer.resetTimer();
+        if (!spinning) spinningTimer.reset();
         spinning = true;
         double motorVel = getVel();
-        pidfController.setTargetPosition(goalVel);
-        pidfController.updateFeedForwardInput(goalVel);
-        pidfController.updatePosition(motorVel);
+        pidController.setTarget(goalVel);
+        pidController.updateFeedForwardInput(goalVel);
+        pidController.updatePosition(motorVel);
         double voltage = Math.max(voltageSensor.getVoltage(), 1e-6);
-        double manualPidf = pidfController.P() * pidfController.getError() + pidfController.F() * goalVel
-            + pidfController.D() * pidfController.getErrorDerivative();
-        double pidf = pidfController.run();
-        double power = (Double.isNaN(pidf) ? manualPidf : pidf) * 12.0 / voltage;
+        double power = pidController.calculate() * 12.0 / voltage;
         if (launcherMotorA != null) launcherMotorA.setPower(power);
         if (launcherMotorB != null) launcherMotorB.setPower(power);
     }
@@ -129,7 +128,7 @@ public class Launcher {
      * @return Duration in seconds, or 0 if not currently spinning
      */
     public double getSpinningDuration() {
-        return spinning ? spinningTimer.getElapsedTimeSeconds() : 0;
+        return spinning ? spinningTimer.get(TimeUnit.SECONDS) : 0;
     }
 
     /**

@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.controllers;
 
-import com.pedropathing.util.Timer;
+import com.pedropathing.utils.Timer;
 
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Intake;
+
+import java.util.concurrent.TimeUnit;
 
 public class IntakeController {
 
@@ -91,9 +93,9 @@ public class IntakeController {
 
     private void setState(State state) {
         if (state != null && state != this.state)
-            tm.log("IntakeController: " + this.state + " -> " + state, stateTimer.getElapsedTimeSeconds());
+            tm.log("IntakeController: " + this.state + " -> " + state, stateTimer.get(TimeUnit.SECONDS));
         setStateNoWait(state);
-        this.stateTimer.resetTimer();
+        this.stateTimer.reset();
     }
 
     private void setStateNoWait(State state) {

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.pedroPathing.localizers;
+package org.firstinspires.ftc.teamcode.pedro.localizers;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.normalizeRadians;
@@ -12,17 +12,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.bylazar.configurables.annotations.Configurable;
-import com.pedropathing.ftc.localization.localizers.OTOSLocalizer;
-import com.pedropathing.geometry.PedroCoordinates;
-import com.pedropathing.geometry.Pose;
 import com.pedropathing.localization.Localizer;
-import com.pedropathing.math.Vector;
+import com.pedropathing.localization.MotionState;
+import com.pedropathing.math.Pose;
+import com.pedropathing.math.Velocity;
+import com.pedropathing.revhub.localizers.OTOSLocalizer;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
 @Configurable
@@ -34,7 +33,7 @@ public class ComplementaryLocalizer implements Localizer {
     @NonNull
     private Pose prevRelPose;
     @NonNull
-    private Pose vel;
+    private Velocity vel;
     private double totalHeading;
     private final Localizer relativeLocalizer;
     private boolean invalidPose = false;
@@ -54,29 +53,14 @@ public class ComplementaryLocalizer implements Localizer {
         }
         if (startPose == null) {
             invalidPose = true;
-            startPose = new Pose();
+            startPose = Pose.zero();
         }
 
-        relativeLocalizer = new OTOSLocalizer(map, Constants.otosConstants, startPose);
-        vel = new Pose();
+        relativeLocalizer = new OTOSLocalizer(map, null);
+        vel = Velocity.zero();
         pose = startPose;
         prevRelPose = startPose;
-        totalHeading = pose.getHeading();
-    }
-
-    public @NonNull Pose getPose() {
-        return pose.getAsCoordinateSystem(PedroCoordinates.INSTANCE);
-    }
-
-    public @NonNull Pose getVelocity() {
-        return vel;
-    }
-
-    public Vector getVelocityVector() {
-        return getVelocity().getAsVector();
-    }
-
-    public void setStartPose(Pose setStart) {
+        totalHeading = pose.heading();
     }
 
     public void setPose(@NonNull Pose setPose) {
@@ -85,20 +69,25 @@ public class ComplementaryLocalizer implements Localizer {
         pose = setPose;
     }
 
+    @Override
+    public MotionState state() {
+        return MotionState.ofVelocity(pose, vel);
+    }
+
     public void update() {
         relativeLocalizer.update();
 
-        double yawRate = relativeLocalizer.getVelocity().getHeading(); // imu.getRobotAngularVelocity(RADIANS).zRotationRate;
+        double yawRate = relativeLocalizer.velocity().toVector2D().theta(); // imu.getRobotAngularVelocity(RADIANS).zRotationRate;
 
-        Pose relPose = relativeLocalizer.getPose();
+        Pose relPose = relativeLocalizer.pose();
         Pose relPoseDelta = relPose.minus(prevRelPose);
         prevRelPose = relPose;
-        vel = relativeLocalizer.getVelocity();
+        vel = relativeLocalizer.velocity();
         Pose lastPose = pose;
         pose = pose.plus(relPoseDelta);
 
         if (limelight == null) {
-            totalHeading += normalizeRadians(pose.getHeading() - lastPose.getHeading());
+            totalHeading += normalizeRadians(pose.heading() - lastPose.heading());
             return;
         }
 
@@ -110,61 +99,47 @@ public class ComplementaryLocalizer implements Localizer {
         if (result != null && result.isValid()) {
             Pose3D botpose = result.getBotpose_MT2();
 
-            if (result.getBotposeTagCount() > 0 && abs(yawRate) < toRadians(360) && hypot(vel.getX(), vel.getY()) < 7) {
+            if (result.getBotposeTagCount() > 0 && abs(yawRate) < toRadians(360) && hypot(vel.vx, vel.vy) < 7) {
                 double angle = result.getBotpose().getOrientation().getYaw(DEGREES) - 90;
                 if (angle < 0) angle += 360;
                 LLPose = new Pose(botpose.getPosition().y / 0.0254 + 72,
-                    -botpose.getPosition().x / 0.0254 + 72, toRadians(angle));
+                        -botpose.getPosition().x / 0.0254 + 72, toRadians(angle));
             }
         }
         if (LLPose != null) {
             if (invalidPose) {
                 Pose3D botpose = result.getBotpose();
-                if (result.getBotposeTagCount() > 0 && abs(yawRate) < toRadians(360) && hypot(vel.getX(), vel.getY()) < 7) {
+                if (result.getBotposeTagCount() > 0 && abs(yawRate) < toRadians(360) && hypot(vel.vx, vel.vy) < 7) {
                     invalidPose = false;
                     double angle = result.getBotpose().getOrientation().getYaw(DEGREES) - 90;
                     if (angle < 0) angle += 360;
                     LLPose = new Pose(botpose.getPosition().y / 0.0254 + 72,
-                        -botpose.getPosition().x / 0.0254 + 72, toRadians(angle));
+                            -botpose.getPosition().x / 0.0254 + 72, toRadians(angle));
                     setPose(LLPose);
-                    totalHeading = pose.getHeading();
+                    totalHeading = pose.heading();
                 }
                 return;
             }
-            pose = new Pose(LLPose.getX() * (1 - linAlpha) + pose.getX() * linAlpha,
-                LLPose.getY() * (1 - linAlpha) + pose.getY() * linAlpha,
-                normalizeRadians(LLPose.getHeading() + angAlpha
-                    * normalizeRadians(pose.getHeading() - LLPose.getHeading())));
+            pose = new Pose(LLPose.x() * (1 - linAlpha) + pose.x() * linAlpha,
+                    LLPose.y() * (1 - linAlpha) + pose.y() * linAlpha,
+                    normalizeRadians(LLPose.heading() + angAlpha
+                            * normalizeRadians(pose.heading() - LLPose.heading())));
         }
-        totalHeading += normalizeRadians(pose.getHeading() - lastPose.getHeading());
+        totalHeading += normalizeRadians(pose.heading() - lastPose.heading());
     }
 
-    public double getTotalHeading() {
-        return totalHeading;
-    }
-
-    public double getForwardMultiplier() {
-        return 0.0;
-    }
-
-    public double getLateralMultiplier() {
-        return 0.0;
-    }
-
-    public double getTurningMultiplier() {
-        return 0.0;
+    @Override
+    public void reset() {
+        relativeLocalizer.reset();
     }
 
     public double getIMUHeading() {
-        return pose.getHeading();
+        return pose.heading();
     }
 
-    public void resetIMU() throws InterruptedException {
-        relativeLocalizer.resetIMU();
-    }
 
     public boolean isNAN() {
-        return Double.isNaN(getPose().getX()) || Double.isNaN(getPose().getY())
-            || Double.isNaN(getPose().getHeading());
+        return Double.isNaN(pose().x()) || Double.isNaN(pose().y())
+                || Double.isNaN(pose().heading());
     }
 }

@@ -24,7 +24,6 @@ public class TeleOp_Main_Red extends OpMode {
     public void init() {
         robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.RED));
         robot.drivetrain.setPose(loadOdometryPosition());
-        robot.drivetrain.follower.startTeleopDrive();
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
         tm = robot.drivetrain.tm;
         if (!robot.drivetrain.isPoseValid())

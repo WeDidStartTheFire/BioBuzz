@@ -2,12 +2,15 @@ package org.firstinspires.ftc.teamcode.constants;
 
 import com.bylazar.configurables.annotations.Configurable;
 
+import org.firstinspires.ftc.teamcode.pedro.controllers.PIDFCoefficients;
+
+@SuppressWarnings("CanBeFinal")
 @Configurable
 public class TurretConstants {
-    public static com.pedropathing.control.PIDFCoefficients turretMotorPID =
-        new com.pedropathing.control.PIDFCoefficients(.00055, 0, 0.00003, 0);
-    public static com.pedropathing.control.PIDFCoefficients turretVelocityPID =
-        new com.pedropathing.control.PIDFCoefficients(0.00003, 0, 0, 0);
+    public static PIDFCoefficients turretMotorPID =
+            new PIDFCoefficients(.00055, 0, 0.00003, 0);
+    public static PIDFCoefficients turretVelocityPID =
+            new PIDFCoefficients(0.00003, 0, 0, 0);
     public static boolean USE_TURRET_VELOCITY_PID = false;
     public static double TURRET_ENCODERS_PER_DEGREE = 77.78;
     public static double TURRET_TOP_VEL = 10000; // encs per second

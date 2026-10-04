@@ -8,8 +8,8 @@ import static java.lang.Math.sqrt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.pedropathing.geometry.Pose;
-import com.pedropathing.math.Vector;
+import com.pedropathing.math.Pose;
+import com.pedropathing.math.Velocity;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
@@ -20,9 +20,9 @@ public class ProjectileSolver {
     static final double g = 386.0885826772; // Constant for gravity in in/s^2
 
     public static class LaunchSolution {
-        public double w; // Launch speed magnitude (relative to robot motion)
-        public double phi; // Horizontal azimuth (radians, degrees?)
-        public double t; // Time from launch for projectile to reach target
+        public final double w; // Launch speed magnitude (relative to robot motion)
+        public final double phi; // Horizontal azimuth (radians, degrees?)
+        public final double t; // Time from launch for projectile to reach target
 
         LaunchSolution(double w, double phi, double t) {
             this.w = w;
@@ -38,11 +38,11 @@ public class ProjectileSolver {
      * @return LaunchSolution containing launch parameters, or null if no solution exists
      */
     public static @Nullable LaunchSolution getLaunchSolution(@NonNull Pose pose,
-                                                             @Nullable Vector vel) {
+                                                             @Nullable Velocity vel) {
         Pose3D targetPose = new Pose3D(new Position(),
             new YawPitchRollAngles(AngleUnit.RADIANS, 0, 0, 0, 0));
-        return solveLaunch(pose.getX(), pose.getY(), LAUNCHER_HEIGHT,
-            vel == null ? 0 : vel.getXComponent(), vel == null ? 0 : vel.getYComponent(),
+        return solveLaunch(pose.x(), pose.y(), LAUNCHER_HEIGHT,
+            vel == null ? 0 : vel.toVector2D().x(), vel == null ? 0 : vel.toVector2D().y(),
             targetPose.getPosition().x, targetPose.getPosition().y, targetPose.getPosition().z,
             LAUNCHER_ANGLE);
     }
@@ -54,8 +54,8 @@ public class ProjectileSolver {
      * @return LaunchSolution containing launch parameters, or null if no solution exists
      */
     public static @Nullable LaunchSolution getLaunchSolution(PoseGetter poseGetter) {
-        Pose pose = poseGetter.getPose();
-        return pose == null ? null : getLaunchSolution(pose, poseGetter.getVel());
+        Pose pose = poseGetter.pose();
+        return pose == null ? null : getLaunchSolution(pose, poseGetter.vel());
     }
 
     /**
@@ -67,7 +67,7 @@ public class ProjectileSolver {
         if (pose == null) return null;
         Pose3D targetPose = new Pose3D(new Position(),
             new YawPitchRollAngles(AngleUnit.RADIANS, 0, 0, 0, 0));
-        return solveLaunch(pose.getX(), pose.getY(), LAUNCHER_HEIGHT, 0, 0,
+        return solveLaunch(pose.x(), pose.y(), LAUNCHER_HEIGHT, 0, 0,
             targetPose.getPosition().x, targetPose.getPosition().y, targetPose.getPosition().z,
             LAUNCHER_ANGLE);
     }

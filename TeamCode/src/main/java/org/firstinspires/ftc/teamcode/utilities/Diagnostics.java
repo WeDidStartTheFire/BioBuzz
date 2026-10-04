@@ -7,6 +7,10 @@ import static org.firstinspires.ftc.teamcode.enums.Hardware.DRIVETRAIN_LEFT_BACK
 import static org.firstinspires.ftc.teamcode.enums.Hardware.DRIVETRAIN_LEFT_FRONT_MOTOR;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.DRIVETRAIN_RIGHT_BACK_MOTOR;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.DRIVETRAIN_RIGHT_FRONT_MOTOR;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.FEEDER_SERVO_A;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.FEEDER_SERVO_B;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.IMU;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.INDEXER_SERVO;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_MOTOR;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_SERVO_A;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_SERVO_B;
@@ -16,18 +20,17 @@ import static org.firstinspires.ftc.teamcode.enums.Hardware.LAUNCHER_MOTOR_B;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.LED;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.LIMELIGHT;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.SPARKFUN_OTOS;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.TOUCH_SENSOR_A;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.TOUCH_SENSOR_B;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.TURRET_MOTOR;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.TURRET_TOUCH_SENSOR;
 
 import androidx.annotation.Nullable;
 
-import com.qualcomm.hardware.limelightvision.Limelight3A;
-import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Utility;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.enums.RobotEnvironment;
@@ -35,12 +38,8 @@ import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
 @Utility(name = "Diagnostics")
 public class Diagnostics extends LinearOpMode {
-    public @Nullable DcMotorEx lf, lb, rf, rb, intakeMotor, launcherMotorA, launcherMotorB, turretMotor;
-    public @Nullable Servo led;
+    public @Nullable DcMotorEx intakeMotor, launcherMotorA, launcherMotorB;
     public @Nullable CRServo intakeServoA, intakeServoB, intakeServoC;
-    public @Nullable Limelight3A limelight;
-    public @Nullable ColorSensor colorSensor, colorSensorB;
-    public @Nullable SparkFunOTOS otos;
 
     public TelemetryUtils tm;
 
@@ -48,10 +47,12 @@ public class Diagnostics extends LinearOpMode {
         tm = new TelemetryUtils(telemetry);
         tm.setEnvironment(RobotEnvironment.PRACTICE);
 
-        lf = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_LEFT_FRONT_MOTOR);
-        lb = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_LEFT_BACK_MOTOR);
-        rf = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_RIGHT_FRONT_MOTOR);
-        rb = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_RIGHT_BACK_MOTOR);
+        HardwareInitializer.init(hardwareMap, tm, IMU);
+
+        HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_LEFT_FRONT_MOTOR);
+        HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_LEFT_BACK_MOTOR);
+        HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_RIGHT_FRONT_MOTOR);
+        HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_RIGHT_BACK_MOTOR);
 
         intakeMotor = HardwareInitializer.init(hardwareMap, tm, INTAKE_MOTOR);
         intakeServoA = HardwareInitializer.init(hardwareMap, tm, INTAKE_SERVO_A);
@@ -61,16 +62,22 @@ public class Diagnostics extends LinearOpMode {
         launcherMotorA = HardwareInitializer.init(hardwareMap, tm, LAUNCHER_MOTOR_A);
         launcherMotorB = HardwareInitializer.init(hardwareMap, tm, LAUNCHER_MOTOR_B);
 
-        led = HardwareInitializer.init(hardwareMap, tm, LED);
+        HardwareInitializer.init(hardwareMap, tm, LED);
 
-        limelight = HardwareInitializer.init(hardwareMap, tm, LIMELIGHT);
+        HardwareInitializer.init(hardwareMap, tm, TURRET_MOTOR);
+        HardwareInitializer.init(hardwareMap, tm, TURRET_TOUCH_SENSOR);
 
-        colorSensor = HardwareInitializer.init(hardwareMap, tm, COLOR_SENSOR_A);
-        colorSensorB = HardwareInitializer.init(hardwareMap, tm, COLOR_SENSOR_B);
+        HardwareInitializer.init(hardwareMap, tm, LIMELIGHT);
+        HardwareInitializer.init(hardwareMap, tm, SPARKFUN_OTOS);
 
-        turretMotor = HardwareInitializer.init(hardwareMap, tm, TURRET_MOTOR);
+        HardwareInitializer.init(hardwareMap, tm, FEEDER_SERVO_A);
+        HardwareInitializer.init(hardwareMap, tm, FEEDER_SERVO_B);
+        HardwareInitializer.init(hardwareMap, tm, TOUCH_SENSOR_A);
+        HardwareInitializer.init(hardwareMap, tm, TOUCH_SENSOR_B);
 
-        otos = HardwareInitializer.init(hardwareMap, tm, SPARKFUN_OTOS);
+        HardwareInitializer.init(hardwareMap, tm, INDEXER_SERVO);
+        HardwareInitializer.init(hardwareMap, tm, COLOR_SENSOR_A);
+        HardwareInitializer.init(hardwareMap, tm, COLOR_SENSOR_B);
 
         tm.update();
         waitForStart();

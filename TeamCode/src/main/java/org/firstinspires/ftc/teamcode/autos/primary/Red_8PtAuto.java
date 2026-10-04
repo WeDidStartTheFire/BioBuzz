@@ -1,51 +1,51 @@
 package org.firstinspires.ftc.teamcode.autos.primary;
 
-import static java.lang.Math.toRadians;
+import static com.pedropathing.ivy.Scheduler.schedule;
+import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
-import com.pedropathing.geometry.BezierLine;
-import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.PathChain;
+import com.pedropathing.api.Paths;
+import com.pedropathing.api.PoseFactory;
+import com.pedropathing.ivy.Scheduler;
+import com.pedropathing.math.Pose;
+import com.pedropathing.paths.Path;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.autos.BaseAuto;
 import org.firstinspires.ftc.teamcode.enums.Color;
 
-@Autonomous(name = "(Red) 8 Points")
+@Autonomous(name = Red_8PtAuto.name)
 public class Red_8PtAuto extends BaseAuto<Red_8PtAuto.State> {
-    private final State initialState = State.START_TO_PARK;
-    private PathChain startToPark;
+    private final PoseFactory poseFactory = PoseFactory.degrees();
+    private final Pose start = poseFactory.of(103.1667, 133.4205, 90);
+    private final Pose end = poseFactory.of(14.2858, 101.3141, 180);
+    private Path path1;
+
+    static final String name = "🟥Red🟥 8 Points";
+    static final Color color = Color.RED;
+    private final State initialState = State.NONE;
+
     protected enum State {
-        FINISHED,
-        START_TO_PARK
+        NONE
     }
-    private final Pose start = new Pose(103.1667, 133.4205, toRadians(90));
-    private final Pose end = new Pose(14.2858, 101.3141, toRadians(180));
 
 
     @Override
     protected void buildPaths() {
-        startToPark = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(start, end))
-                .setLinearHeadingInterpolation(start.getHeading(), end.getHeading())
-                .build();
+        path1 = Paths.line(start, end).linear(start, end);
+    }
+
+    @Override
+    protected void onStart() {
+        schedule(follow(robot.drivetrain.follower, path1));
     }
 
     @Override
     protected void pathUpdate() {
-        robot.drivetrain.follower.update();
-        switch (state) {
-            case START_TO_PARK:
-                robot.drivetrain.follower.followPath(startToPark, true);
-                setState(State.FINISHED);
-                break;
-            case FINISHED:
-                break;
-        }
+        Scheduler.execute();
     }
+
     @Override
     protected void configure() {
-        super.startPose = start;
-        super.color = Color.RED;
-        super.initialState = initialState;
+        super.configure(start, initialState, color, name);
     }
 }

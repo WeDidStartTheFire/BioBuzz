@@ -46,14 +46,17 @@ public class TestAuto extends BaseAuto<TestAuto.State> {
                 setState(TestAuto.State.P2);
                 break;
             case P2:
+                if (robot.drivetrain.follower.isBusy()) break;
                 robot.drivetrain.follower.follow(pa2);
                 setState(TestAuto.State.P3);
                 break;
             case P3:
+                if (robot.drivetrain.follower.isBusy()) break;
                 robot.drivetrain.follower.follow(pa3);
                 setState(TestAuto.State.P4);
                 break;
             case P4:
+                if (robot.drivetrain.follower.isBusy()) break;
                 robot.drivetrain.follower.follow(pa4);
                 setState(State.FINISHED);
                 break;

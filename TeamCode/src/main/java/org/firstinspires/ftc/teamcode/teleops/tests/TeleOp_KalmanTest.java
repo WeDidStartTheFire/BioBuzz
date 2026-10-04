@@ -1,21 +1,20 @@
 package org.firstinspires.ftc.teamcode.teleops.tests;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
-import static org.firstinspires.ftc.teamcode.RobotState.pose;
-import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.VERBOSE;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 
-import com.pedropathing.math.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.MatchContext;
-import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.enums.Color;
+import org.firstinspires.ftc.teamcode.enums.RobotEnvironment;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 @TeleOp(name = "Kalman Test", group = "Test")
@@ -27,23 +26,21 @@ public class TeleOp_KalmanTest extends OpMode {
 
     @Override
     public void init() {
-        Pose pose = loadOdometryPosition();
-        validStartPose = pose != null;
-        RobotState.pose = validStartPose ? pose : Pose.zero();
         robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
         robot.drivetrain.useKalmanFollower();
-        robot.drivetrain.follower.setPose(RobotState.pose);
+        robot.drivetrain.setPose(loadOdometryPosition());
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
         tm = robot.drivetrain.tm;
-        if (!validStartPose)
+        tm.setEnvironment(RobotEnvironment.DEBUG);
+        if (!robot.drivetrain.isPoseValid())
             tm.warn(TelemetryUtils.ErrorLevel.MEDIUM, "Robot Centric driving will be used until the position is reset");
-        else tm.print("Field Centric Driving", "✅");
-        tm.print("Color", "🟦🟦Blue🟦🟦");
+        else tm.print("Field Centric Driving", "✅", INFO);
+        tm.print("Color", "🟦🟦Blue🟦🟦", INFO);
     }
 
     @Override
     public void init_loop() {
-        if (pose != null) tm.print(pose);
+        if (robot.drivetrain.getPose() != null) tm.print(robot.drivetrain.getPose(), INFO);
         teleop.update();
     }
 
@@ -54,20 +51,20 @@ public class TeleOp_KalmanTest extends OpMode {
 
     @Override
     public void loop() {
-        teleop.drivetrainLogic(validStartPose);
+        teleop.drivetrainLogic();
         teleop.updateIntake();
         teleop.updateLauncherTeleOp();
         LLResult result = robot.limelight.getLatestResult();
         if (result != null) {
-            tm.print("LL Pose MT1", result.getBotpose());
-            tm.print("LL Std Dev MT1 X", result.getStddevMt1()[0]);
-            tm.print("LL Std Dev MT1 Y", result.getStddevMt1()[1]);
-            tm.print("LL Std Dev MT1 Heading", result.getStddevMt1()[5]);
-            tm.print("====================");
-            tm.print("LL Pose MT2", result.getBotpose_MT2());
-            tm.print("LL Std Dev MT2 X", result.getStddevMt2()[0]);
-            tm.print("LL Std Dev MT2 Y", result.getStddevMt2()[1]);
-            tm.print("LL Std Dev MT2 Heading", result.getStddevMt2()[5]);
+            tm.print("LL Pose MT1", result.getBotpose(), VERBOSE);
+            tm.print("LL Std Dev MT1 X", result.getStddevMt1()[0], VERBOSE);
+            tm.print("LL Std Dev MT1 Y", result.getStddevMt1()[1], VERBOSE);
+            tm.print("LL Std Dev MT1 Heading", result.getStddevMt1()[5], VERBOSE);
+            tm.print("====================", VERBOSE);
+            tm.print("LL Pose MT2", result.getBotpose_MT2(), VERBOSE);
+            tm.print("LL Std Dev MT2 X", result.getStddevMt2()[0], VERBOSE);
+            tm.print("LL Std Dev MT2 Y", result.getStddevMt2()[1], VERBOSE);
+            tm.print("LL Std Dev MT2 Heading", result.getStddevMt2()[5], VERBOSE);
         }
         teleop.update();
     }

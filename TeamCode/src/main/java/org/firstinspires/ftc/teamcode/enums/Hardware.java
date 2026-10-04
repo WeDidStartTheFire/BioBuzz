@@ -60,6 +60,6 @@ public enum Hardware {
     }
 
     public String getWarnMessage() {
-        return name + " is disconnected. Please check " + hub.toString() + " " + portType.toString() + " " + port;
+        return name + " is disconnected. Please check " + hub + " " + portType + " " + port;
     }
 }

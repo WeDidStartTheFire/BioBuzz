@@ -18,6 +18,8 @@ public class HardwareInitializer {
      *                         retrieved
      * @param deviceName       the name of the device object to be retrieved
      * @return the requested device or null if not present
+     * @see HardwareInitializer#init(HardwareMap, TelemetryUtils, Hardware)
+     * @see Hardware
      */
     public static @Nullable <T> T init(@NonNull HardwareMap hardwareMap,
                                        @NonNull Class<T> classOrInterface,
@@ -31,7 +33,19 @@ public class HardwareInitializer {
         return device;
     }
 
-    public static @Nullable <T> T init(@NonNull HardwareMap hardwareMap, @Nullable TelemetryUtils tm,
+    /**
+     * Safely retrieves the device associated with the hardware enum. If no such device is found,
+     * null is returned and a warning is printed if a {@link TelemetryUtils} instance is provided.
+     *
+     * @param hardwareMap hardware map of the robot
+     * @param tm          the {@link TelemetryUtils} instance to use for warnings
+     * @param hardware    the hardware enum to use for device lookup
+     * @return the requested device or null if not present
+     * @see HardwareInitializer#init(HardwareMap, Class, String)
+     * @see Hardware
+     */
+    public static @Nullable <T> T init(@NonNull HardwareMap hardwareMap,
+                                       @Nullable TelemetryUtils tm,
                                        @NonNull Hardware hardware) {
         try {
             @SuppressWarnings("unchecked")

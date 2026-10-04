@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleops.debug;
 
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.LOW;
+import static org.firstinspires.ftc.teamcode.enums.RobotEnvironment.PRACTICE;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -22,6 +23,7 @@ public class TeleOp_Debug_No_Driving extends OpMode {
 
     @Override
     public void init() {
+        tm.setEnvironment(PRACTICE);
         servoA = HardwareInitializer.init(hardwareMap, Servo.class, "servoA");
         servoB = HardwareInitializer.init(hardwareMap, Servo.class, "servoB");
         servoC = HardwareInitializer.init(hardwareMap, Servo.class, "servoC");

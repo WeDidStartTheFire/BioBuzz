@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.controllers;
 import com.pedropathing.utils.Timer;
 
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
-import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.robot.mechanisms.Intake;
 
 import java.util.concurrent.TimeUnit;
 
@@ -13,21 +13,20 @@ public class IntakeController {
     private final Timer stateTimer = new Timer();
 
     private boolean isBusy;
-    private final Robot robot;
+    private final Intake intake;
     private final TelemetryUtils tm;
 
     private enum State {
         IDLE,
-        INNER_INTAKE,
         INTAKE,
         MANUAL_INTAKE,
         OUTTAKE,
     }
 
-    public IntakeController(Robot robot) {
-        tm = robot.drivetrain.tm;
+    public IntakeController(Intake intake, TelemetryUtils tm) {
+        this.tm = tm;
         setState(State.IDLE);
-        this.robot = robot;
+        this.intake = intake;
         isBusy = false;
     }
 
@@ -35,8 +34,8 @@ public class IntakeController {
      * Updates the LEDs and the IntakeController state machine:<p>
      * INTAKE -> IDLE: When indexer is full<p>
      * Other transitions controlled via calling methods
+     *
      * @see #intake()
-     * @see #innerIntake()
      * @see #outtake()
      * @see #stop()
      */
@@ -44,19 +43,14 @@ public class IntakeController {
         switch (state) {
             case IDLE:
                 isBusy = false;
-                robot.intake.power(0);
-                break;
-            case INNER_INTAKE:
-                isBusy = false;
-                robot.intake.powerInside(-1);
-                robot.intake.powerOutside(0);
+                intake.power(0);
                 break;
             case MANUAL_INTAKE:
             case INTAKE:
-                robot.intake.power(-1);
+                intake.power(-1);
                 break;
             case OUTTAKE:
-                robot.intake.power(1);
+                intake.power(1);
                 break;
         }
     }
@@ -87,21 +81,6 @@ public class IntakeController {
     public void manualIntake() {
         isBusy = true;
         setState(State.MANUAL_INTAKE);
-    }
-
-    /**
-     * Turns on intaking the inner intake only
-     */
-    public void innerIntake() {
-        setStateNoWait(State.INNER_INTAKE);
-        isBusy = false;
-    }
-
-    /**
-     * Stops the intake only if it is inner intaking
-     */
-    public void stopInnerIntake() {
-        if (state == State.INNER_INTAKE) setStateNoWait(State.IDLE);
     }
 
     /**

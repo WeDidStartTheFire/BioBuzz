@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.MatchContext;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.enums.Color;
+import org.firstinspires.ftc.teamcode.enums.RobotEnvironment;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
@@ -41,6 +42,7 @@ public class TeleOp_Debug extends OpMode {
         robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
 
         tm = robot.drivetrain.tm;
+        tm.setEnvironment(RobotEnvironment.PRACTICE);
         servoA = HardwareInitializer.init(hardwareMap, Servo.class, "servoA");
         servoB = HardwareInitializer.init(hardwareMap, Servo.class, "servoB");
         servoC = HardwareInitializer.init(hardwareMap, Servo.class, "servoC");

@@ -1,17 +1,16 @@
 package org.firstinspires.ftc.teamcode.teleops.other;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
-import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.CRITICAL;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
 import static org.firstinspires.ftc.teamcode.Utils.addLine;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 
-import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.MatchContext;
-import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.enums.Color;
@@ -38,11 +37,8 @@ public class TeleOp_CollectColorSensorData extends OpMode {
     public void init() {
         File dir = new File(hardwareMap.appContext.getFilesDir().toURI());
         File file = new File(dir, "colors_0.csv");
-        Pose pose = loadOdometryPosition();
-        validStartPose = pose != null;
-        RobotState.pose = validStartPose ? pose : Pose.zero();
         robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
-        robot.drivetrain.follower.setPose(RobotState.pose);
+        robot.drivetrain.setPose(loadOdometryPosition());
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
         tm = robot.drivetrain.tm;
         int i = 0;
@@ -50,7 +46,7 @@ public class TeleOp_CollectColorSensorData extends OpMode {
             try {
                 if (file.createNewFile()) break;
             } catch (IOException e) {
-                tm.print(Arrays.toString(e.getStackTrace()));
+                tm.warn(CRITICAL, Arrays.toString(e.getStackTrace()));
                 tm.update();
                 throw new RuntimeException(e);
             }
@@ -63,10 +59,10 @@ public class TeleOp_CollectColorSensorData extends OpMode {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        if (!validStartPose)
+        if (!robot.drivetrain.isPoseValid())
             tm.warn(TelemetryUtils.ErrorLevel.MEDIUM, "Robot Centric driving will be used until the position is reset");
-        else tm.print("Field Centric Driving", "✅");
-        tm.print("Color", "🟦🟦Blue🟦🟦");
+        else tm.print("Field Centric Driving", "✅", INFO);
+        tm.print("Color", "🟦🟦Blue🟦🟦", INFO);
     }
 
     @Override
@@ -127,7 +123,7 @@ public class TeleOp_CollectColorSensorData extends OpMode {
                 argbB.val[3],
                 distanceB));
         }
-        teleop.drivetrainLogic(validStartPose);
+        teleop.drivetrainLogic();
         teleop.updateIntake();
         teleop.updateLauncherTeleOp();
         teleop.update();

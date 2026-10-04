@@ -1,18 +1,17 @@
 package org.firstinspires.ftc.teamcode.teleops.tests;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
-import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.VERBOSE;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 
-import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.MatchContext;
-import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.enums.Color;
+import org.firstinspires.ftc.teamcode.enums.RobotEnvironment;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.opencv.core.Scalar;
 
@@ -27,13 +26,11 @@ public class Test_ColorSensor extends OpMode {
 
     @Override
     public void init() {
-        Pose pose = loadOdometryPosition();
-        validStartPose = pose != null;
-        RobotState.pose = validStartPose ? pose : Pose.zero();
         robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
-        robot.drivetrain.follower.setPose(RobotState.pose);
+        robot.drivetrain.setPose(loadOdometryPosition());
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
         tm = robot.drivetrain.tm;
+        tm.setEnvironment(RobotEnvironment.DEBUG);
     }
 
     @Override
@@ -53,26 +50,26 @@ public class Test_ColorSensor extends OpMode {
         Scalar argb = robot.colorSensor.getRGB_A();
         dt0 = (getRuntime() - dt0) * 1000;
 //        float brightness = robot.colorSensor.getBrightness();
-        tm.print("==============");
-        tm.print("A0", ((int) (argb.val[0] * 10000)) / 10000.0);
-        tm.print("R0", ((int) (argb.val[1] * 10000)) / 10000.0);
-        tm.print("G0", ((int) (argb.val[2] * 10000)) / 10000.0);
-        tm.print("B0", ((int) (argb.val[3] * 10000)) / 10000.0);
-        tm.print("dt0", dt0);
-        tm.print("==============");
-//        tm.print("A1", brightness);
-        tm.print("R1", ((int) (rgb.val[0] * 10000)) / 10000.0);
-        tm.print("G1", ((int) (rgb.val[1] * 10000)) / 10000.0);
-        tm.print("B1", ((int) (rgb.val[2] * 10000)) / 10000.0);
-        tm.print("dt1", dt1);
-//        tm.print("==============");
-//        tm.print("R2", ((int) (rgb2.val[0] * 10000)) / 10000.0);
-//        tm.print("G2", ((int) (rgb2.val[1] * 10000)) / 10000.0);
-//        tm.print("B2", ((int) (rgb2.val[2] * 10000)) / 10000.0);
-        tm.print("dt2", dt2);
-        tm.print("==============");
-        tm.print("Distance A (in)", robot.colorSensor.getInchesA());
-        tm.print("Distance B (in)", robot.colorSensor.getInchesB());
-        tm.update();
+        tm.print("==============", VERBOSE);
+        tm.print("A0", ((int) (argb.val[0] * 10000)) / 10000.0, VERBOSE);
+        tm.print("R0", ((int) (argb.val[1] * 10000)) / 10000.0, VERBOSE);
+        tm.print("G0", ((int) (argb.val[2] * 10000)) / 10000.0, VERBOSE);
+        tm.print("B0", ((int) (argb.val[3] * 10000)) / 10000.0, VERBOSE);
+        tm.print("dt0", dt0, VERBOSE);
+        tm.print("==============", VERBOSE);
+//        tm.print("A1", brightness, VERBOSE);
+        tm.print("R1", ((int) (rgb.val[0] * 10000)) / 10000.0, VERBOSE);
+        tm.print("G1", ((int) (rgb.val[1] * 10000)) / 10000.0, VERBOSE);
+        tm.print("B1", ((int) (rgb.val[2] * 10000)) / 10000.0, VERBOSE);
+        tm.print("dt1", dt1, VERBOSE);
+//        tm.print("==============", VERBOSE);
+//        tm.print("R2", ((int) (rgb2.val[0] * 10000)) / 10000.0, VERBOSE);
+//        tm.print("G2", ((int) (rgb2.val[1] * 10000)) / 10000.0, VERBOSE);
+//        tm.print("B2", ((int) (rgb2.val[2] * 10000)) / 10000.0, VERBOSE);
+        tm.print("dt2", dt2, VERBOSE);
+        tm.print("==============", VERBOSE);
+        tm.print("Distance A (in)", robot.colorSensor.getInchesA(), VERBOSE);
+        tm.print("Distance B (in)", robot.colorSensor.getInchesB(), VERBOSE);
+        tm.updateOnlyPanels();
     }
 }

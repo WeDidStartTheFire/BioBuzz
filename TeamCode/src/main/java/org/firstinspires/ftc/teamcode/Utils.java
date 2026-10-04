@@ -27,7 +27,7 @@ public class Utils {
      * @param pos Pose to save
      */
     public static void saveOdometryPosition(@NonNull Pose pos) {
-        RobotState.savedPose = pos;
+        SavedVariables.savedPose = pos;
     }
 
     /**
@@ -37,7 +37,7 @@ public class Utils {
      */
     @Nullable
     public static Pose loadOdometryPosition() {
-        return RobotState.savedPose;
+        return SavedVariables.savedPose;
     }
 
     public static void addLine(BufferedWriter bw, String line) {

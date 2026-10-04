@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode.controllers;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
 import static org.firstinspires.ftc.teamcode.ProjectileSolver.getLaunchSolution;
-import static org.firstinspires.ftc.teamcode.RobotState.pose;
-import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.Utils.lerp;
 import static org.firstinspires.ftc.teamcode.constants.ResetConstants.SNAP_THRESHOLD_DISTANCE;
 import static org.firstinspires.ftc.teamcode.constants.ResetConstants.SNAP_THRESHOLD_HEADING;
@@ -28,13 +26,12 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.MatchContext;
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
-import org.firstinspires.ftc.teamcode.RobotState;
+import org.firstinspires.ftc.teamcode.robot.mechanisms.Drivetrain;
 import org.firstinspires.ftc.teamcode.pedro.controllers.PIDFController;
-import org.firstinspires.ftc.teamcode.robot.Robot;
 
 public class DriveController {
 
-    private final Robot robot;
+    private final Drivetrain drivetrain;
     private final PIDFController headingController = new PIDFController(teleopHeadingPID);
     private boolean aiming = false, following = false;
     private final MatchContext context;
@@ -42,10 +39,10 @@ public class DriveController {
     /**
      * Initializes the DriveController with robot instance.
      *
-     * @param robot Robot instance containing drivetrain hardware
+     * @param drivetrain Drivetrain instance
      */
-    public DriveController(Robot robot, MatchContext context) {
-        this.robot = robot;
+    public DriveController(Drivetrain drivetrain, MatchContext context) {
+        this.drivetrain = drivetrain;
         this.context = context;
     }
 
@@ -71,10 +68,11 @@ public class DriveController {
 
     /**
      * Snaps to closest 90° angle or wall position if close enough, otherwise keeps the current
-     * angle. If {@code RobotState.pose == null} (unlikely) it makes an assumption about where it's
+     * angle. If {@code pose == null} (unlikely) it makes an assumption about where it's
      * getting zeroed (human player zone corner facing human player, like in {@link #hardReset()})
      */
     public boolean softReset() {
+        Pose pose = drivetrain.pose();
         double heading = pose == null ? (context.alliance() == BLUE ? 0 : PI) : pose.heading();
         double newHeading = round(heading * 2 / PI) * PI / 2;
         if (abs(newHeading - heading) > SNAP_THRESHOLD_HEADING) return false;
@@ -85,10 +83,10 @@ public class DriveController {
         x = abs(x - WALL_LOW) <= SNAP_THRESHOLD_DISTANCE ? WALL_LOW : abs(x - WALL_HIGH) <= SNAP_THRESHOLD_DISTANCE ? WALL_HIGH : x;
         double y = pose == null ? WALL_LOW : pose.y();
         y = abs(y - WALL_LOW) <= SNAP_THRESHOLD_DISTANCE ? WALL_LOW : abs(y - WALL_HIGH) <= SNAP_THRESHOLD_DISTANCE ? WALL_HIGH : y;
-        if (heading == 0) x -= 2;
-        else if (heading == PI / 2) y -= 2;
-        else if (heading == PI) x += 2;
-        else if (heading == PI * 1.5) y += 2;
+        if (abs(heading - 0) < .0001) x -= 2;
+        else if (abs(heading - PI / 2) < .0001) y -= 2;
+        else if (abs(heading - PI) < .0001) x += 2;
+        else if (abs(heading - PI * 1.5) < .0001) y += 2;
         resetPose(new Pose(x, y, heading));
         return true;
     }
@@ -99,9 +97,7 @@ public class DriveController {
      * @param pose Pose to set
      */
     public void resetPose(Pose pose) {
-        validStartPose = true;
-        robot.drivetrain.follower.setPose(pose);
-        RobotState.pose = pose;
+        drivetrain.setPose(pose);
     }
 
     /**
@@ -114,11 +110,12 @@ public class DriveController {
     /**
      * Automatically moves the robot to the closest waypoint
      */
-    public void follow(Pose pose) {
-        if (RobotState.pose == null) return;
+    public void follow(Pose endPose) {
+        Pose currPose = drivetrain.getPose();
+        if (currPose == null) return;
         following = true;
         aiming = false;
-        Path path = Paths.line(RobotState.pose, pose).linear(RobotState.pose, pose);
+        Path path = Paths.line(currPose, endPose).linear(currPose, endPose);
         robot.drivetrain.follower.follow(path);
     }
 
@@ -134,7 +131,7 @@ public class DriveController {
         if ((abs(gp.left_stick_y) > .05 ||
                 abs(gp.left_stick_x) > .05 || abs(gp.right_stick_x) > .05)) following = false;
 
-        if (!robot.drivetrain.follower.isBusy() && following) following = false;
+        if (!drivetrain.follower.isBusy() && following) following = false;
 
         aiming = aiming && abs(gp.right_stick_x) <= .05;
         ProjectileSolver.LaunchSolution sol = aiming ? getLaunchSolution() : null;
@@ -145,11 +142,12 @@ public class DriveController {
                 (context.alliance() == RED || !fieldCentric ? -1 : 1);
         double turn = -gp.right_stick_x * speedMultiplier;
         DrivePowers powers = new DrivePowers(forward, lateral, turn);
+        Pose pose = drivetrain.follower.pose();
         powers = ManualDrive.fieldCentric(powers, pose == null ? 0 : pose.heading(), 0);
 
         if (aiming && sol != null)
-            ManualDrive.headingLock(robot.drivetrain.follower, headingController, powers, sol.phi);
-        else ManualDrive.driveOrHold(robot.drivetrain.follower, powers);
+            ManualDrive.headingLock(drivetrain.follower, headingController, powers, sol.phi);
+        else ManualDrive.driveOrHold(drivetrain.follower, powers);
     }
 
     /**
@@ -163,7 +161,7 @@ public class DriveController {
         double speedMultiplier = lerp(gp.left_trigger, speeds[2], speeds[0]);
 
         if (fieldCentric) {
-            double angle = PI / 2 - robot.drivetrain.getYaw(RADIANS);
+            double angle = PI / 2 - drivetrain.getYaw(RADIANS);
 
             double joystickAngle = Math.atan2(gp.left_stick_y, gp.left_stick_x);
             double moveAngle = joystickAngle - angle;
@@ -196,11 +194,11 @@ public class DriveController {
         }
 
         if (abs(leftFrontPower) > .05 || abs(rightFrontPower) > .05 || abs(leftBackPower) > .05 ||
-                abs(rightBackPower) > .05) robot.drivetrain.follower.stop();
+                abs(rightBackPower) > .05) drivetrain.follower.breakFollowing();
 
         // Send calculated power to wheels
-        if (!robot.drivetrain.follower.isBusy())
-            robot.drivetrain.setMotorVelocities(
+        if (!drivetrain.follower.isBusy())
+            drivetrain.setMotorVelocities(
                     leftBackPower * 5000 * speedMultiplier,
                     rightBackPower * 5000 * speedMultiplier,
                     leftFrontPower * 5000 * speedMultiplier,

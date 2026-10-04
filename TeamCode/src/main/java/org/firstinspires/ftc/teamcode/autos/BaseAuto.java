@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.autos;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.AUTO;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.DEBUG;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.VERBOSE;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
 
 import com.pedropathing.ivy.Scheduler;
@@ -9,7 +12,6 @@ import com.pedropathing.utils.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.MatchContext;
-import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.IntakeController;
 import org.firstinspires.ftc.teamcode.enums.Color;
@@ -64,8 +66,8 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         robot.drivetrain.follower.setPose(startPose);
         tm = robot.drivetrain.tm;
         buildPaths();
-        intakeController = new IntakeController(robot);
-        tm.print(name + " auto initialized");
+        intakeController = new IntakeController(robot.intake, tm);
+        tm.print(name + " auto initialized", INFO);
         tm.update();
         setStateNoWait(initialState);
         robot.initBulkCache();
@@ -85,26 +87,25 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
     @Override
     public final void loop() {
         robot.updateBulkCache();
-        robot.drivetrain.follower.update();
-        RobotState.pose = robot.drivetrain.follower.pose();
+        robot.drivetrain.update();
         pathUpdate();
         robot.turret.update(true);
         intakeController.update();
         robot.led.update();
 
         tm.drawRobot(robot.drivetrain.follower, 250);
-        tm.print("Path State", state);
-        tm.print("Intake State", intakeController.getState());
-        if (robot.drivetrain.follower.pose() != null) tm.print(robot.drivetrain.follower.pose());
-        tm.print("Motor Goal Vel", robot.launcher.getGoalVel(shootPose, null));
-        tm.print("Launcher Vel", robot.launcher.getCachedVel());
+        tm.print("Path State", state, INFO);
+        tm.print("Intake State", intakeController.getState(), INFO);
+        if (robot.drivetrain.pose() != null) tm.print(robot.drivetrain.pose(), DEBUG);
+        tm.print("Motor Goal Vel", robot.launcher.getGoalVel(shootPose, null), VERBOSE);
+        tm.print("Launcher Vel", robot.launcher.getCachedVel(), VERBOSE);
         double t = getRuntime();
         if (lastUpdateTime != 0) {
             int ms = (int) ((t - lastUpdateTime) * 1000);
             totalMs += ms;
             totalUpdates++;
-            tm.print("dt (ms)", ms);
-            tm.print("avg dt (ms)", totalMs / totalUpdates);
+            tm.print("dt (ms)", ms, VERBOSE);
+            tm.print("avg dt (ms)", totalMs / totalUpdates, VERBOSE);
         }
         lastUpdateTime = t;
         tm.updateOnlyPanels(5);
@@ -112,10 +113,9 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
 
     @Override
     public final void stop() {
-        robot.drivetrain.follower.update();
+        robot.drivetrain.update();
         robot.drivetrain.follower.stop();
-        if (robot.drivetrain.follower.pose() != null)
-            saveOdometryPosition(robot.drivetrain.follower.pose());
+        if (robot.drivetrain.pose() != null) saveOdometryPosition(robot.drivetrain.pose());
         intakeController.stop();
         robot.limelight.stop();
         tm.showLogs();

@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
-import static org.firstinspires.ftc.teamcode.RobotState.pose;
-import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.MEDIUM;
 import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.BALL_VEL_TO_MOTOR_VEL_COEFF;
 import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.BALL_VEL_TO_MOTOR_VEL_CONST;
@@ -22,6 +20,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
+import org.firstinspires.ftc.teamcode.PoseGetter;
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.pedro.controllers.PIDFController;
@@ -43,6 +42,7 @@ public class Launcher {
     private final TelemetryUtils tm;
     private double cachedVel;
     private double velocityModifier;
+    private final @NonNull PoseGetter poseGetter;
 
     /**
      * Initializes the launcher with hardware components.
@@ -50,8 +50,9 @@ public class Launcher {
      * @param hardwareMap HardwareMap containing motor configurations
      * @param tm          TelemetryUtils instance for debugging output
      */
-    public Launcher(HardwareMap hardwareMap, TelemetryUtils tm) {
+    public Launcher(HardwareMap hardwareMap, TelemetryUtils tm, @NonNull PoseGetter poseGetter) {
         this.tm = tm;
+        this.poseGetter = poseGetter;
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
         launcherMotorA = HardwareInitializer.init(hardwareMap, tm, LAUNCHER_MOTOR_A);
         if (launcherMotorA != null) {
@@ -81,7 +82,7 @@ public class Launcher {
      * @return The target velocity in ticks/sec
      */
     public double getGoalVel() {
-        return getGoalVel(pose, null);
+        return getGoalVel(poseGetter.getPose(), poseGetter.getVel());
     }
 
     /**
@@ -108,7 +109,7 @@ public class Launcher {
     public void spin() {
         if (launcherMotorA != null) launcherMotorA.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         if (launcherMotorB != null) launcherMotorB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        double goalVel = getGoalVel(pose, vel);
+        double goalVel = getGoalVel();
         if (!spinning) spinningTimer.reset();
         spinning = true;
         double motorVel = getVel();

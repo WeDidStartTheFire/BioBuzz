@@ -1,24 +1,24 @@
 package org.firstinspires.ftc.teamcode.teleops.other;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
-import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.VERBOSE;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 import static java.lang.Thread.sleep;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.configurables.annotations.IgnoreConfigurable;
-import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.MatchContext;
-import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.constants.TurretConstants;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.enums.Color;
+import org.firstinspires.ftc.teamcode.enums.RobotEnvironment;
 import org.firstinspires.ftc.teamcode.pedro.controllers.PIDFCoefficients;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
@@ -56,14 +56,12 @@ public class TeleOp_TuneTurretPIDF extends OpMode {
 
     @Override
     public void init() {
-        Pose pose = loadOdometryPosition();
-        validStartPose = pose != null;
-        RobotState.pose = validStartPose ? pose : Pose.zero();
         robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
-        robot.drivetrain.follower.setPose(RobotState.pose);
+        robot.drivetrain.setPose(loadOdometryPosition());
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
         tm = robot.drivetrain.tm;
-        tm.print("Tune Turret PIDF Initialized");
+        tm.setEnvironment(RobotEnvironment.DEBUG);
+        tm.print("Tune Turret PIDF Initialized", INFO);
         tm.update();
         t = getRuntime();
     }
@@ -91,19 +89,19 @@ public class TeleOp_TuneTurretPIDF extends OpMode {
         robot.turret.update(gamepad2.left_stick_button);
         double pos = robot.turret.getEncoderPosition();
         double error = pos - encoderGoal;
-        tm.print("Position", pos);
-        tm.print("Target", encoderGoal);
-        tm.print("Error", error);
-        tm.print("---------------------------");
-        tm.print("P", P);
-        tm.print("D", D);
-        tm.print("Increment", increments[incIdx]);
-        tm.print("---------------------------");
-        tm.print("PIDF", pidf);
+        tm.print("Position", pos, VERBOSE);
+        tm.print("Target", encoderGoal, VERBOSE);
+        tm.print("Error", error, VERBOSE);
+        tm.print("---------------------------", VERBOSE);
+        tm.print("P", P, INFO);
+        tm.print("D", D, INFO);
+        tm.print("Increment", increments[incIdx], INFO);
+        tm.print("---------------------------", INFO);
+        tm.print("PIDF", pidf, VERBOSE);
         DcMotor.RunMode turretMode = robot.turret.getRunMode();
-        if (turretMode != null) tm.print("Run Mode", turretMode);
-        tm.print("dt (ms)", dt * 1000);
-        tm.update();
+        if (turretMode != null) tm.print("Run Mode", turretMode, INFO);
+        tm.print("dt (ms)", dt * 1000, INFO);
+        tm.updateOnlyPanels();
         try {
             sleep(delay);
         } catch (InterruptedException e) {

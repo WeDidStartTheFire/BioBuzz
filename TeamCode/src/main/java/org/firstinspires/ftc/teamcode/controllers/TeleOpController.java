@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode.controllers;
 
-import static org.firstinspires.ftc.teamcode.RobotState.pose;
-import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
-import static org.firstinspires.ftc.teamcode.RobotState.vel;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.DEBUG;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.VERBOSE;
 import static org.firstinspires.ftc.teamcode.constants.ResetConstants.HARD_RESET_WAIT;
 import static org.firstinspires.ftc.teamcode.constants.ResetConstants.SOFT_RESET_WAIT;
 
@@ -43,12 +43,12 @@ public class TeleOpController {
     public TeleOpController(Robot robot, Gamepad gamepad1, Gamepad gamepad2) {
         this.robot = robot;
         this.robot.initBulkCache();
-        intakeController = new IntakeController(robot);
-        driveController = new DriveController(robot, robot.context());
+        tm = robot.drivetrain.tm;
+        intakeController = new IntakeController(robot.intake, tm);
+        driveController = new DriveController(robot.drivetrain, robot.context());
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
         follower = robot.drivetrain.follower;
-        tm = robot.drivetrain.tm;
     }
 
     /**
@@ -70,14 +70,12 @@ public class TeleOpController {
             ms = Math.toIntExact((t - lastUpdateTime) / 1_000_000);
             totalMs += ms;
             totalUpdates++;
-            tm.print("dt (ms)", ms);
-            tm.print("avg dt (ms)", totalMs / totalUpdates);
+            tm.print("dt (ms)", ms, VERBOSE);
+            tm.print("avg dt (ms)", totalMs / totalUpdates, VERBOSE);
         }
         lastUpdateTime = t;
         robot.updateBulkCache();
-        follower.update();
-        if (follower.pose() != null) pose = follower.pose();
-        vel = follower.velocity();
+        robot.drivetrain.update();
         if (gamepad2.rightStickButtonWasPressed()) {
             robot.turret.setTarget(Turret.Target.MANUAL);
             robot.turret.toggleTargetChangeable();
@@ -101,7 +99,15 @@ public class TeleOpController {
     }
 
     /**
-     * Logic for the drivetrain during TeleOp
+     * Logic for the drivetrain during TeleOp. Defaults to using field centric driving if current
+     * position is valid. Defaults to using Pedro Pathing for movement.
+     */
+    public void drivetrainLogic() {
+        drivetrainLogic(robot.drivetrain.isPoseValid());
+    }
+
+    /**
+     * Logic for the drivetrain during TeleOp. Defaults to using Pedro Pathing for movement.
      *
      * @param fieldCentric Whether to use field centric driving
      */
@@ -116,13 +122,13 @@ public class TeleOpController {
      * @param usePedro     Whether to use Pedro Pathing
      */
     public void drivetrainLogic(boolean fieldCentric, boolean usePedro) {
-        if (validStartPose && usePedro) {
+        if (robot.drivetrain.isPoseValid() && usePedro) {
 //            if (gamepad1.xWasPressed())
-//                driveController.follow(RobotState.color == BLUE ? BLUE_FAR_LAUNCH : RED_FAR_LAUNCH);
+//                driveController.follow(robot.context().alliance() == BLUE ? BLUE_FAR_LAUNCH : RED_FAR_LAUNCH);
 //            if (gamepad1.aWasPressed())
-//                driveController.follow(RobotState.color == BLUE ? BLUE_HUMAN_PLAYER : RED_HUMAN_PLAYER);
+//                driveController.follow(robot.context().alliance() == BLUE ? BLUE_HUMAN_PLAYER : RED_HUMAN_PLAYER);
 //            if (gamepad1.yWasPressed())
-//                driveController.follow(RobotState.color == BLUE ? BLUE_BASE_ZONE : RED_BASE_ZONE);
+//                driveController.follow(robot.context().alliance() == BLUE ? BLUE_BASE_ZONE : RED_BASE_ZONE);
             if (gamepad1.bWasPressed()) driveController.toggleAiming();
         }
         if (gamepad1.dpadDownWasPressed()) {
@@ -155,10 +161,10 @@ public class TeleOpController {
         if (gamepad1.dpadLeftWasPressed()) robotCentric = true;
         else if (gamepad1.dpadRightWasPressed()) robotCentric = false;
         fieldCentric = fieldCentric && !robotCentric;
-        tm.print("Robot Centric", robotCentric);
-        tm.print("Field Centric", fieldCentric);
+        tm.print("Robot Centric", robotCentric, INFO);
+        tm.print("Field Centric", fieldCentric, INFO);
         tm.drawRobot(follower, 250);
-        if (pose != null) tm.print(pose);
+        if (robot.drivetrain.getPose() != null) tm.print(robot.drivetrain.getPose(), DEBUG);
         if (usePedro) driveController.updateTeleOp(gamepad1, fieldCentric);
         else driveController.updateTeleOpNoPedro(gamepad1, fieldCentric);
     }
@@ -173,8 +179,6 @@ public class TeleOpController {
         else if (gamepad1.left_bumper) intakeController.manualIntake();
         else if (intakeController.isBusy()) intakeController.stop();
         intakeController.update();
-        // Stops innerIntake if it isn't called by the next call to updateIntake()
-        intakeController.stopInnerIntake();
     }
 
 
@@ -186,7 +190,7 @@ public class TeleOpController {
         if (gamepad2.dpadUpWasPressed()) robot.launcher.increaseVelocityModifier(25);
         if (gamepad2.dpadDownWasPressed()) robot.launcher.increaseVelocityModifier(-25);
 
-        tm.print("Launcher Vel", robot.launcher.getCachedVel());
-        tm.print("Goal", robot.launcher.getGoalVel());
+        tm.print("Launcher Vel", robot.launcher.getCachedVel(), VERBOSE);
+        tm.print("Goal", robot.launcher.getGoalVel(), VERBOSE);
     }
 }

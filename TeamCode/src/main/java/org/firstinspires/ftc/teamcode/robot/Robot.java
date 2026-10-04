@@ -37,8 +37,8 @@ public class Robot {
         colorSensor = new ColorSensor(hardwareMap, tm);
         led = new LED(hardwareMap, tm);
         limelight = new Limelight(hardwareMap, tm);
-        launcher = new Launcher(hardwareMap, tm, drivetrain.getPoseGetter());
-        turret = new Turret(hardwareMap, tm, drivetrain.getPoseGetter());
+        launcher = new Launcher(hardwareMap, tm, drivetrain.poseGetter());
+        turret = new Turret(hardwareMap, tm, drivetrain.poseGetter());
     }
 
     public void initBulkCache() {

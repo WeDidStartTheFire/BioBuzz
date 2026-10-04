@@ -82,7 +82,7 @@ public class Launcher {
      * @return The target velocity in ticks/sec
      */
     public double getGoalVel() {
-        return getGoalVel(poseGetter.getPose(), poseGetter.getVel());
+        return getGoalVel(poseGetter.pose(), poseGetter.vel());
     }
 
     /**

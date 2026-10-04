@@ -2,13 +2,13 @@ package org.firstinspires.ftc.teamcode;
 
 import androidx.annotation.Nullable;
 
-import com.pedropathing.geometry.Pose;
-import com.pedropathing.math.Vector;
+import com.pedropathing.math.Pose;
+import com.pedropathing.math.Velocity;
 
 public interface PoseGetter {
     @Nullable
-    Pose getPose();
+    Pose pose();
 
     @Nullable
-    Vector getVel();
+    Velocity vel();
 }

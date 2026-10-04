@@ -1,8 +1,9 @@
 package org.firstinspires.ftc.teamcode.autos.primary;
 
-import com.pedropathing.geometry.BezierLine;
-import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.PathChain;
+import com.pedropathing.api.Paths;
+import com.pedropathing.api.PoseFactory;
+import com.pedropathing.math.Pose;
+import com.pedropathing.paths.Path;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.autos.BaseAuto;
@@ -11,7 +12,8 @@ import org.firstinspires.ftc.teamcode.enums.Color;
 @Autonomous(name="Tuning Test")
 public class TestAuto extends BaseAuto<TestAuto.State> {
     private final TestAuto.State initialState = TestAuto.State.START;
-    private PathChain pa1, pa2, pa3, pa4;
+    private final PoseFactory poseFactory = PoseFactory.degrees();
+    private Path pa1, pa2, pa3, pa4;
     protected enum State {
         FINISHED,
         START,
@@ -19,31 +21,20 @@ public class TestAuto extends BaseAuto<TestAuto.State> {
         P3,
         P4
     }
-    private final Pose start = new Pose(132.682, 8.2894, 0);
-    private final Pose pt2 = new Pose(129.7883, 122.2311, 0);
-    private final Pose pt3 = new Pose(21.5184, 121.1493, 0);
-    private final Pose pt4 = new Pose(22.1564, 22.7566, 0);
-    private final Pose end = new Pose(116.682, 8.2894, 0);
+
+    private final Pose start = poseFactory.of(132.682, 8.2894, 0);
+    private final Pose pt2 = poseFactory.of(129.7883, 122.2311, 0);
+    private final Pose pt3 = poseFactory.of(21.5184, 121.1493, 0);
+    private final Pose pt4 = poseFactory.of(22.1564, 22.7566, 0);
+    private final Pose end = poseFactory.of(116.682, 8.2894, 0);
 
 
     @Override
     protected void buildPaths() {
-        pa1 = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(start, pt2))
-                .setLinearHeadingInterpolation(start.getHeading(), end.getHeading())
-                .build();
-        pa2 = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(pt2, pt3))
-                .setLinearHeadingInterpolation(start.getHeading(), end.getHeading())
-                .build();
-        pa3 = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(pt3, pt4))
-                .setLinearHeadingInterpolation(start.getHeading(), end.getHeading())
-                .build();
-        pa4 = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(pt4, end))
-                .setLinearHeadingInterpolation(start.getHeading(), end.getHeading())
-                .build();
+        pa1 = Paths.line(start, pt2).linear(start, pt2);
+        pa2 = Paths.line(pt2, pt3).linear(pt2, pt3);
+        pa3 = Paths.line(pt3, pt4).linear(pt3, pt4);
+        pa4 = Paths.line(pt4, end).linear(pt4, end);
     }
 
     @Override
@@ -51,19 +42,19 @@ public class TestAuto extends BaseAuto<TestAuto.State> {
         robot.drivetrain.follower.update();
         switch (state) {
             case START:
-                robot.drivetrain.follower.followPath(pa1, true);
+                robot.drivetrain.follower.follow(pa1);
                 setState(TestAuto.State.P2);
                 break;
             case P2:
-                robot.drivetrain.follower.followPath(pa2, true);
+                robot.drivetrain.follower.follow(pa2);
                 setState(TestAuto.State.P3);
                 break;
             case P3:
-                robot.drivetrain.follower.followPath(pa3, true);
+                robot.drivetrain.follower.follow(pa3);
                 setState(TestAuto.State.P4);
                 break;
             case P4:
-                robot.drivetrain.follower.followPath(pa4, true);
+                robot.drivetrain.follower.follow(pa4);
                 setState(State.FINISHED);
                 break;
             case FINISHED:

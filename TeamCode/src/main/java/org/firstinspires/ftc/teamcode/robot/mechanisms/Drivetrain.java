@@ -8,7 +8,6 @@ import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.CRITICAL;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.DEBUG;
 import static org.firstinspires.ftc.teamcode.constants.DrivetrainConstants.IMU_PARAMS;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.DRIVETRAIN_LEFT_BACK_MOTOR;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.DRIVETRAIN_LEFT_FRONT_MOTOR;
@@ -21,7 +20,6 @@ import androidx.annotation.Nullable;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 import com.pedropathing.math.Velocity;
-import com.pedropathing.utils.Timer;
 import com.qualcomm.hardware.lynx.LynxI2cDeviceSynch;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
@@ -44,7 +42,7 @@ public class Drivetrain implements PoseGetter {
     public Follower follower;
     public final @Nullable SparkFunOTOS otos;
     private @Nullable Pose pose;
-    private @Nullable Vector vel;
+    private @Nullable Velocity vel;
     private boolean validPose = false;
 
     public volatile boolean loop = false;
@@ -121,7 +119,7 @@ public class Drivetrain implements PoseGetter {
     }
 
 
-    public PoseGetter getPoseGetter() {
+    public PoseGetter poseGetter() {
         return new PoseGetter() {
             PoseGetter poseGetter;
 
@@ -132,21 +130,21 @@ public class Drivetrain implements PoseGetter {
 
             @Nullable
             @Override
-            public Pose getPose() {
+            public Pose pose() {
                 if (poseGetter == null) return null;
-                return poseGetter.getPose();
+                return poseGetter.pose();
             }
 
             @Nullable
             @Override
-            public Velocity getVel() {
+            public Velocity vel() {
                 if (poseGetter == null) return null;
-                return poseGetter.getVel();
+                return poseGetter.vel();
             }
         }.init(this);
     }
 
-    public @Nullable Pose getPose() {
+    public @Nullable Pose pose() {
         return pose;
     }
 
@@ -167,7 +165,7 @@ public class Drivetrain implements PoseGetter {
         vel = follower.velocity();
     }
 
-    public @Nullable Velocity getVel() {
+    public @Nullable Velocity vel() {
         return vel;
     }
 

@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.VERBOSE;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 
+import com.pedropathing.math.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -34,7 +35,8 @@ public class Test_RedundantLocalizer extends OpMode {
     @Override
     public void init_loop() {
         teleop.update();
-        if (robot.drivetrain.getPose() != null) tm.print(robot.drivetrain.getPose(), VERBOSE);
+        Pose pose = robot.drivetrain.pose();
+        if (pose != null) tm.print(pose, VERBOSE);
     }
 
     @Override

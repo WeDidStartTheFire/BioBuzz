@@ -291,7 +291,7 @@ public class TelemetryUtils {
      */
     public void drawRobot(Follower follower, int ms) {
         if (environment == RobotEnvironment.COMPETITION ||
-            System.currentTimeMillis() - lastDraw < ms) return;
+                System.currentTimeMillis() - lastDraw < ms) return;
         lastDraw = System.currentTimeMillis();
         drawRobot(follower);
     }

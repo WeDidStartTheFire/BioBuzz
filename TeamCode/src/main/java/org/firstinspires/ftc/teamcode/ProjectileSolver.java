@@ -54,8 +54,8 @@ public class ProjectileSolver {
      * @return LaunchSolution containing launch parameters, or null if no solution exists
      */
     public static @Nullable LaunchSolution getLaunchSolution(PoseGetter poseGetter) {
-        Pose pose = poseGetter.getPose();
-        return pose == null ? null : getLaunchSolution(pose, poseGetter.getVel());
+        Pose pose = poseGetter.pose();
+        return pose == null ? null : getLaunchSolution(pose, poseGetter.vel());
     }
 
     /**

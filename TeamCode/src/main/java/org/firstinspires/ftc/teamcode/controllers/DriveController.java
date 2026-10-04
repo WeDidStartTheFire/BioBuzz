@@ -26,8 +26,8 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.MatchContext;
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
-import org.firstinspires.ftc.teamcode.robot.mechanisms.Drivetrain;
 import org.firstinspires.ftc.teamcode.pedro.controllers.PIDFController;
+import org.firstinspires.ftc.teamcode.robot.mechanisms.Drivetrain;
 
 public class DriveController {
 
@@ -52,8 +52,8 @@ public class DriveController {
     public void stop() {
         aiming = false;
         following = false;
-        robot.drivetrain.follower.stop();
-        robot.drivetrain.stop();
+        drivetrain.follower.stop();
+        drivetrain.stop();
     }
 
     /**
@@ -111,12 +111,12 @@ public class DriveController {
      * Automatically moves the robot to the closest waypoint
      */
     public void follow(Pose endPose) {
-        Pose currPose = drivetrain.getPose();
+        Pose currPose = drivetrain.pose();
         if (currPose == null) return;
         following = true;
         aiming = false;
         Path path = Paths.line(currPose, endPose).linear(currPose, endPose);
-        robot.drivetrain.follower.follow(path);
+        drivetrain.follower.follow(path);
     }
 
     /**
@@ -134,7 +134,8 @@ public class DriveController {
         if (!drivetrain.follower.isBusy() && following) following = false;
 
         aiming = aiming && abs(gp.right_stick_x) <= .05;
-        ProjectileSolver.LaunchSolution sol = aiming ? getLaunchSolution() : null;
+        ProjectileSolver.LaunchSolution sol = aiming ?
+                getLaunchSolution(drivetrain.poseGetter()) : null;
 
         double forward = gp.left_stick_y * speedMultiplier *
                 (context.alliance() == RED || !fieldCentric ? -1 : 1);
@@ -194,7 +195,7 @@ public class DriveController {
         }
 
         if (abs(leftFrontPower) > .05 || abs(rightFrontPower) > .05 || abs(leftBackPower) > .05 ||
-                abs(rightBackPower) > .05) drivetrain.follower.breakFollowing();
+                abs(rightBackPower) > .05) drivetrain.follower.stop();
 
         // Send calculated power to wheels
         if (!drivetrain.follower.isBusy())

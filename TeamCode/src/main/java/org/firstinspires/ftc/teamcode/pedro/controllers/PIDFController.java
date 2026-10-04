@@ -4,10 +4,10 @@ import com.pedropathing.controllers.PIDController;
 
 public class PIDFController extends PIDController {
     public double kF;
-    public double target;
-    public double error;
-    public double feedForwardInput;
-    public boolean targetIsFeedForward = true;
+    private double target;
+    private double position;
+    private double feedForwardInput;
+    private boolean targetIsFeedForward = true;
 
     public PIDFController(PIDFCoefficients coefficients) {
         super(coefficients.kP, coefficients.kI, coefficients.kD);
@@ -18,16 +18,16 @@ public class PIDFController extends PIDController {
         this.target = target;
     }
 
-    public void updatePosition(double position) {
-        this.error = target - position;
+    public double target() {
+        return target;
     }
 
-    public void updateError(double error) {
-        this.error = error;
+    public void updatePosition(double position) {
+        this.position = position;
     }
 
     public double getError() {
-        return error;
+        return target - position;
     }
 
     public void updateFeedForwardInput(double feedForwardInput) {
@@ -41,12 +41,14 @@ public class PIDFController extends PIDController {
 
     @Override
     public double calculate(double target, double error) {
-        return super.calculate(target, error) + kF * target;
+        if (targetIsFeedForward) feedForwardInput = target;
+        return super.calculate(target, error) + kF * feedForwardInput;
     }
 
     @Override
     public double calculate(double target, double error, double velocity) {
-        return super.calculate(target, error, velocity) + kF * target;
+        if (targetIsFeedForward) feedForwardInput = target;
+        return super.calculate(target, error, velocity) + kF * feedForwardInput;
     }
 
     public void setCoefficients(PIDFCoefficients coefficients) {

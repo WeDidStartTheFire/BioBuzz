@@ -96,7 +96,8 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         tm.drawRobot(robot.drivetrain.follower, 250);
         tm.print("Path State", state, INFO);
         tm.print("Intake State", intakeController.getState(), INFO);
-        if (robot.drivetrain.pose() != null) tm.print(robot.drivetrain.pose(), DEBUG);
+        Pose pose = robot.drivetrain.pose();
+        if (pose != null) tm.print(pose, DEBUG);
         tm.print("Motor Goal Vel", robot.launcher.getGoalVel(shootPose, null), VERBOSE);
         tm.print("Launcher Vel", robot.launcher.getCachedVel(), VERBOSE);
         double t = getRuntime();
@@ -115,7 +116,8 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
     public final void stop() {
         robot.drivetrain.update();
         robot.drivetrain.follower.stop();
-        if (robot.drivetrain.pose() != null) saveOdometryPosition(robot.drivetrain.pose());
+        Pose pose = robot.drivetrain.pose();
+        if (pose != null) saveOdometryPosition(pose);
         intakeController.stop();
         robot.limelight.stop();
         tm.showLogs();

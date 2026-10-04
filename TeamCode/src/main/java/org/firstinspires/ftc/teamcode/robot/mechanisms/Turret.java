@@ -108,7 +108,7 @@ public class Turret {
 
     public void rotateManual(double speed) {
         if (target == Target.MANUAL) {
-            turretPIDController.setTarget(-turretPIDController.target +
+            turretPIDController.setTarget(-turretPIDController.target() +
                 speed * TURRET_SPEED_MANUAL);
             velocityPIDController.setTarget(TURRET_SPEED_MANUAL);
             return;
@@ -159,12 +159,12 @@ public class Turret {
 
         double pos = turretMotor.getCurrentPosition();
         turretPIDController.updatePosition(pos);
-        Velocity vel = poseGetter.getVel();
+        Velocity vel = poseGetter.vel();
         if (vel != null)
             velocityPIDController.setTarget(-toDegrees(vel.toVector2D().theta()) * TURRET_ENCODERS_PER_DEGREE);
         velocityPIDController.updatePosition(motorVel);
         tm.print("Turret Pos", pos, VERBOSE);
-        tm.print("Turret Goal", turretPIDController.target, VERBOSE);
+        tm.print("Turret Goal", turretPIDController.target(), VERBOSE);
         tm.print("Turret Offset", offset, INFO);
         tm.print("Turret Vel", motorVel, DEBUG);
         if (target == Target.NONE) return;
@@ -224,7 +224,7 @@ public class Turret {
      * @param angle Turret angle, radians
      */
     private void setFieldCentricAngle(double angle) {
-        Pose pose = poseGetter.getPose();
+        Pose pose = poseGetter.pose();
         if (pose != null) setRobotCentricAngle(angle - pose.heading());
     }
 }

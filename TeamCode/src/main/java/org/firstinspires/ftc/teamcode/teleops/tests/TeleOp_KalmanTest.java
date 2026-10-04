@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.VERBOSE;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 
+import com.pedropathing.math.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -40,7 +41,8 @@ public class TeleOp_KalmanTest extends OpMode {
 
     @Override
     public void init_loop() {
-        if (robot.drivetrain.getPose() != null) tm.print(robot.drivetrain.getPose(), INFO);
+        Pose pose = robot.drivetrain.pose();
+        if (pose != null) tm.print(pose, INFO);
         teleop.update();
     }
 

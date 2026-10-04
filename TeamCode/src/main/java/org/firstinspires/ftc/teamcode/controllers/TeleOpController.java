@@ -7,6 +7,7 @@ import static org.firstinspires.ftc.teamcode.constants.ResetConstants.HARD_RESET
 import static org.firstinspires.ftc.teamcode.constants.ResetConstants.SOFT_RESET_WAIT;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.math.Pose;
 import com.pedropathing.utils.Timer;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
@@ -164,7 +165,8 @@ public class TeleOpController {
         tm.print("Robot Centric", robotCentric, INFO);
         tm.print("Field Centric", fieldCentric, INFO);
         tm.drawRobot(follower, 250);
-        if (robot.drivetrain.getPose() != null) tm.print(robot.drivetrain.getPose(), DEBUG);
+        Pose pose = robot.drivetrain.pose();
+        if (pose != null) tm.print(pose, DEBUG);
         if (usePedro) driveController.updateTeleOp(gamepad1, fieldCentric);
         else driveController.updateTeleOpNoPedro(gamepad1, fieldCentric);
     }

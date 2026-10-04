@@ -107,6 +107,7 @@ public abstract class BaseAuto2 extends OpMode {
 
     @Override
     public final void stop() {
+        Scheduler.reset();
         robot.drivetrain.update();
         follower.stop();
         Pose pose = robot.drivetrain.pose();

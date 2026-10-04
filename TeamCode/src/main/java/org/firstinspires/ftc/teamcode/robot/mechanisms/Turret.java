@@ -179,6 +179,7 @@ public class Turret implements Subsystem {
     /**
      * Stops the turret by aiming for its current position
      */
+    @Override
     public void stop() {
         setTarget(Target.NONE);
         if (turretMotor != null)

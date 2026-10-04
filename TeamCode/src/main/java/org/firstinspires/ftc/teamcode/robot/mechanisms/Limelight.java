@@ -42,6 +42,7 @@ public class Limelight implements Subsystem {
     /**
      * Stops polling of Limelight data.
      */
+    @Override
     public void stop() {
         if (limelight != null) limelight.stop();
     }

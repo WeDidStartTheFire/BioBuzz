@@ -9,18 +9,16 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.MatchContext;
-import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 @TeleOp(name = "TeleOp_AprilTag_Follower", group = "Test")
 public class TeleOp_AprilTag_Follower extends OpMode {
-    Robot robot;
-    TeleOpController teleop;
-    TelemetryUtils tm;
-    Gamepad gamepad;
-    int targetID = 0;
+    private Robot robot;
+    private TeleOpController teleop;
+    private Gamepad gamepad;
+    private int targetID = 0;
 
     @Override
     public void init() {
@@ -30,7 +28,6 @@ public class TeleOp_AprilTag_Follower extends OpMode {
         robot.drivetrain.useLimelightFollower();
         robot.drivetrain.setPose(loadOdometryPosition());
         teleop = new TeleOpController(robot, gamepad, gamepad2);
-        tm = robot.drivetrain.tm;
     }
 
     @Override

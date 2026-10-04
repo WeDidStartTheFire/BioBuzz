@@ -14,7 +14,7 @@ import com.pedropathing.math.Pose;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.enums.RobotEnvironment;
-import org.firstinspires.ftc.teamcode.pedroPathing.Drawing;
+import org.firstinspires.ftc.teamcode.pedro.Drawing;
 
 import java.util.ArrayList;
 
@@ -238,12 +238,29 @@ public class TelemetryUtils {
      * update standard telemetry. Disregard this warning if you are not in either of those methods.
      * </p>
      *
-     * @see #updateOnlyPanels(int numLogs)
      * @see #updateOnlyPanels()
+     * @see #updateOnlyPanels(int numLogs)
+     * @see #forceUpdate()
      */
     public void update() {
+        updateTransmissionInterval();
         telemetry.update();
         if (environment != RobotEnvironment.COMPETITION) telemetryM.update();
+    }
+
+    /**
+     * Force updates telemetry on both the Control Hub and Panels. (This overrides the default
+     * transmission interval and should be used sparingly, like at the end of an OpMode)
+     *
+     * @see #update()
+     * @see #updateOnlyPanels()
+     * @see #updateOnlyPanels(int numLogs)
+     */
+    public void forceUpdate() {
+        telemetry.setMsTransmissionInterval(0);
+        telemetryM.setUpdateInterval(0);
+        telemetry.update();
+        telemetryM.update();
         updateTransmissionInterval();
     }
 
@@ -254,13 +271,10 @@ public class TelemetryUtils {
      * @see #updateOnlyPanels()
      */
     public void updateOnlyPanels(int numLogs) {
-        if (environment == RobotEnvironment.COMPETITION) {
-            updateTransmissionInterval();
-            return;
-        }
+        updateTransmissionInterval();
+        if (environment == RobotEnvironment.COMPETITION) return;
         if (numLogs > 0) showLogs(numLogs);
         telemetryM.update();
-        updateTransmissionInterval();
     }
 
     /**
@@ -268,6 +282,7 @@ public class TelemetryUtils {
      *
      * @see #updateOnlyPanels(int numLogs)
      * @see #update()
+     * @see TelemetryUtils#log(String, Object)
      */
     public void updateOnlyPanels() {
         updateOnlyPanels(3);
@@ -275,25 +290,17 @@ public class TelemetryUtils {
 
 
     /**
-     * Draws the robot in panels
-     *
-     * @param follower The follower that has the pose history of the robot to draw
-     */
-    private void drawRobot(Follower follower) {
-//        com.pedropathing.tuning.(follower);
-    }
-
-    /**
-     * Draws the robot in panels if enough time has passed since the last draw
+     * Draws the robot in panels if enough time has passed since the last draw (time according to
+     * {@link RobotEnvironment#getPanelsTransmissionIntervalMs()}).
      *
      * @param follower Follower object to retrieve pose history from
-     * @param ms       Minimum time between draws
+     * @see RobotEnvironment
      */
-    public void drawRobot(Follower follower, int ms) {
-        if (environment == RobotEnvironment.COMPETITION ||
-                System.currentTimeMillis() - lastDraw < ms) return;
+    public void drawRobot(Follower follower) {
+        if (environment == RobotEnvironment.COMPETITION || System.currentTimeMillis() - lastDraw <
+                environment.getPanelsTransmissionIntervalMs()) return;
         lastDraw = System.currentTimeMillis();
-        drawRobot(follower);
+        Drawing.drawDebug(follower);
     }
 
     /**

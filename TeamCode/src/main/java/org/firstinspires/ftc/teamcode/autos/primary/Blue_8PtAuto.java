@@ -13,18 +13,21 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.autos.BaseAuto;
 import org.firstinspires.ftc.teamcode.enums.Color;
 
-@Autonomous(name = "(Blue) 8 Points")
+@Autonomous(name = Blue_8PtAuto.name)
 public class Blue_8PtAuto extends BaseAuto<Blue_8PtAuto.State> {
     private final PoseFactory poseFactory = PoseFactory.degrees();
     private final Pose start = poseFactory.of(38.5909, 8.358, 90);
     private final Pose end = poseFactory.of(123.0907, 35.9239, 180);
     private Path path1;
 
+    static final String name = "🟦Blue🟦 8 Points";
+    static final Color color = Color.BLUE;
+    private final State initialState = State.NONE;
+
     protected enum State {
         NONE
     }
 
-    private final State initialState = State.NONE;
 
     @Override
     protected void buildPaths() {
@@ -43,8 +46,6 @@ public class Blue_8PtAuto extends BaseAuto<Blue_8PtAuto.State> {
 
     @Override
     protected void configure() {
-        super.startPose = start;
-        super.color = Color.BLUE;
-        super.initialState = initialState;
+        super.configure(startPose, initialState, color, name);
     }
 }

@@ -4,6 +4,7 @@ import com.bylazar.configurables.annotations.Configurable;
 
 import org.firstinspires.ftc.teamcode.pedro.controllers.PIDFCoefficients;
 
+@SuppressWarnings("CanBeFinal")
 @Configurable
 public class TurretConstants {
     public static PIDFCoefficients turretMotorPID =

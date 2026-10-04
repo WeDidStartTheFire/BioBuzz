@@ -25,7 +25,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
     protected IntakeController intakeController;
     protected Pose startPose, shootPose;
     protected TelemetryUtils tm;
-    protected Timer stateTimer = new Timer();
+    protected final Timer stateTimer = new Timer();
     protected S state;
     protected S initialState;
     protected Color color;
@@ -39,6 +39,13 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
     protected abstract void pathUpdate();
 
     protected abstract void configure();
+
+    protected void configure(Pose startPose, S initialState, Color color, String name) {
+        this.startPose = startPose;
+        this.initialState = initialState;
+        this.color = color;
+        this.name = name;
+    }
 
     protected void onInit() {
     }
@@ -93,7 +100,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         intakeController.update();
         robot.led.update();
 
-        tm.drawRobot(robot.drivetrain.follower, 250);
+        tm.drawRobot(robot.drivetrain.follower);
         tm.print("Path State", state, INFO);
         tm.print("Intake State", intakeController.getState(), INFO);
         Pose pose = robot.drivetrain.pose();
@@ -121,7 +128,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         intakeController.stop();
         robot.limelight.stop();
         tm.showLogs();
-        tm.update();
+        tm.forceUpdate();
         onStop();
     }
 }

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.pedroPathing;
+package org.firstinspires.ftc.teamcode.pedro;
 
 import com.bylazar.field.FieldManager;
 import com.bylazar.field.PanelsField;
@@ -22,10 +22,10 @@ public class Drawing {
     public static final double ROBOT_RADIUS = 9; // woah
     private static final FieldManager panelsField = PanelsField.INSTANCE.getField();
 
-    private static final Style robotLook = new Style(
+    public static final Style robotLook = new Style(
             "", "#3F51B5", 0.75
     );
-    private static final Style historyLook = new Style(
+    public static final Style historyLook = new Style(
             "", "#4CAF50", 0.75
     );
 
@@ -45,8 +45,7 @@ public class Drawing {
     public static void drawDebug(Follower follower) {
         if (follower.currentPath() != null) {
             drawPath(follower.currentPath(), robotLook);
-            Pose closestPose = follower.closestPose();
-            drawRobot(new Pose(closestPose.x(), closestPose.y(), closestPose.heading()), robotLook);
+            drawRobot(follower.closestPose(), robotLook);
         }
         drawRobot(follower.pose(), historyLook);
 

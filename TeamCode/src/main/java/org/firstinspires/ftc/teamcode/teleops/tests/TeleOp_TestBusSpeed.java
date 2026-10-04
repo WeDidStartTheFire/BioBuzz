@@ -29,6 +29,7 @@ public class TeleOp_TestBusSpeed extends OpMode {
     private int totalColorCalls = 0;
     private int totalOTOSCalls = 0;
     private boolean fastMode = false;
+    @SuppressWarnings("CanBeFinal")
     public static int ARTIFICIAL_WAIT = 50;
 
     @Override

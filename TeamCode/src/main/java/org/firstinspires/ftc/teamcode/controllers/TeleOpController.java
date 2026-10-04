@@ -3,8 +3,11 @@ package org.firstinspires.ftc.teamcode.controllers;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.DEBUG;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.VERBOSE;
+import static org.firstinspires.ftc.teamcode.constants.Positions.BLUE_PARK;
+import static org.firstinspires.ftc.teamcode.constants.Positions.RED_PARK;
 import static org.firstinspires.ftc.teamcode.constants.ResetConstants.HARD_RESET_WAIT;
 import static org.firstinspires.ftc.teamcode.constants.ResetConstants.SOFT_RESET_WAIT;
+import static org.firstinspires.ftc.teamcode.enums.Color.BLUE;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
@@ -84,7 +87,7 @@ public class TeleOpController {
         robot.turret.rotateManual(gamepad2.right_stick_x * .001 * ms);
         robot.turret.update(true);
         robot.led.update();
-        tm.updateOnlyPanels(10);
+        tm.updateOnlyPanels(7);
     }
 
     /**
@@ -96,7 +99,7 @@ public class TeleOpController {
         intakeController.stop();
         robot.limelight.stop();
         tm.showLogs();
-        tm.update();
+        tm.forceUpdate();
     }
 
     /**
@@ -124,12 +127,8 @@ public class TeleOpController {
      */
     public void drivetrainLogic(boolean fieldCentric, boolean usePedro) {
         if (robot.drivetrain.isPoseValid() && usePedro) {
-//            if (gamepad1.xWasPressed())
-//                driveController.follow(robot.context().alliance() == BLUE ? BLUE_FAR_LAUNCH : RED_FAR_LAUNCH);
-//            if (gamepad1.aWasPressed())
-//                driveController.follow(robot.context().alliance() == BLUE ? BLUE_HUMAN_PLAYER : RED_HUMAN_PLAYER);
-//            if (gamepad1.yWasPressed())
-//                driveController.follow(robot.context().alliance() == BLUE ? BLUE_BASE_ZONE : RED_BASE_ZONE);
+            if (gamepad1.yWasPressed())
+                driveController.follow(robot.context().alliance() == BLUE ? BLUE_PARK : RED_PARK);
             if (gamepad1.bWasPressed()) driveController.toggleAiming();
         }
         if (gamepad1.dpadDownWasPressed()) {
@@ -164,7 +163,7 @@ public class TeleOpController {
         fieldCentric = fieldCentric && !robotCentric;
         tm.print("Robot Centric", robotCentric, INFO);
         tm.print("Field Centric", fieldCentric, INFO);
-        tm.drawRobot(follower, 250);
+        tm.drawRobot(follower);
         Pose pose = robot.drivetrain.pose();
         if (pose != null) tm.print(pose, DEBUG);
         if (usePedro) driveController.updateTeleOp(gamepad1, fieldCentric);

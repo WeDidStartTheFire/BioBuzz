@@ -48,9 +48,4 @@ public class Utils {
             throw new RuntimeException(e);
         }
     }
-
-    @Deprecated
-    public static boolean active() {
-        return true;
-    }
 }

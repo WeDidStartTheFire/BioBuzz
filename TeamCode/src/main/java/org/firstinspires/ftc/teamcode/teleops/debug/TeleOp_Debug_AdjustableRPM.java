@@ -24,7 +24,7 @@ public class TeleOp_Debug_AdjustableRPM extends OpMode {
     public final int TICKS_PER_REVOLUTION = 28;
     public int MOTOR_RPM = 5800;
     public int MOTOR_VEL = MOTOR_RPM / TICKS_PER_REVOLUTION;
-    public TelemetryUtils tm = new TelemetryUtils(telemetry);
+    public final TelemetryUtils tm = new TelemetryUtils(telemetry);
 
     @Override
     public void init() {

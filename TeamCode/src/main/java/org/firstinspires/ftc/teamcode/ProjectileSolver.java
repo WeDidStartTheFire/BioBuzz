@@ -20,9 +20,9 @@ public class ProjectileSolver {
     static final double g = 386.0885826772; // Constant for gravity in in/s^2
 
     public static class LaunchSolution {
-        public double w; // Launch speed magnitude (relative to robot motion)
-        public double phi; // Horizontal azimuth (radians, degrees?)
-        public double t; // Time from launch for projectile to reach target
+        public final double w; // Launch speed magnitude (relative to robot motion)
+        public final double phi; // Horizontal azimuth (radians, degrees?)
+        public final double t; // Time from launch for projectile to reach target
 
         LaunchSolution(double w, double phi, double t) {
             this.w = w;

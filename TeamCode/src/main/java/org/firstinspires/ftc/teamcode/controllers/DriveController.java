@@ -135,7 +135,7 @@ public class DriveController {
 
         aiming = aiming && abs(gp.right_stick_x) <= .05;
         ProjectileSolver.LaunchSolution sol = aiming ?
-                getLaunchSolution(drivetrain.poseGetter()) : null;
+                getLaunchSolution(drivetrain) : null;
 
         double forward = gp.left_stick_y * speedMultiplier *
                 (context.alliance() == RED || !fieldCentric ? -1 : 1);

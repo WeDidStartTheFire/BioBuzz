@@ -37,6 +37,6 @@ public class TeleOp_PanelsVCTest extends OpMode {
         tm.print("B Button: ", gamepad.b, INFO);
         tm.print("X Button: ", gamepad.x, INFO);
         tm.print("Y Button: ", gamepad.y, INFO);
-        tm.updateOnlyPanels(3);
+        tm.updateOnlyPanels();
     }
 }

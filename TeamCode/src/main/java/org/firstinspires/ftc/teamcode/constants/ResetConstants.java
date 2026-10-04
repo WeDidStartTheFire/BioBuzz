@@ -4,6 +4,7 @@ import static java.lang.Math.toRadians;
 
 import com.bylazar.configurables.annotations.Configurable;
 
+@SuppressWarnings("CanBeFinal")
 @Configurable
 public class ResetConstants {
     public static double SOFT_RESET_WAIT = .5;

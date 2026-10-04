@@ -45,9 +45,7 @@ public class Drivetrain implements PoseGetter {
     private @Nullable Velocity vel;
     private boolean validPose = false;
 
-    public volatile boolean loop = false;
-
-    public TelemetryUtils tm;
+    public final TelemetryUtils tm;
     private final HardwareMap hardwareMap;
 
     /**
@@ -119,33 +117,12 @@ public class Drivetrain implements PoseGetter {
     }
 
 
-    public PoseGetter poseGetter() {
-        return new PoseGetter() {
-            PoseGetter poseGetter;
-
-            PoseGetter init(PoseGetter poseGetter) {
-                this.poseGetter = poseGetter;
-                return this;
-            }
-
-            @Nullable
-            @Override
-            public Pose pose() {
-                if (poseGetter == null) return null;
-                return poseGetter.pose();
-            }
-
-            @Nullable
-            @Override
-            public Velocity vel() {
-                if (poseGetter == null) return null;
-                return poseGetter.vel();
-            }
-        }.init(this);
-    }
-
     public @Nullable Pose pose() {
         return pose;
+    }
+
+    public @Nullable Velocity vel() {
+        return vel;
     }
 
     public void setPose(Pose pose) {
@@ -163,10 +140,6 @@ public class Drivetrain implements PoseGetter {
         follower.update();
         pose = follower.pose();
         vel = follower.velocity();
-    }
-
-    public @Nullable Velocity vel() {
-        return vel;
     }
 
     public boolean isMotorDisconnected() {

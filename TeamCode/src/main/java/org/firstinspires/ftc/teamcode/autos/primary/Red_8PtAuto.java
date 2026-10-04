@@ -46,6 +46,6 @@ public class Red_8PtAuto extends BaseAuto<Red_8PtAuto.State> {
 
     @Override
     protected void configure() {
-        super.configure(startPose, initialState, color, name);
+        super.configure(start, initialState, color, name);
     }
 }

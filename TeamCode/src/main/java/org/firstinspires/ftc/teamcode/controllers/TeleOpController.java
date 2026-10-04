@@ -93,7 +93,6 @@ public class TeleOpController {
             tm.print("avg dt (ms)", totalMs / totalUpdates);
         }
         lastUpdateTime = t;
-        robot.updateBulkCache();
         follower.update();
         if (follower.getPose() != null) pose = follower.getPose();
         vel = follower.getVelocity();
@@ -102,10 +101,9 @@ public class TeleOpController {
             robot.turret.changeable = !robot.turret.changeable;
         }
         robot.turret.rotateManual(gamepad2.right_stick_x * .001 * ms);
-        robot.turret.update(true);
         if (motif == RobotConstants.Motif.UNKNOWN) motif = robot.limelight.getMotif();
-        robot.led.update();
         tm.updateOnlyPanels(10);
+        robot.update();
     }
 
     /**

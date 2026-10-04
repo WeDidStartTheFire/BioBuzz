@@ -69,6 +69,7 @@ public class Robot implements Subsystem {
 
     @Override
     public void update() {
+        updateBulkCache();
         for (Subsystem subsystem : subsystems) subsystem.update();
     }
 

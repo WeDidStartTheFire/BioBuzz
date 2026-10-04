@@ -6,9 +6,10 @@ import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.VERBOSE;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
 
+import com.pedropathing.follower.Follower;
+import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.math.Pose;
-import com.pedropathing.utils.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.MatchContext;
@@ -18,31 +19,24 @@ import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
 
-import java.util.concurrent.TimeUnit;
-
-public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
+public abstract class BaseAuto2 extends OpMode {
     protected Robot robot;
+    protected Follower follower;
     protected IntakeController intakeController;
     protected Pose startPose, shootPose;
     protected TelemetryUtils tm;
-    protected final Timer stateTimer = new Timer();
-    protected S state;
-    protected S initialState;
     protected Color color;
     protected String name;
     private double lastUpdateTime = 0;
     private int totalMs = 0;
     private int totalUpdates = 0;
 
-    protected abstract void buildPaths();
-
-    protected abstract void pathUpdate();
+    protected abstract Command getAutoRoutine();
 
     protected abstract void configure();
 
-    protected void configure(Pose startPose, S initialState, Color color, String name) {
+    protected void configure(Pose startPose, Color color, String name) {
         this.startPose = startPose;
-        this.initialState = initialState;
         this.color = color;
         this.name = name;
     }
@@ -53,30 +47,22 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
     protected void onStart() {
     }
 
+    protected void onLoop() {
+    }
+
     protected void onStop() {
-    }
-
-    protected void setState(S state) {
-        tm.log(this.state + " -> " + state, stateTimer.get(TimeUnit.SECONDS));
-        setStateNoWait(state);
-        stateTimer.reset();
-    }
-
-    protected void setStateNoWait(S state) {
-        this.state = state;
     }
 
     @Override
     public final void init() {
         configure();
         robot = new Robot(hardwareMap, telemetry, new MatchContext(AUTO, color));
-        robot.drivetrain.follower.setPose(startPose);
+        follower = robot.drivetrain.follower;
+        follower.setPose(startPose);
         tm = robot.drivetrain.tm;
-        buildPaths();
         intakeController = new IntakeController(robot.intake, tm);
         tm.print(name + " auto initialized", INFO);
         tm.update();
-        setStateNoWait(initialState);
         robot.initBulkCache();
         Scheduler.reset();
         onInit();
@@ -84,10 +70,10 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
 
     @Override
     public final void start() {
-        robot.drivetrain.follower.setPose(startPose);
+        follower.setPose(startPose);
         robot.limelight.start();
         robot.turret.setTarget(Turret.Target.GOAL);
-        setState(initialState);
+        Scheduler.schedule(getAutoRoutine());
         onStart();
     }
 
@@ -95,14 +81,13 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
     public final void loop() {
         robot.updateBulkCache();
         robot.drivetrain.update();
-        pathUpdate();
+        onLoop();
         Scheduler.execute();
         robot.turret.update(true);
         intakeController.update();
         robot.led.update();
 
-        tm.drawRobot(robot.drivetrain.follower);
-        tm.print("Path State", state, INFO);
+        tm.drawRobot(follower);
         tm.print("Intake State", intakeController.getState(), INFO);
         Pose pose = robot.drivetrain.pose();
         if (pose != null) tm.print(pose, DEBUG);
@@ -123,7 +108,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
     @Override
     public final void stop() {
         robot.drivetrain.update();
-        robot.drivetrain.follower.stop();
+        follower.stop();
         Pose pose = robot.drivetrain.pose();
         if (pose != null) saveOdometryPosition(pose);
         intakeController.stop();

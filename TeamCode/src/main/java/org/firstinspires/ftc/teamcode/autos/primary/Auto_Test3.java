@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.autos.BaseAuto2;
 import org.firstinspires.ftc.teamcode.autos.paths.Paths_Test3;
 import org.firstinspires.ftc.teamcode.enums.Color;
 
-@Autonomous(name = Auto_Test3.name, group = "Autonomous")
+@Autonomous(name = Auto_Test3.name, group = "B")
 public class Auto_Test3 extends BaseAuto2<Paths_Test3> {
     private final Color color = Color.BLUE;
     public static final String name = "Test Auto 2";

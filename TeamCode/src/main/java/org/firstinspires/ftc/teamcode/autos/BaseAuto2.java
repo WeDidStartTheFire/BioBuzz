@@ -14,31 +14,37 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.MatchContext;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.autos.paths.AutoPaths;
 import org.firstinspires.ftc.teamcode.controllers.IntakeController;
 import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
 
-public abstract class BaseAuto2 extends OpMode {
+public abstract class BaseAuto2<T extends AutoPaths> extends OpMode {
     protected Robot robot;
     protected Follower follower;
-    protected IntakeController intakeController;
-    protected Pose startPose, shootPose;
+    private IntakeController intakeController;
+    protected Pose shootPose;
     protected TelemetryUtils tm;
-    protected Color color;
-    protected String name;
+    private Color color;
+    private String name;
     private double lastUpdateTime = 0;
     private int totalMs = 0;
     private int totalUpdates = 0;
+    protected T paths;
 
     protected abstract Command getAutoRoutine();
 
     protected abstract void configure();
 
-    protected void configure(Pose startPose, Color color, String name) {
-        this.startPose = startPose;
+    protected void configure(Class<T> pathsClass, Color color, String name) {
+        configure(pathsClass, color, name, true);
+    }
+
+    protected void configure(Class<T> pathsClass, Color color, String name, boolean addColorToName) {
+        this.paths = AutoPaths.get(pathsClass, color);
         this.color = color;
-        this.name = name;
+        this.name = addColorToName ? color + name : name;
     }
 
     protected void onInit() {
@@ -58,7 +64,7 @@ public abstract class BaseAuto2 extends OpMode {
         configure();
         robot = new Robot(hardwareMap, telemetry, new MatchContext(AUTO, color));
         follower = robot.drivetrain.follower;
-        follower.setPose(startPose);
+        follower.setPose(paths.start());
         tm = robot.drivetrain.tm;
         intakeController = new IntakeController(robot.intake, tm);
         tm.print(name + " auto initialized", INFO);
@@ -70,7 +76,7 @@ public abstract class BaseAuto2 extends OpMode {
 
     @Override
     public final void start() {
-        follower.setPose(startPose);
+        follower.setPose(paths.start());
         robot.limelight.start();
         robot.turret.setTarget(Turret.Target.GOAL);
         Scheduler.schedule(getAutoRoutine());

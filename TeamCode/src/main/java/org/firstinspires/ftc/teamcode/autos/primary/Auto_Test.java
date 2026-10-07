@@ -9,9 +9,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.autos.BaseAuto;
 import org.firstinspires.ftc.teamcode.enums.Color;
 
-@Autonomous(name = TestAuto.name)
-public class TestAuto extends BaseAuto<TestAuto.State> {
-    private final TestAuto.State initialState = TestAuto.State.START;
+@Autonomous(name = Auto_Test.name)
+public class Auto_Test extends BaseAuto<Auto_Test.State> {
+    private final Auto_Test.State initialState = Auto_Test.State.START;
     private final PoseFactory poseFactory = PoseFactory.degrees();
     private Path pa1, pa2, pa3, pa4;
     private final Color color = Color.BLUE;
@@ -45,17 +45,17 @@ public class TestAuto extends BaseAuto<TestAuto.State> {
         switch (state) {
             case START:
                 robot.drivetrain.follower.follow(pa1);
-                setState(TestAuto.State.P2);
+                setState(Auto_Test.State.P2);
                 break;
             case P2:
                 if (robot.drivetrain.follower.isBusy()) break;
                 robot.drivetrain.follower.follow(pa2);
-                setState(TestAuto.State.P3);
+                setState(Auto_Test.State.P3);
                 break;
             case P3:
                 if (robot.drivetrain.follower.isBusy()) break;
                 robot.drivetrain.follower.follow(pa3);
-                setState(TestAuto.State.P4);
+                setState(Auto_Test.State.P4);
                 break;
             case P4:
                 if (robot.drivetrain.follower.isBusy()) break;

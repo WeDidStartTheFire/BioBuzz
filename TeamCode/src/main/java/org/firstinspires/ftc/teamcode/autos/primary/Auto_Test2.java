@@ -12,8 +12,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.autos.BaseAuto;
 import org.firstinspires.ftc.teamcode.enums.Color;
 
-@Autonomous(name = TestAuto2.name, group = "Autonomous")
-public class TestAuto2 extends BaseAuto<TestAuto2.State> {
+@Autonomous(name = Auto_Test2.name, group = "Autonomous")
+public class Auto_Test2 extends BaseAuto<Auto_Test2.State> {
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
     private final Pose start = poseFactory.of(132.125, 9.375, 90);

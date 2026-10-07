@@ -4,10 +4,10 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.enums.Color;
 
-@Autonomous(name = "🟦Blue🟦 " + Auto_8Pt.baseName, group = Auto_8Pt.group)
-public class Auto_8Pt_Blue extends Auto_8Pt {
+@Autonomous(name = "🟥Red🟥 " + Auto_8Pt_Up.baseName, group = Auto_8Pt_Up.group)
+public class Auto_8Pt_Up_Red extends Auto_8Pt_Up {
     @Override
     protected void configure() {
-        super.configure(autoPathsClass, Color.BLUE, baseName);
+        super.configure(autoPathsClass, Color.RED, baseName);
     }
 }

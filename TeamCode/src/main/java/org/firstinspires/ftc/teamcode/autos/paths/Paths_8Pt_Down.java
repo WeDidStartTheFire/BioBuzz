@@ -8,12 +8,12 @@ import com.pedropathing.paths.Path;
 import org.firstinspires.ftc.teamcode.enums.Color;
 
 
-public class Paths_8Pt extends AutoPaths {
+public class Paths_8Pt_Down extends AutoPaths {
 
     private Pose start, path1, path1Control1;
     private static final Color pathsColor = Color.BLUE;
 
-    public Paths_8Pt(Color autoColor) {
+    public Paths_8Pt_Down(Color autoColor) {
         super(pathsColor, autoColor);
     }
 

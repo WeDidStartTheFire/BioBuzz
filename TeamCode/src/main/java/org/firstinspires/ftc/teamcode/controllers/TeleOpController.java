@@ -111,9 +111,7 @@ public class TeleOpController {
      * Should be called when TeleOp mode ends.
      */
     public void stop() {
-        driveController.stop();
-        launchController.stop();
-        intakeController.stop();
+        robot.stop();
         robot.indexer.markAllUnknown();
         RobotState.launcherVelModifier = 0;
         tm.showLogs();
@@ -193,15 +191,6 @@ public class TeleOpController {
 
         if (gamepad2.dpadRightWasPressed()) robot.indexer.rotateClockwise();
         else if (gamepad2.dpadLeftWasPressed()) robot.indexer.rotateCounterclockwise();
-    }
-
-
-    /**
-     * Updates the indexer mechanism state.
-     * Should be called every loop iteration.
-     */
-    public void indexerUpdate() {
-        robot.indexer.update();
     }
 
     /**

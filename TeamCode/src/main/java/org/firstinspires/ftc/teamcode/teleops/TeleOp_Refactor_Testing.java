@@ -30,6 +30,5 @@ public class TeleOp_Refactor_Testing extends OpMode {
     public void loop() {
         teleop.drivetrainLogic(true);
         teleop.update();
-        robot.update();
     }
 }

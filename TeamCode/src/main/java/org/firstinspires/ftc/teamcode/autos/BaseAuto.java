@@ -48,9 +48,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
     }
 
     protected void onStop() {
-        driveController.stop();
-        intakeController.forceStop();
-        launchController.stop();
+        robot.stop();
     }
 
     protected void onUpdate() {

@@ -13,7 +13,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
-import org.firstinspires.ftc.teamcode.controllers.DriveController;
 import org.firstinspires.ftc.teamcode.controllers.IntakeController;
 import org.firstinspires.ftc.teamcode.controllers.LaunchController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
@@ -23,7 +22,6 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
     protected Robot robot;
     protected LaunchController launchController;
     protected IntakeController intakeController;
-    protected DriveController driveController;
     protected Pose startPose, shootPose;
     protected TelemetryUtils tm;
     protected Timer stateTimer = new Timer();
@@ -57,6 +55,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         pose = robot.drivetrain.follower.getPose();
         vel = robot.drivetrain.follower.getVelocity();
         pathUpdate();
+        Scheduler.execute();
         robot.update();
     }
 
@@ -80,10 +79,8 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         robot.indexer.markAllUnknown();
         tm = robot.drivetrain.tm;
         buildPaths();
-        launchController = new LaunchController(robot);
-        intakeController = new IntakeController(robot);
-        driveController = new DriveController(robot);
-        tm.print(name + " auto initialized");
+        intakeController = new IntakeController(robot.intake, tm);
+        tm.print(name + " auto initialized", INFO);
         tm.update();
         setStateNoWait(initialState);
         robot.initBulkCache();
@@ -105,17 +102,15 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
     @Override
     public final void loop() {
         onUpdate();
-        tm.drawRobot(robot.drivetrain.follower, 250);
-        tm.print("Path State", state);
-        tm.print("Launcher State", launchController.getState());
-        tm.print("Intake State", intakeController.getState());
-        tm.print("Queue", launchController.getQueue());
-        tm.print("Motif", motif);
-        tm.print("Indexer Pos", robot.indexer.getGoalPos());
-        if (pose != null) tm.print(pose);
-        tm.print("Motor Goal Vel", robot.launcher.getGoalVel(shootPose, null));
-        tm.print("Launcher Vel", robot.launcher.getCachedVel());
-        long t = runtime.nanoseconds();
+
+        tm.drawRobot(robot.drivetrain.follower);
+        tm.print("Path State", state, INFO);
+        tm.print("Intake State", intakeController.getState(), INFO);
+        Pose pose = robot.drivetrain.pose();
+        if (pose != null) tm.print(pose, DEBUG);
+        tm.print("Motor Goal Vel", robot.launcher.getGoalVel(shootPose, null), VERBOSE);
+        tm.print("Launcher Vel", robot.launcher.getCachedVel(), VERBOSE);
+        double t = getRuntime();
         if (lastUpdateTime != 0) {
             int ms = Math.toIntExact((t - lastUpdateTime) / 1_000_000);
             totalMs += ms;

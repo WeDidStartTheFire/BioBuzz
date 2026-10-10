@@ -1,16 +1,11 @@
 package org.firstinspires.ftc.teamcode.controllers;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.AZURE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.BLUE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.GREEN;
+import com.pedropathing.utils.Timer;
 
-import com.pedropathing.util.Timer;
-
-import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
-import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Intake;
-import org.firstinspires.ftc.teamcode.robot.mechanisms.LED;
+import org.firstinspires.ftc.teamcode.robot.Robot;
+import java.util.concurrent.TimeUnit;
 
 public class IntakeController {
 
@@ -19,19 +14,21 @@ public class IntakeController {
 
     private boolean isBusy;
     private final Robot robot;
-    private final Timer artifactDetectedTimer = new Timer();
+    private final Intake intake;
     private final TelemetryUtils tm;
 
     private enum State {
         IDLE,
         INTAKE,
+        MANUAL_INTAKE,
         OUTTAKE,
     }
 
-    public IntakeController(Robot robot) {
-        tm = robot.drivetrain.tm;
+    public IntakeController(Robot robot, Intake intake, TelemetryUtils tm) {
+        this.tm = tm;
         setState(State.IDLE);
         this.robot = robot;
+        this.intake = intake;
         isBusy = false;
     }
 
@@ -39,17 +36,12 @@ public class IntakeController {
      * Updates the LEDs and the IntakeController state machine:<p>
      * INTAKE -> IDLE: When indexer is full<p>
      * Other transitions controlled via calling methods
+     *
      * @see #intake()
      * @see #outtake()
      * @see #stop()
      */
     public void update() {
-        if (robot.indexer.getTotalArtifacts() == 3)
-            robot.led.setColor(GREEN, isBusy ? LED.Priority.HIGH : LED.Priority.MEDIUM);
-        else if (robot.indexer.getTotalArtifacts() == 2)
-            robot.led.setColor(AZURE, isBusy ? LED.Priority.MEDIUM : LED.Priority.LOW);
-        else if (robot.indexer.getTotalArtifacts() <= 1)
-            robot.led.setColor(BLUE, LED.Priority.LOW);
         switch (state) {
             case IDLE:
                 RobotState.normalIntaking = false;
@@ -68,7 +60,7 @@ public class IntakeController {
     }
 
     /**
-     * @return Whether the robot is actively intaking artifacts
+     * @return Whether the robot is actively intaking
      */
     public boolean isBusy() {
         return isBusy;
@@ -90,6 +82,11 @@ public class IntakeController {
         setState(State.INTAKE);
     }
 
+    public void manualIntake() {
+        isBusy = true;
+        setState(State.MANUAL_INTAKE);
+    }
+
     /**
      * Stops the intake
      */
@@ -108,9 +105,9 @@ public class IntakeController {
 
     private void setState(State state) {
         if (state != null && state != this.state)
-            tm.log("IntakeController: " + this.state + " -> " + state, stateTimer.getElapsedTimeSeconds());
+            tm.log("IntakeController: " + this.state + " -> " + state, stateTimer.get(TimeUnit.SECONDS));
         setStateNoWait(state);
-        this.stateTimer.resetTimer();
+        this.stateTimer.reset();
     }
 
     private void setStateNoWait(State state) {

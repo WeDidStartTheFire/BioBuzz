@@ -1,15 +1,16 @@
 package org.firstinspires.ftc.teamcode.teleops.other;
 
-import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
+import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 
-import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.RobotState;
+import org.firstinspires.ftc.teamcode.MatchContext;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
+import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 @TeleOp(name = "Always Field Centric", group = "C")
@@ -20,18 +21,14 @@ public class TeleOp_AlwaysFieldCentric extends OpMode {
 
     @Override
     public void init() {
-        Pose pose = loadOdometryPosition();
-        validStartPose = pose != null;
-        RobotState.pose = validStartPose ? pose : new Pose();
-        robot = new Robot(hardwareMap, telemetry, true);
-        robot.drivetrain.follower.setPose(RobotState.pose);
-        robot.drivetrain.follower.startTeleopDrive();
+        robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
+        robot.drivetrain.setPose(loadOdometryPosition());
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
         tm = robot.drivetrain.tm;
-        if (!validStartPose)
-            tm.print("Field Centric Driving️", "☑️Will be used without valid position");
-        else tm.print("Field Centric Driving", "✅");
-        tm.print("Color", "\uD83D\uDFE6Blue\uD83D\uDFE6 (Default)");
+        if (!robot.drivetrain.isPoseValid())
+            tm.print("Field Centric Driving️", "☑️Will be used without valid position", INFO);
+        else tm.print("Field Centric Driving", "✅", INFO);
+        tm.print("Color", "\uD83D\uDFE6Blue\uD83D\uDFE6 (Default)", INFO);
     }
 
     @Override
@@ -42,8 +39,6 @@ public class TeleOp_AlwaysFieldCentric extends OpMode {
     @Override
     public void loop() {
         teleop.drivetrainLogic(true);
-        teleop.updateIntake();
-        teleop.updateLauncherTeleOp();
         teleop.update();
     }
 }

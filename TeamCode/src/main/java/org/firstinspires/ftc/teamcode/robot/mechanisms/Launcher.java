@@ -1,33 +1,33 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.BALL_VEL_TO_MOTOR_VEL_COEFF;
-import static org.firstinspires.ftc.teamcode.RobotConstants.BALL_VEL_TO_MOTOR_VEL_CONST;
-import static org.firstinspires.ftc.teamcode.RobotConstants.launcherPIDF;
-import static org.firstinspires.ftc.teamcode.RobotConstants.launcherReversePIDF;
-import static org.firstinspires.ftc.teamcode.RobotState.launcherVelModifier;
-import static org.firstinspires.ftc.teamcode.RobotState.pose;
-import static org.firstinspires.ftc.teamcode.RobotState.vel;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.CRITICAL;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.MEDIUM;
-import static java.lang.Math.abs;
+import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.BALL_VEL_TO_MOTOR_VEL_COEFF;
+import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.BALL_VEL_TO_MOTOR_VEL_CONST;
+import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.launcherPIDF;
+import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.launcherReversePIDF;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.LAUNCHER_MOTOR_A;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.LAUNCHER_MOTOR_B;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.pedropathing.control.PIDFController;
-import com.pedropathing.geometry.Pose;
-import com.pedropathing.math.Vector;
-import com.pedropathing.util.Timer;
+import com.pedropathing.math.Pose;
+import com.pedropathing.math.Velocity;
+import com.pedropathing.utils.Timer;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
+import org.firstinspires.ftc.teamcode.PoseGetter;
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.pedro.controllers.PIDFController;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 import org.firstinspires.ftc.teamcode.robot.Subsystem;
+
+import java.util.concurrent.TimeUnit;
 
 public class Launcher implements Subsystem {
 
@@ -35,13 +35,15 @@ public class Launcher implements Subsystem {
     private final @NonNull Timer spinningTimer;
     private boolean spinning = false;
     private @Nullable Pose lastPose;
-    private @Nullable Vector lastVel;
+    private @Nullable Velocity lastVel;
     private double lastGoalVel;
     private double cachedPower = 0;
-    private final PIDFController pidfController = new PIDFController(launcherPIDF);
+    private final PIDFController pidController = new PIDFController(launcherPIDF);
     private final VoltageSensor voltageSensor;
     private final TelemetryUtils tm;
     private double cachedVel;
+    private double velocityModifier;
+    private final @NonNull PoseGetter poseGetter;
     private double power;
 
     /**
@@ -50,29 +52,30 @@ public class Launcher implements Subsystem {
      * @param hardwareMap HardwareMap containing motor configurations
      * @param tm          TelemetryUtils instance for debugging output
      */
-    public Launcher(HardwareMap hardwareMap, TelemetryUtils tm) {
+    public Launcher(HardwareMap hardwareMap, TelemetryUtils tm, @NonNull PoseGetter poseGetter) {
         this.tm = tm;
+        this.poseGetter = poseGetter;
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
-        launcherMotorA = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "launcherMotorA");
-        if (launcherMotorA == null)
-            tm.warn(CRITICAL, "Launcher Motor A disconnected. Check Expansion Hub motor port 1.");
-        else {
+        launcherMotorA = HardwareInitializer.init(hardwareMap, tm, LAUNCHER_MOTOR_A);
+        if (launcherMotorA != null) {
             launcherMotorA.setTargetPosition(0);
             launcherMotorA.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherReversePIDF);
             launcherMotorA.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
 
-        launcherMotorB = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "launcherMotorB");
-        if (launcherMotorB == null)
-            tm.warn(CRITICAL, "Launcher Motor B disconnected. Check Expansion Hub motor port 2.");
-        else {
+        launcherMotorB = HardwareInitializer.init(hardwareMap, tm, LAUNCHER_MOTOR_B);
+        if (launcherMotorB != null) {
             launcherMotorB.setDirection(DcMotorSimple.Direction.REVERSE);
             launcherMotorB.setTargetPosition(0);
             launcherMotorB.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherReversePIDF);
             launcherMotorB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
         spinningTimer = new Timer();
-        launcherVelModifier = 0;
+        velocityModifier = 0;
+    }
+
+    public void increaseVelocityModifier(double increment) {
+        velocityModifier += increment;
     }
 
     /**
@@ -81,7 +84,7 @@ public class Launcher implements Subsystem {
      * @return The target velocity in ticks/sec
      */
     public double getGoalVel() {
-        return getGoalVel(pose, null);
+        return getGoalVel(poseGetter.pose(), poseGetter.vel());
     }
 
     /**
@@ -90,15 +93,15 @@ public class Launcher implements Subsystem {
      * @param pose Launch position
      * @return The target velocity in ticks/sec
      */
-    public double getGoalVel(@Nullable Pose pose, @Nullable Vector vel) {
+    public double getGoalVel(@Nullable Pose pose, @Nullable Velocity vel) {
         if (pose == null) return 0;
         if (pose.equals(lastPose) && ((vel == null && lastVel == null) || vel != null && vel.equals(lastVel)))
-            return lastGoalVel + launcherVelModifier;
+            return lastGoalVel + velocityModifier;
         ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolution(pose, vel);
         lastPose = pose;
         lastVel = vel;
         lastGoalVel = sol != null ? ballVelToMotorVel(sol.w) : 0;
-        return lastGoalVel + launcherVelModifier;
+        return lastGoalVel + velocityModifier;
     }
 
     /**
@@ -108,18 +111,17 @@ public class Launcher implements Subsystem {
     public void spin() {
         if (launcherMotorA != null) launcherMotorA.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         if (launcherMotorB != null) launcherMotorB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        double goalVel = getGoalVel(pose, vel);
-        if (!spinning) spinningTimer.resetTimer();
+        double goalVel = getGoalVel();
+        if (!spinning) spinningTimer.reset();
         spinning = true;
         double motorVel = getVel();
-        pidfController.setTargetPosition(goalVel);
-        pidfController.updateFeedForwardInput(goalVel);
-        pidfController.updatePosition(motorVel);
+        pidController.setTarget(goalVel);
+        pidController.updateFeedForwardInput(goalVel);
+        pidController.updatePosition(motorVel);
         double voltage = Math.max(voltageSensor.getVoltage(), 1e-6);
-        double manualPidf = pidfController.P() * pidfController.getError() + pidfController.F() * goalVel
-            + pidfController.D() * pidfController.getErrorDerivative();
-        double pidf = pidfController.run();
-        power = (Double.isNaN(pidf) ? manualPidf : pidf) * 12.0 / voltage;
+        double power = pidController.calculate() * 12.0 / voltage;
+        if (launcherMotorA != null) launcherMotorA.setPower(power);
+        if (launcherMotorB != null) launcherMotorB.setPower(power);
     }
 
     /**
@@ -128,7 +130,7 @@ public class Launcher implements Subsystem {
      * @return Duration in seconds, or 0 if not currently spinning
      */
     public double getSpinningDuration() {
-        return spinning ? spinningTimer.getElapsedTimeSeconds() : 0;
+        return spinning ? spinningTimer.get(TimeUnit.SECONDS) : 0;
     }
 
     /**
@@ -148,21 +150,6 @@ public class Launcher implements Subsystem {
     public boolean almostToSpeed(double vel) {
         if (launcherMotorA == null || launcherMotorB == null) return false;
         return vel >= getGoalVel() - 100;
-    }
-
-    /**
-     * Spins the launch motors inward to intake artifacts
-     *
-     * @param percent Power on [0, 1] to power the launch motors
-     */
-    public void intakeMotors(double percent) {
-        if (launcherMotorA != null) launcherMotorA.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        if (launcherMotorB != null) launcherMotorB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        percent = Math.max(0, Math.min(1, percent));
-        if (!spinning && abs(cachedPower + percent * .4) <= .005) return;
-        spinning = false;
-        cachedPower = -percent * .4;
-        power = -percent * .4;
     }
 
     /**

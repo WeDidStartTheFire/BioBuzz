@@ -1,30 +1,28 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.Color.BLUE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_ANGLE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_HEIGHT;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Positions.BLUE_GOAL_POSE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Positions.RED_GOAL_POSE;
-import static org.firstinspires.ftc.teamcode.RobotState.pose;
-import static org.firstinspires.ftc.teamcode.RobotState.vel;
+import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.LAUNCHER_ANGLE;
+import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.LAUNCHER_HEIGHT;
 import static java.lang.Math.abs;
 import static java.lang.Math.sqrt;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.pedropathing.geometry.Pose;
-import com.pedropathing.math.Vector;
+import com.pedropathing.math.Pose;
+import com.pedropathing.math.Velocity;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 public class ProjectileSolver {
     static final double g = 386.0885826772; // Constant for gravity in in/s^2
 
     public static class LaunchSolution {
-        public double w; // Launch speed magnitude (relative to robot motion)
-        public double phi; // Horizontal azimuth (radians, degrees?)
-        public double t; // Time from launch for artifact to reach target
+        public final double w; // Launch speed magnitude (relative to robot motion)
+        public final double phi; // Horizontal azimuth (radians, degrees?)
+        public final double t; // Time from launch for projectile to reach target
 
         LaunchSolution(double w, double phi, double t) {
             this.w = w;
@@ -39,22 +37,25 @@ public class ProjectileSolver {
      * @param pose Robot pose to calculate launch solution for
      * @return LaunchSolution containing launch parameters, or null if no solution exists
      */
-    public static @Nullable LaunchSolution getLaunchSolution(@NonNull Pose pose, @Nullable Vector vel) {
-        Pose3D targetPose = RobotState.color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE;
-        return solveLaunch(pose.getX(), pose.getY(), LAUNCHER_HEIGHT,
-                vel == null ? 0 : vel.getXComponent(), vel == null ? 0 : vel.getYComponent(),
-                targetPose.getPosition().x, targetPose.getPosition().y, targetPose.getPosition().z,
-                LAUNCHER_ANGLE);
+    public static @Nullable LaunchSolution getLaunchSolution(@NonNull Pose pose,
+                                                             @Nullable Velocity vel) {
+        Pose3D targetPose = new Pose3D(new Position(),
+            new YawPitchRollAngles(AngleUnit.RADIANS, 0, 0, 0, 0));
+        return solveLaunch(pose.x(), pose.y(), LAUNCHER_HEIGHT,
+            vel == null ? 0 : vel.toVector2D().x(), vel == null ? 0 : vel.toVector2D().y(),
+            targetPose.getPosition().x, targetPose.getPosition().y, targetPose.getPosition().z,
+            LAUNCHER_ANGLE);
     }
 
     /**
-     * Gets the launch solution for the current robot pose and velocity ({@link RobotState#pose} and
-     * {@link RobotState#vel})
+     * Gets the launch solution for the current robot pose and velocity
      *
+     * @param poseGetter PoseGetter to get pose and velocity from
      * @return LaunchSolution containing launch parameters, or null if no solution exists
      */
-    public static @Nullable LaunchSolution getLaunchSolution() {
-        return pose == null ? null : getLaunchSolution(pose, vel);
+    public static @Nullable LaunchSolution getLaunchSolution(PoseGetter poseGetter) {
+        Pose pose = poseGetter.pose();
+        return pose == null ? null : getLaunchSolution(pose, poseGetter.vel());
     }
 
     /**
@@ -62,12 +63,13 @@ public class ProjectileSolver {
      *
      * @return LaunchSolution containing launch parameters, or null if no solution exists
      */
-    public static @Nullable LaunchSolution getLaunchSolutionStationary() {
+    public static @Nullable LaunchSolution getLaunchSolutionStationary(Pose pose) {
         if (pose == null) return null;
-        Pose3D targetPose = RobotState.color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE;
-        return solveLaunch(pose.getX(), pose.getY(), LAUNCHER_HEIGHT, 0, 0,
-                targetPose.getPosition().x, targetPose.getPosition().y, targetPose.getPosition().z,
-                LAUNCHER_ANGLE);
+        Pose3D targetPose = new Pose3D(new Position(),
+            new YawPitchRollAngles(AngleUnit.RADIANS, 0, 0, 0, 0));
+        return solveLaunch(pose.x(), pose.y(), LAUNCHER_HEIGHT, 0, 0,
+            targetPose.getPosition().x, targetPose.getPosition().y, targetPose.getPosition().z,
+            LAUNCHER_ANGLE);
     }
 
 
@@ -88,10 +90,10 @@ public class ProjectileSolver {
      * is not possible
      */
     public static @Nullable LaunchSolution solveLaunch(
-            double xr, double yr, double zr, // Robot position
-            double vx, double vy, // Robot x-y velocities (vz = 0)
-            double xt, double yt, double zt, // Target position
-            double theta // Launch angle measured from x-y plane
+        double xr, double yr, double zr, // Robot position
+        double vx, double vy, // Robot x-y velocities (vz = 0)
+        double xt, double yt, double zt, // Target position
+        double theta // Launch angle measured from x-y plane
     ) {
         // Position deltas between robot and target
         double dx = xt - xr;
@@ -117,7 +119,7 @@ public class ProjectileSolver {
         double t = findPositiveRoot(a, b, c, d);
         if (t <= 0) return null;
 
-        // Compute horizontal velocity of the artifact
+        // Compute horizontal velocity of the projectile
         double ux = (dx / t) - vx;
         double uy = (dy / t) - vy;
 

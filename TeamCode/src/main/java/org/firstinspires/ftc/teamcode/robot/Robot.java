@@ -6,11 +6,11 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.MatchContext;
+import org.firstinspires.ftc.teamcode.PoseGetter;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.ColorSensor;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Drivetrain;
-import org.firstinspires.ftc.teamcode.robot.mechanisms.Feeder;
-import org.firstinspires.ftc.teamcode.robot.mechanisms.Indexer;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Intake;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.LED;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Launcher;
@@ -21,36 +21,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Robot implements Subsystem {
-    public Drivetrain drivetrain;
-    public Feeder feeder;
-    public ColorSensor colorSensor;
-    public Intake intake;
-    public Indexer indexer;
-    public Limelight limelight;
-    public Launcher launcher;
-    public LED led;
-    public Turret turret;
-    public HardwareMap hardwareMap;
+    public final Drivetrain drivetrain;
+    public final ColorSensor colorSensor;
+    public final Intake intake;
+    public final Limelight limelight;
+    public final Launcher launcher;
+    public final LED led;
+    public final Turret turret;
+    public final HardwareMap hardwareMap;
+    private final MatchContext context;
     private final List<Subsystem> subsystems = new ArrayList<>();
 
-    public Robot(@NonNull HardwareMap hardwareMap, @NonNull Telemetry telemetry, boolean useOdometry) {
+    public Robot(@NonNull HardwareMap hardwareMap, @NonNull Telemetry telemetry,
+                 MatchContext context) {
+        this.context = context;
         this.hardwareMap = hardwareMap;
         TelemetryUtils tm = new TelemetryUtils(telemetry);
+        drivetrain = new Drivetrain(hardwareMap, tm, this.context);
         intake = new Intake(hardwareMap, tm);
-        drivetrain = new Drivetrain(hardwareMap, tm, useOdometry);
-        led = new LED(hardwareMap, tm);
-        feeder = new Feeder(hardwareMap, tm);
         colorSensor = new ColorSensor(hardwareMap, tm);
-        indexer = new Indexer(hardwareMap, tm, colorSensor, feeder);
+        led = new LED(hardwareMap, tm);
         limelight = new Limelight(hardwareMap, tm);
-        launcher = new Launcher(hardwareMap, tm);
-        turret = new Turret(hardwareMap, tm);
+        launcher = new Launcher(hardwareMap, tm, PoseGetter.from(drivetrain));
+        turret = new Turret(hardwareMap, tm, PoseGetter.from(drivetrain));
 
         subsystems.add(drivetrain);
         subsystems.add(intake);
         subsystems.add(led);
-        subsystems.add(feeder);
-        subsystems.add(indexer);
         subsystems.add(colorSensor);
         subsystems.add(limelight);
         subsystems.add(launcher);
@@ -78,4 +75,8 @@ public class Robot implements Subsystem {
         for (Subsystem subsystem : subsystems) subsystem.stop();
     }
 
+    public MatchContext context() {
+        return context;
+    }
 }
+

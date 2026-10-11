@@ -4,4 +4,8 @@
 - [Ivy](pedropathing.com/docs/ivy)
 - [Panels](panels.bylazar.com)
 - [Sloth](github.com/Dairy-Foundation/Sloth)
-## [Website](wedidstartthefire.com)
+## Other Resources
+- [Website](wedidstartthefire.com)
+- [Engineering Portfolios](wedidstartthefire.com/resources)
+- [Learn Java for FTC](github.com/alan412/LearnJavaForFTC)
+- [Iron Reign Coding Guidelines](ironreignrobotics.org/docs/coding-guidelines)

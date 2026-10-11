@@ -1,11 +1,11 @@
 # FTC 16657 We DID Start the Fire BioBuzz Code
 ## Tools
-- [Pedro Pathing](pedropathing.com)
-- [Ivy](pedropathing.com/docs/ivy)
-- [Panels](panels.bylazar.com)
-- [Sloth](github.com/Dairy-Foundation/Sloth)
+- [Pedro Pathing](https://pedropathing.com)
+- [Ivy](https://pedropathing.com/docs/ivy)
+- [Panels](https://panels.bylazar.com)
+- [Sloth](https://github.com/Dairy-Foundation/Sloth)
 ## Other Resources
-- [Website](wedidstartthefire.com)
-- [Engineering Portfolios](wedidstartthefire.com/resources)
-- [Learn Java for FTC](github.com/alan412/LearnJavaForFTC)
-- [Iron Reign Coding Guidelines](ironreignrobotics.org/docs/coding-guidelines)
+- [Website](https://wedidstartthefire.com)
+- [Engineering Portfolios](https://wedidstartthefire.com/resources)
+- [Learn Java for FTC](https://github.com/alan412/LearnJavaForFTC)
+- [Iron Reign Coding Guidelines](https://ironreignrobotics.org/docs/coding-guidelines)

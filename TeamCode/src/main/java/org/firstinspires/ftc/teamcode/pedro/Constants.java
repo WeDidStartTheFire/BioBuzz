@@ -31,9 +31,9 @@ public class Constants {
 
     public static OTOSConfig localizerConfig = new OTOSConfig(c -> {
         c.name.set("sensorOtos");
-        c.linearScalar.set(1.01324767265);
-        c.angularScalar.set(0.9756097560975604);
-        c.offset.set(new Pose(5.7, 0, Math.toRadians(-90)));
+        c.linearScalar.set(1.0639346364846869279098346663255);
+        c.angularScalar.set(1.02564102564102);
+        c.offset.set(new Pose(-0.19824411, 5.5388, Math.toRadians(-90)));
         c.linearUnit.set(DistanceUnit.INCH);
     });
 

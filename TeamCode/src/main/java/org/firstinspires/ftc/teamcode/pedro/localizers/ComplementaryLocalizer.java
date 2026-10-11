@@ -136,10 +136,4 @@ public class ComplementaryLocalizer implements Localizer {
     public double getIMUHeading() {
         return pose.heading();
     }
-
-
-    public boolean isNAN() {
-        return Double.isNaN(pose().x()) || Double.isNaN(pose().y())
-                || Double.isNaN(pose().heading());
-    }
 }

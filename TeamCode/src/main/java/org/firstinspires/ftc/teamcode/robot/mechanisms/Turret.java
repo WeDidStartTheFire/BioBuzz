@@ -1,83 +1,99 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.Color.RED;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Positions.BLUE_HUMAN_PLAYER_POSE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Positions.RED_HUMAN_PLAYER_POSE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.MAX_TIMES_NOT_RESET;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.TURRET_ADJUST_FOR_VOLTAGE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.TURRET_ENCODERS_PER_DEGREE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.TURRET_FEEDFORWARD;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.TURRET_FEEDFORWARD_SLOW_START;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.TURRET_MAX_POS;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.TURRET_MAX_POWER;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.TURRET_MIN_POS;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.TURRET_OFFSET;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.TURRET_SPEED_MANUAL;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.TURRET_SPEED_OFFSET;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.TURRET_STATIC_FEEDFORWARD;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.TURRET_TS_OFFSET_ENC;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.USE_TURRET_VELOCITY_PID;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.turretMotorPID;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.turretVelocityPID;
-import static org.firstinspires.ftc.teamcode.RobotState.panelsResetTurret;
-import static org.firstinspires.ftc.teamcode.RobotState.pose;
-import static org.firstinspires.ftc.teamcode.RobotState.vel;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.HIGH;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.DEBUG;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.VERBOSE;
+import static org.firstinspires.ftc.teamcode.constants.TurretConstants.MAX_TIMES_NOT_RESET;
+import static org.firstinspires.ftc.teamcode.constants.TurretConstants.TURRET_ADJUST_FOR_VOLTAGE;
+import static org.firstinspires.ftc.teamcode.constants.TurretConstants.TURRET_ENCODERS_PER_DEGREE;
+import static org.firstinspires.ftc.teamcode.constants.TurretConstants.TURRET_FEEDFORWARD;
+import static org.firstinspires.ftc.teamcode.constants.TurretConstants.TURRET_FEEDFORWARD_SLOW_START;
+import static org.firstinspires.ftc.teamcode.constants.TurretConstants.TURRET_MAX_POS;
+import static org.firstinspires.ftc.teamcode.constants.TurretConstants.TURRET_MAX_POWER;
+import static org.firstinspires.ftc.teamcode.constants.TurretConstants.TURRET_MIN_POS;
+import static org.firstinspires.ftc.teamcode.constants.TurretConstants.TURRET_OFFSET;
+import static org.firstinspires.ftc.teamcode.constants.TurretConstants.TURRET_SPEED_MANUAL;
+import static org.firstinspires.ftc.teamcode.constants.TurretConstants.TURRET_SPEED_OFFSET;
+import static org.firstinspires.ftc.teamcode.constants.TurretConstants.TURRET_STATIC_FEEDFORWARD;
+import static org.firstinspires.ftc.teamcode.constants.TurretConstants.TURRET_TS_OFFSET_ENC;
+import static org.firstinspires.ftc.teamcode.constants.TurretConstants.USE_TURRET_VELOCITY_PID;
+import static org.firstinspires.ftc.teamcode.constants.TurretConstants.turretMotorPID;
+import static org.firstinspires.ftc.teamcode.constants.TurretConstants.turretVelocityPID;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.TURRET_MOTOR;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.TURRET_TOUCH_SENSOR;
 import static java.lang.Math.abs;
-import static java.lang.Math.atan2;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.Math.signum;
 import static java.lang.Math.toDegrees;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.pedropathing.control.PIDFController;
-import com.pedropathing.geometry.Pose;
+import com.bylazar.configurables.annotations.Configurable;
+import com.pedropathing.math.Pose;
+import com.pedropathing.math.Velocity;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
+import org.firstinspires.ftc.teamcode.PoseGetter;
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
-import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.pedro.controllers.PIDFController;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
+@Configurable
 public class Turret {
-    public final @Nullable DcMotorEx turretMotor;
-    public final @Nullable TouchSensor turretTouchSensor;
+    public static boolean panelsResetTurret = false;
+
+    private final @Nullable DcMotorEx turretMotor;
+    private final @Nullable TouchSensor turretTouchSensor;
     private final VoltageSensor voltageSensor;
     private Target target = Target.HOLD;
     public final PIDFController turretPIDController = new PIDFController(turretMotorPID);
     private final PIDFController velocityPIDController = new PIDFController(turretVelocityPID);
     private final TelemetryUtils tm;
-    public boolean changeable = true;
+    private boolean targetChangeable = true;
     private double offset = 0;
     private int timesNotReset = 0;
     private boolean reset = false;
+    private final @NonNull PoseGetter poseGetter;
 
     public enum Target {
-        GOAL, HUMAN_PLAYER, NONE, HOLD, MANUAL
+        GOAL, NONE, HOLD, MANUAL
     }
 
-    public Turret(HardwareMap hardwareMap, TelemetryUtils tm) {
+    public Turret(HardwareMap hardwareMap, TelemetryUtils tm, @NonNull PoseGetter poseGetter) {
         this.tm = tm;
+        this.poseGetter = poseGetter;
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
-        turretMotor = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "turretMotor");
-        if (turretMotor == null)
-            tm.warn(HIGH, "Turret Motor disconnected. Check Expansion Hub motor port 3.");
-        else {
+        turretMotor = HardwareInitializer.init(hardwareMap, tm, TURRET_MOTOR);
+        if (turretMotor != null) {
             turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             int currentPos = turretMotor.getCurrentPosition();
-            turretPIDController.setTargetPosition(abs(currentPos - 7000) < 250 ? 7000 : currentPos);
-            velocityPIDController.setTargetPosition(0);
+            turretPIDController.setTarget(abs(currentPos - 7000) < 250 ? 7000 : currentPos);
+            velocityPIDController.setTarget(0);
         }
-        turretTouchSensor = HardwareInitializer.init(hardwareMap, TouchSensor.class, "turretTouchSensor");
-        if (turretTouchSensor == null)
-            tm.warn(HIGH, "Turret Touch Sensor disconnected. Check Expansion Hub digital port 2:3.");
+        turretTouchSensor = HardwareInitializer.init(hardwareMap, tm, TURRET_TOUCH_SENSOR);
+    }
+
+    public void toggleTargetChangeable() {
+        targetChangeable = !targetChangeable;
+    }
+
+    public int getEncoderPosition() {
+        if (turretMotor == null) return 0;
+        return turretMotor.getCurrentPosition();
+    }
+
+    @Nullable
+    public DcMotor.RunMode getRunMode() {
+        if (turretMotor == null) return null;
+        return turretMotor.getMode();
     }
 
     /**
@@ -87,14 +103,14 @@ public class Turret {
      * @see Target
      */
     public void setTarget(Target target) {
-        if (changeable) this.target = target;
+        if (targetChangeable) this.target = target;
     }
 
     public void rotateManual(double speed) {
         if (target == Target.MANUAL) {
-            turretPIDController.setTargetPosition(-turretPIDController.getTargetPosition() +
+            turretPIDController.setTarget(-turretPIDController.target() +
                 speed * TURRET_SPEED_MANUAL);
-            velocityPIDController.setTargetPosition(TURRET_SPEED_MANUAL);
+            velocityPIDController.setTarget(TURRET_SPEED_MANUAL);
             return;
         }
         offset -= TURRET_SPEED_OFFSET * speed;
@@ -108,7 +124,7 @@ public class Turret {
         if (turretMotor == null) return;
         if (abs(turretMotor.getCurrentPosition()) > 50) turretPIDController.reset();
         turretPIDController.updatePosition(0);
-        if (target == Target.MANUAL) turretPIDController.setTargetPosition(0);
+        if (target == Target.MANUAL) turretPIDController.setTarget(0);
         turretPIDController.updatePosition(0);
         turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // sets encoder back to 0
         turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -136,34 +152,31 @@ public class Turret {
         if (!reset && timesNotReset < MAX_TIMES_NOT_RESET) return;
 
         if (target == Target.GOAL) {
-            ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolution();
+            ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolution(poseGetter);
             if (sol == null) return;
             setFieldCentricAngle(sol.phi);
-        } else if (target == Target.HUMAN_PLAYER && pose != null) {
-            Pose targetPose = RobotState.color == RED ? RED_HUMAN_PLAYER_POSE : BLUE_HUMAN_PLAYER_POSE;
-            Pose dPose = targetPose.minus(pose);
-            setFieldCentricAngle(atan2(dPose.getY(), dPose.getX()));
         }
 
         double pos = turretMotor.getCurrentPosition();
         turretPIDController.updatePosition(pos);
+        Velocity vel = poseGetter.vel();
         if (vel != null)
-            velocityPIDController.setTargetPosition(-toDegrees(vel.getTheta()) * TURRET_ENCODERS_PER_DEGREE);
+            velocityPIDController.setTarget(-toDegrees(vel.toVector2D().theta()) * TURRET_ENCODERS_PER_DEGREE);
         velocityPIDController.updatePosition(motorVel);
-        tm.print("Turret Pos", pos);
-        tm.print("Turret Goal", turretPIDController.getTargetPosition());
-        tm.print("Turret Offset", offset);
-        tm.print("Turret Vel", motorVel);
+        tm.print("Turret Pos", pos, VERBOSE);
+        tm.print("Turret Goal", turretPIDController.target(), VERBOSE);
+        tm.print("Turret Offset", offset, INFO);
+        tm.print("Turret Vel", motorVel, DEBUG);
         if (target == Target.NONE) return;
-        double feedforward = vel == null ? 0 : -vel.getTheta() * TURRET_FEEDFORWARD;
+        double feedforward = vel == null ? 0 : -vel.toVector2D().theta() * TURRET_FEEDFORWARD;
         feedforward *= min(1, min(max(0, pos - TURRET_MIN_POS), max(0, TURRET_MAX_POS - pos)) / TURRET_FEEDFORWARD_SLOW_START);
         feedforward = Math.clamp(feedforward, -TURRET_MAX_POWER, TURRET_MAX_POWER);
         if (target == Target.HOLD || target == Target.MANUAL) feedforward = 0;
-        double pid = turretPIDController.run();
-        if (USE_TURRET_VELOCITY_PID) pid += velocityPIDController.run();
+        double pid = turretPIDController.calculate();
+        if (USE_TURRET_VELOCITY_PID) pid += velocityPIDController.calculate();
         double staticFeedforward = TURRET_STATIC_FEEDFORWARD * signum(pid);
         double power = pid + feedforward + staticFeedforward;
-        double modifier = TURRET_ADJUST_FOR_VOLTAGE ? 12 / Math.max(voltageSensor.getVoltage(), 1e-6) : 1;
+        double modifier = TURRET_ADJUST_FOR_VOLTAGE ? 12 / max(voltageSensor.getVoltage(), 1e-6) : 1;
         power *= modifier;
         turretMotor.setPower(Math.clamp(power, -TURRET_MAX_POWER * modifier, TURRET_MAX_POWER * modifier));
     }
@@ -174,7 +187,7 @@ public class Turret {
     public void stop() {
         setTarget(Target.NONE);
         if (turretMotor != null)
-            turretPIDController.setTargetPosition(turretMotor.getCurrentPosition());
+            turretPIDController.setTarget(turretMotor.getCurrentPosition());
     }
 
     /**
@@ -184,7 +197,7 @@ public class Turret {
      */
     private void setRobotCentricAngle(double angle) {
         if (turretMotor == null) return;
-        turretPIDController.setTargetPosition(
+        turretPIDController.setTarget(
             Math.clamp((int) (normalizeAngle(toDegrees(angle) + TURRET_OFFSET)
                     * TURRET_ENCODERS_PER_DEGREE + offset - TURRET_TS_OFFSET_ENC),
                 TURRET_MIN_POS, TURRET_MAX_POS));
@@ -211,6 +224,7 @@ public class Turret {
      * @param angle Turret angle, radians
      */
     private void setFieldCentricAngle(double angle) {
-        if (pose != null) setRobotCentricAngle(angle - pose.getHeading());
+        Pose pose = poseGetter.pose();
+        if (pose != null) setRobotCentricAngle(angle - pose.heading());
     }
 }

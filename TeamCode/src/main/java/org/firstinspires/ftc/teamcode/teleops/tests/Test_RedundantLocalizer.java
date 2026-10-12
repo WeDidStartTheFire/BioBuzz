@@ -1,19 +1,19 @@
 package org.firstinspires.ftc.teamcode.teleops.tests;
 
-import static org.firstinspires.ftc.teamcode.RobotState.pose;
-import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
+import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.VERBOSE;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 
-import com.pedropathing.geometry.Pose;
+import com.pedropathing.math.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.RobotConstants;
-import org.firstinspires.ftc.teamcode.RobotState;
+import org.firstinspires.ftc.teamcode.MatchContext;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
+import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 @TeleOp(name = "Redundant Localizer Test", group = "Test")
@@ -25,15 +25,9 @@ public class Test_RedundantLocalizer extends OpMode {
 
     @Override
     public void init() {
-        RobotState.color = RobotConstants.Color.BLUE;
-        Pose pose = loadOdometryPosition();
-        RobotState.auto = false;
-        validStartPose = pose != null;
-        RobotState.pose = validStartPose ? pose : new Pose();
-        robot = new Robot(hardwareMap, telemetry, true);
+        robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
         robot.drivetrain.useRedundantFollower();
-        robot.drivetrain.follower.setPose(RobotState.pose);
-        robot.drivetrain.follower.startTeleopDrive();
+        robot.drivetrain.setPose(loadOdometryPosition());
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
         tm = robot.drivetrain.tm;
     }
@@ -41,8 +35,8 @@ public class Test_RedundantLocalizer extends OpMode {
     @Override
     public void init_loop() {
         teleop.update();
-        if (pose != null) tm.print(pose);
-        tm.print("Motif", robot.limelight.getMotif());
+        Pose pose = robot.drivetrain.pose();
+        if (pose != null) tm.print(pose, VERBOSE);
     }
 
     @Override
@@ -52,23 +46,20 @@ public class Test_RedundantLocalizer extends OpMode {
 
     @Override
     public void loop() {
-        teleop.drivetrainLogic(validStartPose);
+        teleop.drivetrainLogic();
         teleop.updateIntake();
-        teleop.feederLogic();
-        teleop.updateIndexerTeleOp();
         teleop.updateLauncherTeleOp();
         LLResult result = robot.limelight.getLatestResult();
-        tm.print("Motif", robot.limelight.getMotif());
         if (result != null) {
-            tm.print("LL Pose MT1", result.getBotpose());
-            tm.print("LL Std Dev MT1 X", result.getStddevMt1()[0]);
-            tm.print("LL Std Dev MT1 Y", result.getStddevMt1()[1]);
-            tm.print("LL Std Dev MT1 Heading", result.getStddevMt1()[5]);
-            tm.print("====================");
-            tm.print("LL Pose MT2", result.getBotpose_MT2());
-            tm.print("LL Std Dev MT2 X", result.getStddevMt2()[0]);
-            tm.print("LL Std Dev MT2 Y", result.getStddevMt2()[1]);
-            tm.print("LL Std Dev MT2 Heading", result.getStddevMt2()[5]);
+            tm.print("LL Pose MT1", result.getBotpose(), VERBOSE);
+            tm.print("LL Std Dev MT1 X", result.getStddevMt1()[0], VERBOSE);
+            tm.print("LL Std Dev MT1 Y", result.getStddevMt1()[1], VERBOSE);
+            tm.print("LL Std Dev MT1 Heading", result.getStddevMt1()[5], VERBOSE);
+            tm.print("====================", VERBOSE);
+            tm.print("LL Pose MT2", result.getBotpose_MT2(), VERBOSE);
+            tm.print("LL Std Dev MT2 X", result.getStddevMt2()[0], VERBOSE);
+            tm.print("LL Std Dev MT2 Y", result.getStddevMt2()[1], VERBOSE);
+            tm.print("LL Std Dev MT2 Heading", result.getStddevMt2()[5], VERBOSE);
         }
         teleop.update();
     }

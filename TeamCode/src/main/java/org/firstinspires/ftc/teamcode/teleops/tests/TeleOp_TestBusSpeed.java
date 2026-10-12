@@ -1,21 +1,25 @@
 package org.firstinspires.ftc.teamcode.teleops.tests;
 
-import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
+import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.VERBOSE;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 import static java.lang.Thread.sleep;
 
 import com.bylazar.configurables.annotations.Configurable;
-import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.lynx.LynxI2cDeviceSynch;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.RobotConstants;
-import org.firstinspires.ftc.teamcode.RobotState;
+import org.firstinspires.ftc.teamcode.MatchContext;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.enums.Color;
+import org.firstinspires.ftc.teamcode.enums.RobotEnvironment;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 @TeleOp(name = "Test Bus Speed", group = "Test")
+@Disabled
 @Configurable
 public class TeleOp_TestBusSpeed extends OpMode {
     private Robot robot;
@@ -25,23 +29,19 @@ public class TeleOp_TestBusSpeed extends OpMode {
     private int totalColorCalls = 0;
     private int totalOTOSCalls = 0;
     private boolean fastMode = false;
+    @SuppressWarnings("CanBeFinal")
     public static int ARTIFICIAL_WAIT = 50;
 
     @Override
     public void init() {
-        RobotState.color = RobotConstants.Color.BLUE;
-        Pose pose = loadOdometryPosition();
-        validStartPose = pose != null;
-        RobotState.pose = validStartPose ? pose : new Pose();
-        RobotState.auto = false;
-        robot = new Robot(hardwareMap, telemetry, true);
-        robot.drivetrain.follower.setPose(RobotState.pose);
-        robot.drivetrain.follower.startTeleopDrive();
+        robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
+        robot.drivetrain.setPose(loadOdometryPosition());
         tm = robot.drivetrain.tm;
-        if (!validStartPose)
+        tm.setEnvironment(RobotEnvironment.DEBUG);
+        if (!robot.drivetrain.isPoseValid())
             tm.warn(TelemetryUtils.ErrorLevel.LOW, "Robot Centric driving will be used until the position is reset");
-        else tm.print("Field Centric Driving", "✅");
-        tm.print("Color", "🟦Blue🟦");
+        else tm.print("Field Centric Driving", "✅", INFO);
+        tm.print("Color", "🟦Blue🟦", INFO);
     }
 
     @Override
@@ -69,17 +69,17 @@ public class TeleOp_TestBusSpeed extends OpMode {
         double t1 = getRuntime();
         totalColorTime += t1 - t0;
         totalColorCalls++;
-        tm.print("Bus Speed", fastMode ? "Fast" : "Standard");
-        tm.print("Color Sensor Time (ms)", (t1 - t0) * 1000);
-        tm.print("Color Sensor Average Time (ms)", totalColorTime / totalColorCalls * 1000);
+        tm.print("Bus Speed", fastMode ? "Fast" : "Standard", VERBOSE);
+        tm.print("Color Sensor Time (ms)", (t1 - t0) * 1000, VERBOSE);
+        tm.print("Color Sensor Average Time (ms)", totalColorTime / totalColorCalls * 1000, VERBOSE);
         t0 = getRuntime();
         if (robot.drivetrain.otos != null) robot.drivetrain.follower.update();
         t1 = getRuntime();
         totalOTOSTime += t1 - t0;
         totalOTOSCalls++;
-        tm.print("OTOS Time (ms)", (t1 - t0) * 1000);
-        tm.print("OTOS Average Time (ms)", totalOTOSTime / totalOTOSCalls * 1000);
-        tm.update();
+        tm.print("OTOS Time (ms)", (t1 - t0) * 1000, VERBOSE);
+        tm.print("OTOS Average Time (ms)", totalOTOSTime / totalOTOSCalls * 1000, VERBOSE);
+        tm.updateOnlyPanels();
         try {
             sleep(ARTIFICIAL_WAIT);
         } catch (InterruptedException e) {

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleops.other;
 
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
+
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -26,8 +28,8 @@ public class TeleOp_ReadData extends OpMode {
         dir = new File(hardwareMap.appContext.getFilesDir().toURI());
         file = new File(dir, "colors_0.csv");
         tm = new TelemetryUtils(telemetry);
-        tm.print(file.getName());
-        tm.print(file.exists() ? "Exists" : "Does not exist");
+        tm.print(file.getName(), INFO);
+        tm.print(file.exists() ? "Exists" : "Does not exist", INFO);
         tm.update();
     }
 
@@ -36,15 +38,15 @@ public class TeleOp_ReadData extends OpMode {
         if (gamepad1.dpadUpWasPressed()) {
             i++;
             file = new File(dir, "colors_" + i + ".csv");
-            tm.print(file.getName());
-            tm.print(file.exists() ? "Exists" : "Does not exist");
+            tm.print(file.getName(), INFO);
+            tm.print(file.exists() ? "Exists" : "Does not exist", INFO);
             tm.update();
         }
         if (gamepad1.dpadDownWasPressed()) {
             i--;
             file = new File(dir, "colors_" + i + ".csv");
-            tm.print(file.getName());
-            tm.print(file.exists() ? "Exists" : "Does not exist");
+            tm.print(file.getName(), INFO);
+            tm.print(file.exists() ? "Exists" : "Does not exist", INFO);
             tm.update();
         }
     }
@@ -56,7 +58,7 @@ public class TeleOp_ReadData extends OpMode {
             FileReader fr = new FileReader(file);
             BufferedReader br = new BufferedReader(fr);
             Object[] lines = br.lines().toArray();
-            for (Object line : lines) tm.print("", line);
+            for (Object line : lines) tm.print("", line, INFO);
             br.close();
             fr.close();
         } catch (IOException e) {

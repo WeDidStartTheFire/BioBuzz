@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.pedropathing.geometry.Pose;
+import com.pedropathing.math.Pose;
 
 import java.io.BufferedWriter;
 
@@ -22,22 +22,22 @@ public class Utils {
     }
 
     /**
-     * Saves the current pose to a file.
+     * Saves the current pos to be used in TeleOp. Clears after power off.
      *
      * @param pos Pose to save
      */
     public static void saveOdometryPosition(@NonNull Pose pos) {
-        RobotState.savedPose = pos;
+        SavedVariables.savedPose = pos;
     }
 
     /**
-     * Loads the current pose from a file.
+     * Saves the current pos to be used in TeleOp. Clears after power off.
      *
      * @return The position the robot ended at in the last Auto
      */
     @Nullable
     public static Pose loadOdometryPosition() {
-        return RobotState.savedPose;
+        return SavedVariables.savedPose;
     }
 
     public static void addLine(BufferedWriter bw, String line) {
@@ -47,10 +47,5 @@ public class Utils {
         } catch (java.io.IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Deprecated
-    public static boolean active() {
-        return true;
     }
 }

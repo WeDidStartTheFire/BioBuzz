@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.MEDIUM;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.LIMELIGHT;
 
 import androidx.annotation.Nullable;
 
@@ -9,8 +9,10 @@ import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.enums.Color;
+import org.firstinspires.ftc.teamcode.enums.Hive;
+import org.firstinspires.ftc.teamcode.enums.HivePosition;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
 import java.util.List;
@@ -20,10 +22,8 @@ public class Limelight {
     private final @Nullable Limelight3A limelight;
 
     public Limelight(HardwareMap hardwareMap, TelemetryUtils tm) {
-        limelight = HardwareInitializer.init(hardwareMap, Limelight3A.class, "limelight");
-        if (limelight == null)
-            tm.warn(MEDIUM, "Limelight disconnected. Check the Control Hub USB 3.0 port.");
-        else limelight.pipelineSwitch(0);
+        limelight = HardwareInitializer.init(hardwareMap, tm, LIMELIGHT);
+        if (limelight != null) limelight.pipelineSwitch(0);
     }
 
     /**
@@ -41,35 +41,6 @@ public class Limelight {
     }
 
     /**
-     * Gets the detected motif
-     *
-     * @return Detected motif. If it doesn't detect a valid ID or multiple motif IDs, will return
-     * Motif.UNKNOWN.
-     */
-    public RobotConstants.Motif getMotif() {
-        List<LLResultTypes.FiducialResult> fiducials = getFiducials();
-        if (fiducials == null) return RobotConstants.Motif.UNKNOWN;
-        RobotConstants.Motif motif = RobotConstants.Motif.UNKNOWN;
-        for (LLResultTypes.FiducialResult fiducial : fiducials) {
-            switch (fiducial.getFiducialId()) {
-                case 21:
-                    if (motif == RobotConstants.Motif.UNKNOWN) motif = RobotConstants.Motif.GPP;
-                    else return RobotConstants.Motif.UNKNOWN;
-                    break;
-                case 22:
-                    if (motif == RobotConstants.Motif.UNKNOWN) motif = RobotConstants.Motif.PGP;
-                    else return RobotConstants.Motif.UNKNOWN;
-                    break;
-                case 23:
-                    if (motif == RobotConstants.Motif.UNKNOWN) motif = RobotConstants.Motif.PPG;
-                    else return RobotConstants.Motif.UNKNOWN;
-                    break;
-            }
-        }
-        return motif;
-    }
-
-    /**
      * @return The fiducial readings from the limelight
      */
     public @Nullable List<LLResultTypes.FiducialResult> getFiducials() {
@@ -81,5 +52,79 @@ public class Limelight {
     public @Nullable LLResult getLatestResult() {
         if (limelight == null) return null;
         return limelight.getLatestResult();
+    }
+
+    public Double getAverageHiveY(Hive hive) {
+        double total = 0;
+        int number = 0;
+
+        if (limelight != null && getFiducials() != null) {
+            for (LLResultTypes.FiducialResult fiducial : getFiducials()) {
+                if (Hive.ifTagMatchesHive(fiducial.getFiducialId(), hive)) {
+                    number++;
+                    total += fiducial.getTargetPoseRobotSpace().getPosition().y;
+                }
+            }
+        }
+
+        if (number == 0) return Double.NaN;
+
+        return total / number;
+    }
+
+    public HivePosition getHivePosition(Color alliance) {
+        if (alliance == Color.BLUE) {
+            HivePosition positionAccordingToAudience = HivePosition.TRANSITIONING;
+            HivePosition positionAccordingToStage = HivePosition.TRANSITIONING;
+            if (getAverageHiveY(Hive.BLUE_AUDIENCE) <= -1.20)
+                positionAccordingToAudience = HivePosition.AUDIENCE;
+            else if (getAverageHiveY(Hive.BLUE_AUDIENCE) >= -.91)
+                positionAccordingToAudience = HivePosition.STAGE;
+            else if (Double.isNaN(getAverageHiveY(Hive.BLUE_AUDIENCE)))
+                positionAccordingToAudience = HivePosition.UNKNOWN;
+
+            if (getAverageHiveY(Hive.BLUE_STAGE) <= -1.20)
+                positionAccordingToStage = HivePosition.STAGE;
+            else if (getAverageHiveY(Hive.BLUE_STAGE) >= -.91)
+                positionAccordingToStage = HivePosition.AUDIENCE;
+            else if (Double.isNaN(getAverageHiveY(Hive.BLUE_STAGE)))
+                positionAccordingToStage = HivePosition.UNKNOWN;
+
+            if (positionAccordingToAudience == positionAccordingToStage)
+                return positionAccordingToAudience;
+            if (positionAccordingToAudience == HivePosition.UNKNOWN)
+                return positionAccordingToStage;
+            if (positionAccordingToStage == HivePosition.UNKNOWN)
+                return positionAccordingToAudience;
+            return HivePosition.TRANSITIONING;
+        }
+
+        if (alliance == Color.RED) {
+            HivePosition positionAccordingToAudience = HivePosition.TRANSITIONING;
+            HivePosition positionAccordingToStage = HivePosition.TRANSITIONING;
+            if (getAverageHiveY(Hive.RED_AUDIENCE) <= -1.20)
+                positionAccordingToAudience = HivePosition.AUDIENCE;
+            else if (getAverageHiveY(Hive.RED_AUDIENCE) >= -.91)
+                positionAccordingToAudience = HivePosition.STAGE;
+            else if (Double.isNaN(getAverageHiveY(Hive.RED_AUDIENCE)))
+                positionAccordingToAudience = HivePosition.UNKNOWN;
+
+            if (getAverageHiveY(Hive.RED_STAGE) <= -1.20)
+                positionAccordingToStage = HivePosition.STAGE;
+            else if (getAverageHiveY(Hive.RED_STAGE) >= -.91)
+                positionAccordingToStage = HivePosition.AUDIENCE;
+            else if (Double.isNaN(getAverageHiveY(Hive.RED_STAGE)))
+                positionAccordingToStage = HivePosition.UNKNOWN;
+
+            if (positionAccordingToAudience == positionAccordingToStage)
+                return positionAccordingToAudience;
+            if (positionAccordingToAudience == HivePosition.UNKNOWN)
+                return positionAccordingToStage;
+            if (positionAccordingToStage == HivePosition.UNKNOWN)
+                return positionAccordingToAudience;
+            return HivePosition.TRANSITIONING;
+        }
+
+        return HivePosition.UNKNOWN;
     }
 }

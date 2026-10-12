@@ -2,33 +2,24 @@ package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
-import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.FLOAT;
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
-import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
-import static org.firstinspires.ftc.teamcode.RobotConstants.B;
-import static org.firstinspires.ftc.teamcode.RobotConstants.COUNTS_PER_INCH;
-import static org.firstinspires.ftc.teamcode.RobotConstants.DRIVETRAIN_VELOCITY;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Dir;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Dir.BACKWARD;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Dir.FORWARD;
-import static org.firstinspires.ftc.teamcode.RobotConstants.IMU_PARAMS;
-import static org.firstinspires.ftc.teamcode.RobotConstants.M;
-import static org.firstinspires.ftc.teamcode.RobotConstants.runtime;
-import static org.firstinspires.ftc.teamcode.RobotState.auto;
-import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.CRITICAL;
-import static java.lang.Math.abs;
-import static java.lang.Math.signum;
+import static org.firstinspires.ftc.teamcode.constants.DrivetrainConstants.IMU_PARAMS;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.DRIVETRAIN_LEFT_BACK_MOTOR;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.DRIVETRAIN_LEFT_FRONT_MOTOR;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.DRIVETRAIN_RIGHT_BACK_MOTOR;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.DRIVETRAIN_RIGHT_FRONT_MOTOR;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.SPARKFUN_OTOS;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.Pose;
+import com.pedropathing.math.Pose;
+import com.pedropathing.math.Velocity;
 import com.qualcomm.hardware.lynx.LynxI2cDeviceSynch;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
@@ -38,21 +29,23 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.MatchContext;
+import org.firstinspires.ftc.teamcode.PoseGetter;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.enums.Hardware;
+import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
-public class Drivetrain {
+public class Drivetrain implements PoseGetter {
     private DcMotorEx lf, lb, rf, rb;
-    private final @NonNull IMU imu;
+    private final @Nullable IMU imu;
     public Follower follower;
     public final @Nullable SparkFunOTOS otos;
+    private @Nullable Pose pose;
+    private @Nullable Velocity vel;
+    private boolean validPose = false;
 
-    public volatile boolean loop = false;
-
-    public boolean useOdometry;
-
-    public TelemetryUtils tm;
+    public final TelemetryUtils tm;
     private final HardwareMap hardwareMap;
 
     /**
@@ -81,26 +74,27 @@ public class Drivetrain {
      *
      * @param hardwareMap HardwareMap containing motor and sensor configurations
      * @param tm          TelemetryUtils instance for debugging output
-     * @param useOdom     Whether to use odometry (because it may be disconnected)
      */
-    public Drivetrain(HardwareMap hardwareMap, TelemetryUtils tm, boolean useOdom) {
+    public Drivetrain(HardwareMap hardwareMap, TelemetryUtils tm, MatchContext context) {
         this.tm = tm;
         this.hardwareMap = hardwareMap;
-        follower = Constants.createFollower(hardwareMap);
-        otos = HardwareInitializer.init(hardwareMap, SparkFunOTOS.class, "otosSensor");
+        follower = Constants.create(hardwareMap);
+        otos = HardwareInitializer.init(hardwareMap, tm, SPARKFUN_OTOS);
 
-        imu = hardwareMap.get(IMU.class, "imu");
-        imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
-        if (!imu.initialize(IMU_PARAMS)) throw new RuntimeException("IMU initialization failed");
-        imu.resetYaw();
-
+        imu = HardwareInitializer.init(hardwareMap, tm, Hardware.IMU);
+        if (imu != null) {
+            imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
+                    RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                    RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
+            if (!imu.initialize(IMU_PARAMS))
+                throw new RuntimeException("IMU initialization failed");
+            imu.resetYaw();
+        }
         // Drive train
-        lf = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "leftFront"); // Port 1
-        lb = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "leftBack"); // Port 3
-        rf = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "rightFront"); // Port 0
-        rb = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "rightBack"); // Port 4
+        lf = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_LEFT_FRONT_MOTOR);
+        lb = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_LEFT_BACK_MOTOR);
+        rf = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_RIGHT_FRONT_MOTOR);
+        rb = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_RIGHT_BACK_MOTOR);
         if (isMotorDisconnected()) {
             tm.warn(CRITICAL, "At least one drive train motor is not connected, so all will be disabled");
             lf = lb = rf = rb = null;
@@ -112,7 +106,7 @@ public class Drivetrain {
             rf.setDirection(DcMotorEx.Direction.FORWARD);
             rb.setDirection(DcMotorEx.Direction.FORWARD);
 
-            if (auto) setZeroPowerBehavior(BRAKE);
+            if (context.isAuto()) setZeroPowerBehavior(BRAKE);
             else setZeroPowerBehavior(FLOAT);
 
             lb.setTargetPosition(lb.getCurrentPosition());
@@ -120,8 +114,32 @@ public class Drivetrain {
             lf.setTargetPosition(lf.getCurrentPosition());
             rf.setTargetPosition(rf.getCurrentPosition());
         }
+    }
 
-        useOdometry = useOdom;
+
+    public @Nullable Pose pose() {
+        return pose;
+    }
+
+    public @Nullable Velocity vel() {
+        return vel;
+    }
+
+    public void setPose(Pose pose) {
+        follower.setPose(pose);
+        validPose = pose != null;
+        this.pose = pose;
+    }
+
+    public boolean isPoseValid() {
+        return validPose;
+    }
+
+    public void update() {
+        if (follower == null) return;
+        follower.update();
+        pose = follower.pose();
+        vel = follower.velocity();
     }
 
     public boolean isMotorDisconnected() {
@@ -129,66 +147,13 @@ public class Drivetrain {
     }
 
     public double getYaw(AngleUnit angleUnit) {
+        if (imu == null) return 0;
         return imu.getRobotOrientation(INTRINSIC, ZYX, angleUnit).firstAngle;
     }
 
     public void setOtosBusSpeed(LynxI2cDeviceSynch.BusSpeed busSpeed) {
         if (otos == null) return;
         ((LynxI2cDeviceSynch) otos.getDeviceClient()).setBusSpeed(busSpeed);
-    }
-
-    /**
-     * Holds the current robot position in a certain orientation (based on RobotState.pose)
-     *
-     * @param heading Orientation for the robot to point at
-     */
-    public void holdCurrentPose(double heading) {
-        if (pose == null) return;
-        Pose holdPose = pose.withHeading(heading);
-        follower.holdPoint(holdPose);
-    }
-
-    /**
-     * Holds the current robot position
-     */
-    public void holdCurrentPose() {
-        follower.holdPoint(pose);
-    }
-
-    /**
-     * Drives using encoder velocity. An inches value of zero will cause the robot to drive until
-     * manually stopped.
-     *
-     * @param inches    Amount of inches to drive.
-     * @param direction (opt.) Direction to drive if inches is zero.*
-     */
-    public void drive(double inches, Dir direction) {
-        if (isMotorDisconnected()) return;
-
-        int lfTarget = 0;
-        int rfTarget = 0;
-        int dir = direction == FORWARD ? 1 : direction == BACKWARD ? -1 : 0;
-
-        setMotorModes(STOP_AND_RESET_ENCODER);
-        setMotorModes(RUN_USING_ENCODER);
-
-        // reset the timeout time and start motion.
-        if (inches != 0) {
-            runtime.reset();
-            setMotorVelocities(DRIVETRAIN_VELOCITY * signum(inches) * dir);
-            inches = signum(inches) * (abs(inches) + B) / M;
-        } else setMotorVelocities(DRIVETRAIN_VELOCITY * dir);
-
-        double duration = abs(inches * COUNTS_PER_INCH / DRIVETRAIN_VELOCITY);
-
-        while (runtime.seconds() < duration && inches != 0) {
-            // Display it for the driver.
-            tm.print("Angle", imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
-            tm.print("Running to", " " + lfTarget + ":" + rfTarget);
-            tm.print("Currently at", lf.getCurrentPosition() + ":" + rf.getCurrentPosition());
-            if (!loop) tm.update();
-        }
-        if (inches != 0) stop();
     }
 
     /**
@@ -268,9 +233,11 @@ public class Drivetrain {
         rb.setZeroPowerBehavior(behavior);
     }
 
-    /** Stops all drive train motors on the robot. */
+    /**
+     * Stops all drive train motors on the robot.
+     */
     public void stop() {
-        follower.breakFollowing();
+        follower.stop();
 
         if (isMotorDisconnected()) return;
         setMotorPowers(0);

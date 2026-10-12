@@ -1,27 +1,29 @@
 package org.firstinspires.ftc.teamcode.teleops.other;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.speeds;
+import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
+import static org.firstinspires.ftc.teamcode.constants.TeleOpConstants.speeds;
 import static java.lang.Math.abs;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.RobotState;
+import org.firstinspires.ftc.teamcode.MatchContext;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 @TeleOp(name = "Slow", group = "C")
 public class TeleOp_Slow extends OpMode {
-    public TelemetryUtils tm = new TelemetryUtils(telemetry);
+    public final TelemetryUtils tm = new TelemetryUtils(telemetry);
     public Robot robot;
-    public double baseSpeedMultiplier = .7;
-    public double baseTurnSpeed = .625;
+    public final double baseSpeedMultiplier = .7;
+    public final double baseTurnSpeed = .625;
 
     @Override
     public void init() {
-        RobotState.auto = false;
-        robot = new Robot(hardwareMap, telemetry, false);
+        robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
         robot.drivetrain.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
@@ -60,6 +62,6 @@ public class TeleOp_Slow extends OpMode {
 
         robot.drivetrain.setMotorPowers(leftBackPower, rightBackPower, leftFrontPower, rightFrontPower);
 
-        tm.print("Speed Multiplier", speedMultiplier);
+        tm.print("Speed Multiplier", speedMultiplier, INFO);
     }
 }

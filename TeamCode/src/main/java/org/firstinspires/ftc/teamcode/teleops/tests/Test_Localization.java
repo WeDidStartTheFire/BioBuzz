@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
-@TeleOp(name="Test Localization", group="C")
+@TeleOp(name = "Test Localization", group = "C")
 public class Test_Localization extends OpMode {
     public Robot robot;
     public TelemetryUtils tm;
@@ -29,7 +29,7 @@ public class Test_Localization extends OpMode {
     public void loop() {
         tm.drawRobot(robot.drivetrain.follower);
         Pose drivetrainPosition = robot.drivetrain.pose();
-        if (drivetrainPosition!=null)
+        if (drivetrainPosition != null)
             tm.print(drivetrainPosition, INFO);
         tm.update();
     }

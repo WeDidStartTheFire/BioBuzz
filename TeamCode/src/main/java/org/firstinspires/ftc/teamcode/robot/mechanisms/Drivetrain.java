@@ -56,6 +56,13 @@ public class Drivetrain implements PoseGetter {
     }
 
     /**
+     * Configures the drivetrain to use complementary filter localization.
+     */
+    public void useComplementaryFollower() {
+        follower = Constants.createComplementaryFollower(hardwareMap);
+    }
+
+    /**
      * Configures the drivetrain to use Limelight localization.
      */
     public void useLimelightFollower() {

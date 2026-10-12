@@ -155,9 +155,9 @@ public class TeleOpController {
         }
         if (gamepad1.dpadLeftWasPressed()) robotCentric = true;
         else if (gamepad1.dpadRightWasPressed()) robotCentric = false;
-        fieldCentric = fieldCentric && !robotCentric;
         tm.print("Robot Centric", robotCentric, INFO);
         tm.print("Field Centric", fieldCentric, INFO);
+        fieldCentric = fieldCentric && !robotCentric;
         tm.drawRobot(follower);
         Pose pose = robot.drivetrain.pose();
         if (pose != null) tm.print(pose, DEBUG);

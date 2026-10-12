@@ -20,9 +20,9 @@ import java.util.List;
 
 public class Limelight implements Subsystem {
 
-    private final @Nullable Limelight3A limelight;
+    public final @Nullable Limelight3A limelight;
 
-    public Limelight(HardwareMap hardwareMap, TelemetryUtils tm) {
+    public Limelight(HardwareMap hardwareMap, @Nullable TelemetryUtils tm) {
         limelight = HardwareInitializer.init(hardwareMap, tm, LIMELIGHT);
         if (limelight != null) limelight.pipelineSwitch(0);
     }

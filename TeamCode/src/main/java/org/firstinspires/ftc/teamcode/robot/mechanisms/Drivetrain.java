@@ -35,8 +35,9 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.enums.Hardware;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
+import org.firstinspires.ftc.teamcode.robot.Subsystem;
 
-public class Drivetrain implements Subsystem {
+public class Drivetrain implements Subsystem, PoseGetter {
     private DcMotorEx lf, lb, rf, rb;
     private final @Nullable IMU imu;
     private double lfPower, lbPower, rfPower, rbPower;
@@ -143,13 +144,6 @@ public class Drivetrain implements Subsystem {
         return validPose;
     }
 
-    public void update() {
-        if (follower == null) return;
-        follower.update();
-        pose = follower.pose();
-        vel = follower.velocity();
-    }
-
     public boolean isMotorDisconnected() {
         return lf == null || lb == null || rf == null || rb == null;
     }
@@ -242,6 +236,10 @@ public class Drivetrain implements Subsystem {
 
     @Override
     public void update() {
+        if (follower == null) return;
+        follower.update();
+        pose = follower.pose();
+        vel = follower.velocity();
         if (isMotorDisconnected()) return;
         lf.setVelocity(lfPower);
         lb.setVelocity(lbPower);

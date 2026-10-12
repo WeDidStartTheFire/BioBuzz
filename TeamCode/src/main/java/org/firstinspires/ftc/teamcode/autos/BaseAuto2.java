@@ -66,7 +66,7 @@ public abstract class BaseAuto2<T extends AutoPaths> extends OpMode {
         follower = robot.drivetrain.follower;
         follower.setPose(paths.start());
         tm = robot.drivetrain.tm;
-        intakeController = new IntakeController(robot.intake, tm);
+        intakeController = new IntakeController(robot, robot.intake, tm);
         tm.print(name + " auto initialized", INFO);
         tm.update();
         robot.initBulkCache();

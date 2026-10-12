@@ -3,8 +3,9 @@ package org.firstinspires.ftc.teamcode.controllers;
 import com.pedropathing.utils.Timer;
 
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
-import org.firstinspires.ftc.teamcode.robot.mechanisms.Intake;
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.robot.mechanisms.Intake;
+
 import java.util.concurrent.TimeUnit;
 
 public class IntakeController {
@@ -44,16 +45,13 @@ public class IntakeController {
     public void update() {
         switch (state) {
             case IDLE:
-                RobotState.normalIntaking = false;
                 isBusy = false;
                 robot.intake.setBehavior(Intake.Behavior.OFF);
                 break;
             case INTAKE:
-                RobotState.normalIntaking = true;
                 robot.intake.setBehavior(Intake.Behavior.INTAKE);
                 break;
             case OUTTAKE:
-                RobotState.normalIntaking = false;
                 robot.intake.setBehavior(Intake.Behavior.OUTTAKE);
                 break;
         }

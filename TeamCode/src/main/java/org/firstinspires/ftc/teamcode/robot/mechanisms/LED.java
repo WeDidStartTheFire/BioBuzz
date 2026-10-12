@@ -17,9 +17,6 @@ public class LED implements Subsystem {
     private final @Nullable Servo led;
     private int highestPriorityThisLoop = -1;
     private double color;
-
-
-
     public enum Priority {
         LOW(0),
         MEDIUM(1),
@@ -54,7 +51,7 @@ public class LED implements Subsystem {
 
     @Override
     public void stop() {
-        if (led != null) led.setPosition(RobotConstants.LEDColors.OFF.position());
+        if (led != null) led.setPosition(LEDColors.OFF.position());
     }
 
     /**

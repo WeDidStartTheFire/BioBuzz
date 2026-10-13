@@ -37,25 +37,56 @@ public abstract class BaseAuto2<T extends AutoPaths> extends OpMode {
 
     protected abstract void configure();
 
+    /**
+     * Configures the auto variables
+     *
+     * @param pathsClass {@link AutoPaths} class to reference for path information
+     * @param color      Autonomous color {@link Color}
+     * @param name       Name of the auto
+     * @see configure()
+     */
     protected void configure(Class<T> pathsClass, Color color, String name) {
         configure(pathsClass, color, name, true);
     }
 
+    /**
+     * Configures the auto variables
+     *
+     * @param pathsClass     {@link AutoPaths} class to reference for path information
+     * @param color          Autonomous color {@link Color}
+     * @param name           Name of the auto
+     * @param addColorToName Whether to add the color to the name. If true, the color will be
+     *                       prepended to the name (e.g. "Auto" -> "🟥Red🟥 Auto").
+     * @see configure()
+     */
     protected void configure(Class<T> pathsClass, Color color, String name, boolean addColorToName) {
         this.paths = AutoPaths.get(pathsClass, color);
         this.color = color;
         this.name = addColorToName ? color + name : name;
     }
 
+    /**
+     * Runs once at the start of the OpMode after initialization
+     */
     protected void onInit() {
     }
 
+    /**
+     * Runs once at the start of the OpMode after start button press and before {@link loop()} and
+     * {@link onLoop()} begins running
+     */
     protected void onStart() {
     }
 
+    /**
+     * Runs once every loop after bulk cache and drivetrain updated and before all other updates
+     */
     protected void onLoop() {
     }
 
+    /**
+     * Runs once at the end of the OpMode
+     */
     protected void onStop() {
     }
 
@@ -65,7 +96,7 @@ public abstract class BaseAuto2<T extends AutoPaths> extends OpMode {
         robot = new Robot(hardwareMap, telemetry, new MatchContext(AUTO, color));
         follower = robot.drivetrain.follower;
         follower.setPose(paths.start());
-        tm = robot.drivetrain.tm;
+        tm = robot.tm();
         intakeController = new IntakeController(robot.intake, tm);
         tm.print(name + " auto initialized", INFO);
         tm.update();

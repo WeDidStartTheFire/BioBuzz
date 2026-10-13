@@ -17,14 +17,13 @@ import org.firstinspires.ftc.teamcode.robot.Robot;
 @TeleOp(name = "Panels Virtual Controller Test", group = "Test")
 public class TeleOp_PanelsVCTest extends OpMode {
 
-    public TelemetryUtils tm;
-    public Robot robot;
-    public GamepadManager gamepadManager;
+    private TelemetryUtils tm;
+    private GamepadManager gamepadManager;
 
     @Override
     public void init() {
-        robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
-        tm = robot.drivetrain.tm;
+        Robot robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
+        tm = robot.tm();
         gamepadManager = PanelsGamepad.INSTANCE.getFirstManager();
         tm.print("Panels Virtual Controller Test Initialized", INFO);
         tm.update();

@@ -49,7 +49,7 @@ public class TeleOp_TuneFlywheelPIDF extends OpMode {
         robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
         robot.drivetrain.setPose(loadOdometryPosition());
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
-        tm = robot.drivetrain.tm;
+        tm = robot.tm();
         tm.setEnvironment(RobotEnvironment.DEBUG);
         tm.print("Tune Flywheel PIDF Initialized", INFO);
         tm.update();

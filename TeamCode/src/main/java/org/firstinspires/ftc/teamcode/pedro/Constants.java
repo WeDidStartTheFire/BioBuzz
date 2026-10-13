@@ -19,7 +19,6 @@ import org.firstinspires.ftc.teamcode.pedro.localizers.ComplementaryLocalizer;
 import org.firstinspires.ftc.teamcode.pedro.localizers.LimelightLocalizer;
 
 public class Constants {
-
     public static MecanumConfig drivetrainConfig = new MecanumConfig(c -> {
         c.frontLeftName.set("leftFront");
         c.frontRightName.set("rightFront");

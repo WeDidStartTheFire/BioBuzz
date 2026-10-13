@@ -18,10 +18,10 @@ import java.io.IOException;
 @Configurable
 @Disabled
 public class TeleOp_ReadData extends OpMode {
-    public TelemetryUtils tm;
-    public static int i = 0;
-    public File dir;
-    public File file;
+    private TelemetryUtils tm;
+    private static int i = 0;
+    private File dir;
+    private File file;
 
     @Override
     public void init() {

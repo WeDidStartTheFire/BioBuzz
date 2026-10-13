@@ -17,9 +17,9 @@ import org.firstinspires.ftc.teamcode.robot.Robot;
 
 @TeleOp(name = "Limelight Test", group = "Test")
 public class Test_Limelight extends OpMode {
-    public TeleOpController teleop;
-    public Robot robot;
-    public TelemetryUtils tm;
+    private TeleOpController teleop;
+    private Robot robot;
+    private TelemetryUtils tm;
 
     @Override
     public void init() {
@@ -27,7 +27,7 @@ public class Test_Limelight extends OpMode {
         robot.drivetrain.useLimelightFollower();
         robot.drivetrain.setPose(loadOdometryPosition());
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
-        tm = robot.drivetrain.tm;
+        tm = robot.tm();
     }
 
     @Override

@@ -12,7 +12,6 @@ import static java.lang.Math.toRadians;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.localization.Localizer;
 import com.pedropathing.localization.MotionState;
 import com.pedropathing.math.Pose;
@@ -32,7 +31,6 @@ import org.firstinspires.ftc.teamcode.enums.HivePosition;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Limelight;
 
-@Configurable
 public class LimelightLocalizer implements Localizer {
     private final Limelight limelight;
     @Nullable

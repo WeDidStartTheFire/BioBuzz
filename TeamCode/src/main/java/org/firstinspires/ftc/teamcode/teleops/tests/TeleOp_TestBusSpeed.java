@@ -36,7 +36,7 @@ public class TeleOp_TestBusSpeed extends OpMode {
     public void init() {
         robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
         robot.drivetrain.setPose(loadOdometryPosition());
-        tm = robot.drivetrain.tm;
+        tm = robot.tm();
         tm.setEnvironment(RobotEnvironment.DEBUG);
         if (!robot.drivetrain.isPoseValid())
             tm.warn(TelemetryUtils.ErrorLevel.LOW, "Robot Centric driving will be used until the position is reset");

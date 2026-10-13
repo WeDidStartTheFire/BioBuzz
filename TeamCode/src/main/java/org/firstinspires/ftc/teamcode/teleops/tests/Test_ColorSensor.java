@@ -20,16 +20,16 @@ import java.util.Objects;
 
 @TeleOp(name = "Test Color Sensor", group = "Test")
 public class Test_ColorSensor extends OpMode {
-    Robot robot;
-    TelemetryUtils tm;
-    TeleOpController teleop;
+    private Robot robot;
+    private TelemetryUtils tm;
+    private TeleOpController teleop;
 
     @Override
     public void init() {
         robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
         robot.drivetrain.setPose(loadOdometryPosition());
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
-        tm = robot.drivetrain.tm;
+        tm = robot.tm();
         tm.setEnvironment(RobotEnvironment.DEBUG);
     }
 

@@ -14,8 +14,8 @@ import org.firstinspires.ftc.teamcode.robot.mechanisms.Limelight;
 
 @TeleOp(name = "TeleOp_HivePositionDetector", group = "C")
 public class TeleOp_HivePositionDetector extends OpMode {
-    TelemetryUtils tm;
-    Limelight limelight;
+    private TelemetryUtils tm;
+    private Limelight limelight;
 
     @Override
     public void init() {

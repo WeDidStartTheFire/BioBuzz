@@ -45,7 +45,6 @@ public class Drivetrain implements PoseGetter {
     private @Nullable Velocity vel;
     private boolean validPose = false;
 
-    public final TelemetryUtils tm;
     private final HardwareMap hardwareMap;
 
     /**
@@ -83,7 +82,6 @@ public class Drivetrain implements PoseGetter {
      * @param tm          TelemetryUtils instance for debugging output
      */
     public Drivetrain(HardwareMap hardwareMap, TelemetryUtils tm, MatchContext context) {
-        this.tm = tm;
         this.hardwareMap = hardwareMap;
         follower = Constants.create(hardwareMap);
         otos = HardwareInitializer.init(hardwareMap, tm, SPARKFUN_OTOS);

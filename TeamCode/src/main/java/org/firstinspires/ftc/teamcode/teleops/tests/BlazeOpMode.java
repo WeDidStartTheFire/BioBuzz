@@ -40,7 +40,9 @@ public class BlazeOpMode extends OpMode {
             // Every time this function is called, you should have new encoder data available in
             // your motors. Run PID loops here. I recommend doing it like this, report your data do
             // not do computation here:
-            robot.turret.update(true);
+            robot.launcher.update();
+            robot.turret.update();
+            robot.intake.update();
             tm.print("bulk loop time (ms)", elt.milliseconds(), VERBOSE);
             elt.reset();
             return null;

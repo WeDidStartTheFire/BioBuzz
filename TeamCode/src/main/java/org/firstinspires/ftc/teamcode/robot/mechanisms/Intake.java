@@ -20,6 +20,8 @@ public class Intake {
 
     private final @Nullable CRServo intakeServoA, intakeServoB, intakeServoC;
     private final @Nullable DcMotorEx intakeMotor;
+    private double cachedOutsidePower = 0;
+    private double cachedInsidePower = 0;
     private double outsidePower = 0;
     private double insidePower = 0;
 
@@ -30,6 +32,19 @@ public class Intake {
         intakeServoB = HardwareInitializer.init(hardwareMap, tm, INTAKE_SERVO_B);
         intakeServoC = HardwareInitializer.init(hardwareMap, tm, INTAKE_SERVO_C);
         if (intakeServoC != null) intakeServoC.setDirection(REVERSE);
+    }
+
+    public void update() {
+        if (abs(insidePower - cachedInsidePower) > .02) {
+            cachedInsidePower = insidePower;
+            if (intakeServoA != null) intakeServoA.setPower(insidePower);
+            if (intakeServoC != null) intakeServoC.setPower(insidePower);
+        }
+        if (abs(outsidePower - cachedOutsidePower) > .02) {
+            cachedOutsidePower = outsidePower;
+            if (intakeMotor != null) intakeMotor.setPower(outsidePower);
+            if (intakeServoB != null) intakeServoB.setPower(outsidePower);
+        }
     }
 
     /**
@@ -48,10 +63,7 @@ public class Intake {
      * @param power Power on [-1, 1]. Negative is inward, positive is outward.
      */
     public void powerInside(double power) {
-        if (abs(insidePower - power) < .02) return;
         insidePower = power;
-        if (intakeServoA != null) intakeServoA.setPower(power);
-        if (intakeServoC != null) intakeServoC.setPower(power);
     }
 
     /**
@@ -60,9 +72,6 @@ public class Intake {
      * @param power Power on [-1, 1]. Negative is inward, positive is outward.
      */
     public void powerOutside(double power) {
-        if (abs(outsidePower - power) < .02) return;
         outsidePower = power;
-        if (intakeMotor != null) intakeMotor.setPower(power);
-        if (intakeServoB != null) intakeServoB.setPower(power);
     }
 }

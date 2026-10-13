@@ -61,6 +61,8 @@ public class Turret {
     private int timesNotReset = 0;
     private boolean reset = false;
     private final @NonNull PoseGetter poseGetter;
+    private double cachedPower = 0;
+    private double power = 0;
 
     public enum Target {
         GOAL, NONE, HOLD, MANUAL
@@ -109,7 +111,7 @@ public class Turret {
     public void rotateManual(double speed) {
         if (target == Target.MANUAL) {
             turretPIDController.setTarget(-turretPIDController.target() +
-                speed * TURRET_SPEED_MANUAL);
+                    speed * TURRET_SPEED_MANUAL);
             velocityPIDController.setTarget(TURRET_SPEED_MANUAL);
             return;
         }
@@ -131,25 +133,41 @@ public class Turret {
         reset = true;
     }
 
+    public void update() {
+        update(true);
+    }
+
     /**
      * Updates the turret PID and continues aiming at the target
      */
     public void update(boolean canReset) {
         if (turretMotor == null) return;
 
+        double motorVel = turretMotor.getVelocity();
+        resetLogic(canReset, motorVel);
+        if (!reset && timesNotReset < MAX_TIMES_NOT_RESET) return;
+
+        calculatePower(motorVel);
+
+        writePower(power);
+    }
+
+    private void resetLogic(boolean canReset, double motorVel) {
         if (panelsResetTurret) resetEncoder();
         panelsResetTurret = false;
-        double motorVel = turretMotor.getVelocity();
 
         // Positive velocity check makes it so it only zeros the touch sensor when coming from one
         // side, so the "zero" on the touch sensor is always on the right side, and not changing
         // between the left and right sides
         if (turretTouchSensor != null && turretTouchSensor.isPressed() && motorVel < 50 &&
-            (canReset || !reset))
+                (canReset || !reset))
             resetEncoder();
 
         if (!reset) timesNotReset++;
-        if (!reset && timesNotReset < MAX_TIMES_NOT_RESET) return;
+    }
+
+    private void calculatePower(double motorVel) {
+        if (turretMotor == null) return;
 
         if (target == Target.GOAL) {
             ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolution(poseGetter);
@@ -163,22 +181,33 @@ public class Turret {
         if (vel != null)
             velocityPIDController.setTarget(-toDegrees(vel.toVector2D().theta()) * TURRET_ENCODERS_PER_DEGREE);
         velocityPIDController.updatePosition(motorVel);
+
         tm.print("Turret Pos", pos, VERBOSE);
         tm.print("Turret Goal", turretPIDController.target(), VERBOSE);
         tm.print("Turret Offset", offset, INFO);
         tm.print("Turret Vel", motorVel, DEBUG);
+
         if (target == Target.NONE) return;
         double feedforward = vel == null ? 0 : -vel.toVector2D().theta() * TURRET_FEEDFORWARD;
         feedforward *= min(1, min(max(0, pos - TURRET_MIN_POS), max(0, TURRET_MAX_POS - pos)) / TURRET_FEEDFORWARD_SLOW_START);
         feedforward = Math.clamp(feedforward, -TURRET_MAX_POWER, TURRET_MAX_POWER);
+
         if (target == Target.HOLD || target == Target.MANUAL) feedforward = 0;
         double pid = turretPIDController.calculate();
         if (USE_TURRET_VELOCITY_PID) pid += velocityPIDController.calculate();
         double staticFeedforward = TURRET_STATIC_FEEDFORWARD * signum(pid);
-        double power = pid + feedforward + staticFeedforward;
+        power = pid + feedforward + staticFeedforward;
         double modifier = TURRET_ADJUST_FOR_VOLTAGE ? 12 / max(voltageSensor.getVoltage(), 1e-6) : 1;
+
         power *= modifier;
-        turretMotor.setPower(Math.clamp(power, -TURRET_MAX_POWER * modifier, TURRET_MAX_POWER * modifier));
+        power = Math.clamp(power, -TURRET_MAX_POWER * modifier, TURRET_MAX_POWER * modifier);
+    }
+
+    private void writePower(double power) {
+        if (abs(power - cachedPower) > .001) {
+            cachedPower = power;
+            if (turretMotor != null) turretMotor.setPower(power);
+        }
     }
 
     /**
@@ -198,9 +227,9 @@ public class Turret {
     private void setRobotCentricAngle(double angle) {
         if (turretMotor == null) return;
         turretPIDController.setTarget(
-            Math.clamp((int) (normalizeAngle(toDegrees(angle) + TURRET_OFFSET)
-                    * TURRET_ENCODERS_PER_DEGREE + offset - TURRET_TS_OFFSET_ENC),
-                TURRET_MIN_POS, TURRET_MAX_POS));
+                Math.clamp((int) (normalizeAngle(toDegrees(angle) + TURRET_OFFSET)
+                                * TURRET_ENCODERS_PER_DEGREE + offset - TURRET_TS_OFFSET_ENC),
+                        TURRET_MIN_POS, TURRET_MAX_POS));
     }
 
     private double normalizeAngle(double angle) {
@@ -208,7 +237,7 @@ public class Turret {
         // turret snaps to the closest point it's able to reach. This means the +/-180° wraparound
         // is in the middle of the deadzone and technically has different numbers (e.g. +210, -150)
         double rangeStart = TURRET_MIN_POS / TURRET_ENCODERS_PER_DEGREE -
-            (360 - (TURRET_MAX_POS - TURRET_MIN_POS) / TURRET_ENCODERS_PER_DEGREE) / 2;
+                (360 - (TURRET_MAX_POS - TURRET_MIN_POS) / TURRET_ENCODERS_PER_DEGREE) / 2;
         return normalizeAngle(angle, rangeStart);
     }
 

@@ -8,6 +8,8 @@ import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.launcherR
 import static org.firstinspires.ftc.teamcode.enums.Hardware.LAUNCHER_MOTOR_A;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.LAUNCHER_MOTOR_B;
 
+import static java.lang.Math.abs;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -43,6 +45,7 @@ public class Launcher {
     private double cachedVel;
     private double velocityModifier;
     private final @NonNull PoseGetter poseGetter;
+    private double power;
 
     /**
      * Initializes the launcher with hardware components.
@@ -107,19 +110,34 @@ public class Launcher {
      * velocity
      */
     public void spin() {
-        if (launcherMotorA != null) launcherMotorA.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        if (launcherMotorB != null) launcherMotorB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        double goalVel = getGoalVel();
         if (!spinning) spinningTimer.reset();
         spinning = true;
+    }
+
+    private void calculatePower() {
+        if (!spinning) {
+            power = 0;
+            return;
+        }
+        double goalVel = getGoalVel();
         double motorVel = getVel();
         pidController.setTarget(goalVel);
         pidController.updateFeedForwardInput(goalVel);
         pidController.updatePosition(motorVel);
         double voltage = Math.max(voltageSensor.getVoltage(), 1e-6);
-        double power = pidController.calculate() * 12.0 / voltage;
+        power = pidController.calculate() * 12.0 / voltage;
+    }
+
+    private void writePower() {
+        if (abs(power - cachedPower) < .001) return;
+        cachedPower = power;
         if (launcherMotorA != null) launcherMotorA.setPower(power);
         if (launcherMotorB != null) launcherMotorB.setPower(power);
+    }
+
+    public void update() {
+        calculatePower();
+        writePower();
     }
 
     /**

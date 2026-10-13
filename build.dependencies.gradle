@@ -19,8 +19,8 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
 
     // Blaze FTC
-    implementation 'dev.anygeneric:blazeftc:0.1.64'
-    implementation 'dev.anygeneric:blazeftc_pedro3:0.1.64'
+    implementation 'dev.anygeneric:blazeftc:0.1.66'
+    implementation 'dev.anygeneric:blazeftc_pedro3:0.1.66'
 
     // Pedro Pathing
     implementation 'com.pedropathing:revhub:3.0.1'

@@ -29,7 +29,7 @@ public class BlazeOpMode extends OpMode {
         Robot robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, BLUE));
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
 
-        TelemetryUtils tm = robot.drivetrain.tm;
+        TelemetryUtils tm = robot.tm();
         if (!robot.drivetrain.isPoseValid())
             tm.warn(TelemetryUtils.ErrorLevel.MEDIUM, "Robot Centric driving will be used until the position is reset");
         else tm.print("Field Centric Driving", "✅", INFO);

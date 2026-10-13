@@ -14,12 +14,12 @@ import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 @TeleOp(name = "Test No Driving", group = "Test")
 public class TeleOp_Debug_No_Driving extends OpMode {
 
-    boolean wasDownA = false;
-    boolean wasDownB = false;
-    public Servo servoA, servoB, servoC, servoD;
-    public DcMotorEx motorA, motorB;
+    private boolean wasDownA = false;
+    private boolean wasDownB = false;
+    private Servo servoA, servoB, servoC, servoD;
+    private DcMotorEx motorA, motorB;
     //    public final int MOTOR_VEL = 5800 / 28;
-    public final TelemetryUtils tm = new TelemetryUtils(telemetry);
+    private final TelemetryUtils tm = new TelemetryUtils(telemetry);
 
     @Override
     public void init() {

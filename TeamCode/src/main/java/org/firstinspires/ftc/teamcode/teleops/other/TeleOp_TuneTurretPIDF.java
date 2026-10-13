@@ -57,7 +57,7 @@ public class TeleOp_TuneTurretPIDF extends OpMode {
         robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
         robot.drivetrain.setPose(loadOdometryPosition());
         robot.initBulkCache();
-        tm = robot.drivetrain.tm;
+        tm = robot.tm();
         tm.setEnvironment(RobotEnvironment.DEBUG);
         tm.print("Tune Turret PIDF Initialized", INFO);
         tm.update();

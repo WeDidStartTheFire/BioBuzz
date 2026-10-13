@@ -47,7 +47,7 @@ public class TeleOpController {
     public TeleOpController(Robot robot, Gamepad gamepad1, Gamepad gamepad2) {
         this.robot = robot;
         this.robot.initBulkCache();
-        tm = robot.drivetrain.tm;
+        tm = robot.tm();
         intakeController = new IntakeController(robot.intake, tm);
         driveController = new DriveController(robot.drivetrain, robot.context());
         this.gamepad1 = gamepad1;
@@ -160,9 +160,9 @@ public class TeleOpController {
         }
         if (gamepad1.dpadLeftWasPressed()) robotCentric = true;
         else if (gamepad1.dpadRightWasPressed()) robotCentric = false;
-        fieldCentric = fieldCentric && !robotCentric;
         tm.print("Robot Centric", robotCentric, INFO);
         tm.print("Field Centric", fieldCentric, INFO);
+        fieldCentric = fieldCentric && !robotCentric;
         tm.drawRobot(follower);
         Pose pose = robot.drivetrain.pose();
         if (pose != null) tm.print(pose, DEBUG);

@@ -21,9 +21,9 @@ import org.firstinspires.ftc.teamcode.robot.Robot;
 @TeleOp(name = "Kalman Test", group = "Test")
 @Disabled
 public class TeleOp_KalmanTest extends OpMode {
-    public TeleOpController teleop;
-    public Robot robot;
-    public TelemetryUtils tm;
+    private TeleOpController teleop;
+    private Robot robot;
+    private TelemetryUtils tm;
 
     @Override
     public void init() {
@@ -31,7 +31,7 @@ public class TeleOp_KalmanTest extends OpMode {
         robot.drivetrain.useKalmanFollower();
         robot.drivetrain.setPose(loadOdometryPosition());
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
-        tm = robot.drivetrain.tm;
+        tm = robot.tm();
         tm.setEnvironment(RobotEnvironment.DEBUG);
         if (!robot.drivetrain.isPoseValid())
             tm.warn(TelemetryUtils.ErrorLevel.MEDIUM, "Robot Centric driving will be used until the position is reset");

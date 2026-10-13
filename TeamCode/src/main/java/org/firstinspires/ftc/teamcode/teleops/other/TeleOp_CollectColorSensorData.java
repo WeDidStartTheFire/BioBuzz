@@ -27,11 +27,10 @@ import java.util.Locale;
 @TeleOp(name = "Collect Color Sensor Data", group = "C")
 @Disabled
 public class TeleOp_CollectColorSensorData extends OpMode {
-    public TeleOpController teleop;
-    public Robot robot;
-    public TelemetryUtils tm;
-    public FileWriter fw;
-    public BufferedWriter bw;
+    private TeleOpController teleop;
+    private Robot robot;
+    private FileWriter fw;
+    private BufferedWriter bw;
 
     @Override
     public void init() {
@@ -40,7 +39,7 @@ public class TeleOp_CollectColorSensorData extends OpMode {
         robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
         robot.drivetrain.setPose(loadOdometryPosition());
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
-        tm = robot.drivetrain.tm;
+        TelemetryUtils tm = robot.tm();
         int i = 0;
         while (true) {
             try {

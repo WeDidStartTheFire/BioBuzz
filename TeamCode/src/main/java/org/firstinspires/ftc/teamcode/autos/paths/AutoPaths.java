@@ -16,10 +16,26 @@ public abstract class AutoPaths {
         buildPoints();
     }
 
+    /**
+     * Returns the start pose of the path
+     *
+     * @return Start pose of the path
+     */
     public abstract Pose start();
 
+    /**
+     * Builds the points of the path
+     */
     protected abstract void buildPoints();
 
+    /**
+     * Returns an instance of the specified {@link AutoPaths} class
+     *
+     * @param autoPathsClass {@link AutoPaths} class
+     * @param autoColor      {@link Color} of the autonomous
+     * @param <T>            {@link AutoPaths} class
+     * @return Instance of the specified {@link AutoPaths} class
+     */
     public static <T extends AutoPaths> T get(Class<T> autoPathsClass, Color autoColor) {
         try {
             return autoPathsClass.getConstructor(Color.class).newInstance(autoColor);

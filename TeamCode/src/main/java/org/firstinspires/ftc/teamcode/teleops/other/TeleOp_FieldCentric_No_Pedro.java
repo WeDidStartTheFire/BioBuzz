@@ -17,16 +17,14 @@ import org.firstinspires.ftc.teamcode.robot.Robot;
 @TeleOp(name = "Field Centric No Pedro", group = "C")
 @Disabled
 public class TeleOp_FieldCentric_No_Pedro extends OpMode {
-    public TeleOpController teleop;
-    public Robot robot;
-    public TelemetryUtils tm;
+    private TeleOpController teleop;
 
     @Override
     public void init() {
-        robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
+        Robot robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
         robot.drivetrain.setPose(loadOdometryPosition());
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
-        tm = robot.drivetrain.tm;
+        TelemetryUtils tm = robot.tm();
         if (!robot.drivetrain.isPoseValid())
             tm.warn(TelemetryUtils.ErrorLevel.MEDIUM, "Field centric driving without valid position");
         else tm.print("Field Centric Driving", "✅", INFO);

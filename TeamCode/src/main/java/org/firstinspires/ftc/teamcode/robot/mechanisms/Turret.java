@@ -172,7 +172,7 @@ public class Turret {
         turretPIDController.updatePosition(pos);
         Velocity vel = poseGetter.vel();
         if (vel != null)
-            velocityPIDController.setTarget(-toDegrees(vel.toVector2D().theta()) * TURRET_ENCODERS_PER_DEGREE);
+            velocityPIDController.setTarget(-toDegrees(vel.omega) * TURRET_ENCODERS_PER_DEGREE);
         velocityPIDController.updatePosition(motorVel);
 
         tm.print("Turret Pos", pos, VERBOSE);
@@ -181,7 +181,7 @@ public class Turret {
         tm.print("Turret Vel", motorVel, DEBUG);
 
         if (target == Target.NONE) return;
-        double feedforward = vel == null ? 0 : -vel.toVector2D().theta() * TURRET_FEEDFORWARD;
+        double feedforward = vel == null ? 0 : -vel.omega * TURRET_FEEDFORWARD;
         feedforward *= min(1, min(max(0, pos - TURRET_MIN_POS), max(0, TURRET_MAX_POS - pos)) / TURRET_FEEDFORWARD_SLOW_START);
         feedforward = Math.clamp(feedforward, -TURRET_MAX_POWER, TURRET_MAX_POWER);
 

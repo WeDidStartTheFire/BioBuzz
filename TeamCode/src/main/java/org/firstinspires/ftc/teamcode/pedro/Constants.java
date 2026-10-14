@@ -86,7 +86,7 @@ public class Constants {
 
     public static Follower createLimelightFollower(HardwareMap h) {
         return new Follower(
-                new LimelightLocalizer(h, localizerConfig),
+                new LimelightLocalizer(h),
                 new Mecanum(h, drivetrainConfig),
                 new Foresight(foresightConfig)
         );

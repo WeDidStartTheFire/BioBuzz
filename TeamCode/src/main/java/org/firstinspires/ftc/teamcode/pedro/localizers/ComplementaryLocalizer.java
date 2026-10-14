@@ -83,7 +83,7 @@ public class ComplementaryLocalizer implements Localizer {
     public void update() {
         relativeLocalizer.update();
 
-        double yawRate = relativeLocalizer.velocity().toVector2D().theta(); // imu.getRobotAngularVelocity(RADIANS).zRotationRate;
+        double yawRate = relativeLocalizer.velocity().omega; // imu.getRobotAngularVelocity(RADIANS).zRotationRate;
 
         Pose relPose = relativeLocalizer.pose();
         Pose relPoseDelta = relPose.minus(prevRelPose);

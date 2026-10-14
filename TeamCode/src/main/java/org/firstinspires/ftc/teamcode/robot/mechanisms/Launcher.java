@@ -8,8 +8,6 @@ import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.launcherR
 import static org.firstinspires.ftc.teamcode.enums.Hardware.LAUNCHER_MOTOR_A;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.LAUNCHER_MOTOR_B;
 
-import static java.lang.Math.abs;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -17,7 +15,6 @@ import com.pedropathing.math.Pose;
 import com.pedropathing.math.Velocity;
 import com.pedropathing.utils.Timer;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -26,19 +23,18 @@ import org.firstinspires.ftc.teamcode.PoseGetter;
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.pedro.controllers.PIDFController;
-import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
+import org.firstinspires.ftc.teamcode.robot.BlazeMotor;
 
 import java.util.concurrent.TimeUnit;
 
 public class Launcher {
 
-    private final @Nullable DcMotorEx launcherMotorA, launcherMotorB;
+    private final BlazeMotor launcherMotorA, launcherMotorB;
     private final @NonNull Timer spinningTimer;
     private boolean spinning = false;
     private @Nullable Pose lastPose;
     private @Nullable Velocity lastVel;
     private double lastGoalVel;
-    private double cachedPower = 0;
     private final PIDFController pidController = new PIDFController(launcherPIDF);
     private final VoltageSensor voltageSensor;
     private final TelemetryUtils tm;
@@ -57,20 +53,18 @@ public class Launcher {
         this.tm = tm;
         this.poseGetter = poseGetter;
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
-        launcherMotorA = HardwareInitializer.init(hardwareMap, tm, LAUNCHER_MOTOR_A);
-        if (launcherMotorA != null) {
-            launcherMotorA.setTargetPosition(0);
-            launcherMotorA.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherReversePIDF);
-            launcherMotorA.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        }
 
-        launcherMotorB = HardwareInitializer.init(hardwareMap, tm, LAUNCHER_MOTOR_B);
-        if (launcherMotorB != null) {
-            launcherMotorB.setDirection(DcMotorSimple.Direction.REVERSE);
-            launcherMotorB.setTargetPosition(0);
-            launcherMotorB.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherReversePIDF);
-            launcherMotorB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        }
+        launcherMotorA = new BlazeMotor(hardwareMap, tm, LAUNCHER_MOTOR_A);
+        launcherMotorA.setTargetPosition(0);
+        launcherMotorA.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherReversePIDF);
+        launcherMotorA.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        launcherMotorB = new BlazeMotor(hardwareMap, tm, LAUNCHER_MOTOR_B);
+        launcherMotorB.setDirection(DcMotorSimple.Direction.REVERSE);
+        launcherMotorB.setTargetPosition(0);
+        launcherMotorB.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherReversePIDF);
+        launcherMotorB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         spinningTimer = new Timer();
         velocityModifier = 0;
     }
@@ -129,10 +123,8 @@ public class Launcher {
     }
 
     private void writePower() {
-        if (abs(power - cachedPower) < .001) return;
-        cachedPower = power;
-        if (launcherMotorA != null) launcherMotorA.setPower(power);
-        if (launcherMotorB != null) launcherMotorB.setPower(power);
+        launcherMotorA.writePower(power);
+        launcherMotorB.writePower(power);
     }
 
     public void update() {
@@ -153,7 +145,6 @@ public class Launcher {
      * @return Whether the launch motors are spinning outward (>= 100 ticks/sec)
      */
     public boolean isSpinning(double vel) {
-        if (launcherMotorA == null || launcherMotorB == null) return false;
         return vel >= 100;
     }
 
@@ -164,7 +155,6 @@ public class Launcher {
      * @return Whether the launch motors are almost to speed (within 100 ticks/sec).
      */
     public boolean almostToSpeed(double vel) {
-        if (launcherMotorA == null || launcherMotorB == null) return false;
         return vel >= getGoalVel() - 100;
     }
 
@@ -190,11 +180,9 @@ public class Launcher {
      * Stops the launch motors
      */
     public void stop() {
-        if (!spinning && cachedPower == 0) return;
         spinning = false;
-        cachedPower = 0;
-        if (launcherMotorA != null) launcherMotorA.setPower(0);
-        if (launcherMotorB != null) launcherMotorB.setPower(0);
+        launcherMotorA.writePower(0);
+        launcherMotorB.writePower(0);
     }
 
     /**
@@ -221,8 +209,8 @@ public class Launcher {
      * motor's encoder is detected to be disconnected.
      */
     public double getVel() {
-        double aRawVel = launcherMotorA == null ? 0 : launcherMotorA.getVelocity();
-        double bRawVel = launcherMotorB == null ? 0 : launcherMotorB.getVelocity();
+        double aRawVel = launcherMotorA.getVelocity();
+        double bRawVel = launcherMotorB.getVelocity();
         double aVel = aRawVel == 0 && bRawVel > 100 ? bRawVel : aRawVel;
         double bVel = bRawVel == 0 && aRawVel > 100 ? aRawVel : bRawVel;
         if (aRawVel == 0 && bRawVel > 100) tm.warn(MEDIUM, "Launch encoder A disconnected");

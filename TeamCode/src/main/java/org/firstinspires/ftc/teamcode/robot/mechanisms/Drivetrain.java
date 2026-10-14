@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
-import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
-import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.FLOAT;
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
@@ -34,10 +32,14 @@ import org.firstinspires.ftc.teamcode.PoseGetter;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.enums.Hardware;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
+import org.firstinspires.ftc.teamcode.robot.BlazeMotor;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
+import dev.anygeneric.blazeftc.BlazeFTC;
+
 public class Drivetrain implements PoseGetter {
-    private final DcMotorEx lf, lb, rf, rb;
+    private final BlazeMotor lf, lb, rf, rb;
+    private final boolean disabled;
     private final @Nullable IMU imu;
     public Follower follower;
     public final @Nullable SparkFunOTOS otos;
@@ -96,22 +98,17 @@ public class Drivetrain implements PoseGetter {
             imu.resetYaw();
         }
 
-        DcMotorEx tmpLf = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_LEFT_FRONT_MOTOR);
-        DcMotorEx tmpLb = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_LEFT_BACK_MOTOR);
-        DcMotorEx tmpRf = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_RIGHT_FRONT_MOTOR);
-        DcMotorEx tmpRb = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_RIGHT_BACK_MOTOR);
-        if (tmpLf == null || tmpLb == null || tmpRf == null || tmpRb == null) {
+        lf = new BlazeMotor(hardwareMap, tm, DRIVETRAIN_LEFT_FRONT_MOTOR);
+        lb = new BlazeMotor(hardwareMap, tm, DRIVETRAIN_LEFT_BACK_MOTOR);
+        rf = new BlazeMotor(hardwareMap, tm, DRIVETRAIN_RIGHT_FRONT_MOTOR);
+        rb = new BlazeMotor(hardwareMap, tm, DRIVETRAIN_RIGHT_BACK_MOTOR);
+        if (lf.isInitialized() || lb.isInitialized() || rf.isInitialized() || rb.isInitialized()) {
             tm.warn(CRITICAL, "At least one drive train motor is not connected, so all will be " +
                     "disabled");
-            lf = lb = rf = rb = null;
-        } else {
-            lf = tmpLf;
-            lb = tmpLb;
-            rf = tmpRf;
-            rb = tmpRb;
-        }
+            disabled = true;
+        } else disabled = false;
 
-        if (lf != null) {
+        if (!disabled) {
             lf.setDirection(REVERSE);
             lb.setDirection(REVERSE);
             rf.setDirection(DcMotorEx.Direction.FORWARD);
@@ -153,10 +150,6 @@ public class Drivetrain implements PoseGetter {
         vel = follower.velocity();
     }
 
-    public boolean isMotorDisconnected() {
-        return lf == null || lb == null || rf == null || rb == null;
-    }
-
     public double getYaw(AngleUnit angleUnit) {
         if (imu == null) return 0;
         return imu.getRobotOrientation(INTRINSIC, ZYX, angleUnit).firstAngle;
@@ -173,7 +166,7 @@ public class Drivetrain implements PoseGetter {
      * @param mode The mode to set the motors to.
      */
     private void setMotorModes(DcMotor.RunMode mode) {
-        if (isMotorDisconnected()) return;
+        if (disabled) return;
         lf.setMode(mode);
         lb.setMode(mode);
         rf.setMode(mode);
@@ -186,7 +179,8 @@ public class Drivetrain implements PoseGetter {
      * @param power Power value to set for all motors on [-1, 1]
      */
     public void setMotorPowers(double power) {
-        setMotorPowers(power, power, power, power);
+        if (disabled) return;
+        BlazeFTC.setMotorPowers(0, power, power, power, power); // 0 is for the Control Hub
     }
 
     /**
@@ -198,11 +192,10 @@ public class Drivetrain implements PoseGetter {
      * @param rfPower Right front motor power.
      */
     public void setMotorPowers(double lbPower, double rbPower, double lfPower, double rfPower) {
-        if (isMotorDisconnected()) return;
-        lb.setPower(lbPower);
-        rb.setPower(rbPower);
-        lf.setPower(lfPower);
-        rf.setPower(rfPower);
+        if (disabled) return;
+        // 0 is for the Control Hub
+        // Powers are in order of the ports (rfPower is for port 0, lfPower is for port 1, etc.)
+        BlazeFTC.setMotorPowers(0, rfPower, lfPower, rbPower, lbPower);
     }
 
     /**
@@ -211,7 +204,7 @@ public class Drivetrain implements PoseGetter {
      * @param velocity Velocity to set for all motors
      */
     public void setMotorVelocities(double velocity) {
-        if (isMotorDisconnected()) return;
+        if (disabled) return;
         setMotorVelocities(velocity, velocity, velocity, velocity);
     }
 
@@ -224,7 +217,7 @@ public class Drivetrain implements PoseGetter {
      * @param rfPower Right front motor velocity
      */
     public void setMotorVelocities(double lbPower, double rbPower, double lfPower, double rfPower) {
-        if (isMotorDisconnected()) return;
+        if (disabled) return;
         lf.setVelocity(lfPower);
         lb.setVelocity(lbPower);
         rf.setVelocity(rfPower);
@@ -237,7 +230,7 @@ public class Drivetrain implements PoseGetter {
      * @param behavior The zero power behavior (BRAKE or FLOAT)
      */
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior behavior) {
-        if (isMotorDisconnected()) return;
+        if (disabled) return;
         lf.setZeroPowerBehavior(behavior);
         lb.setZeroPowerBehavior(behavior);
         rf.setZeroPowerBehavior(behavior);
@@ -249,21 +242,6 @@ public class Drivetrain implements PoseGetter {
      */
     public void stop() {
         follower.stop();
-
-        if (isMotorDisconnected()) return;
         setMotorPowers(0);
-        setMotorVelocities(0);
-
-        // Set target position to avoid an error
-        lb.setTargetPosition(lb.getCurrentPosition());
-        rb.setTargetPosition(rb.getCurrentPosition());
-        lf.setTargetPosition(lf.getCurrentPosition());
-        rf.setTargetPosition(rf.getCurrentPosition());
-
-        // Turn On RUN_TO_POSITION
-        setMotorModes(RUN_TO_POSITION);
-
-        // Turn off RUN_TO_POSITION
-        setMotorModes(RUN_USING_ENCODER);
     }
 }

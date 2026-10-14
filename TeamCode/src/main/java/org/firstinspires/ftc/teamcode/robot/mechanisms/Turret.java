@@ -34,7 +34,6 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.math.Pose;
 import com.pedropathing.math.Velocity;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -43,13 +42,14 @@ import org.firstinspires.ftc.teamcode.PoseGetter;
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.pedro.controllers.PIDFController;
+import org.firstinspires.ftc.teamcode.robot.BlazeMotor;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
 @Configurable
 public class Turret {
     public static boolean panelsResetTurret = false;
 
-    private final @Nullable DcMotorEx turretMotor;
+    private final BlazeMotor turretMotor;
     private final @Nullable TouchSensor turretTouchSensor;
     private final VoltageSensor voltageSensor;
     private Target target = Target.HOLD;
@@ -61,8 +61,6 @@ public class Turret {
     private int timesNotReset = 0;
     private boolean reset = false;
     private final @NonNull PoseGetter poseGetter;
-    private double cachedPower = 0;
-    private double power = 0;
 
     public enum Target {
         GOAL, NONE, HOLD, MANUAL
@@ -72,14 +70,12 @@ public class Turret {
         this.tm = tm;
         this.poseGetter = poseGetter;
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
-        turretMotor = HardwareInitializer.init(hardwareMap, tm, TURRET_MOTOR);
-        if (turretMotor != null) {
-            turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            int currentPos = turretMotor.getCurrentPosition();
-            turretPIDController.setTarget(abs(currentPos - 7000) < 250 ? 7000 : currentPos);
-            velocityPIDController.setTarget(0);
-        }
+        turretMotor = new BlazeMotor(hardwareMap, tm, TURRET_MOTOR);
+        turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        int currentPos = turretMotor.getCurrentPosition();
+        turretPIDController.setTarget(abs(currentPos - 7000) < 250 ? 7000 : currentPos);
+        velocityPIDController.setTarget(0);
         turretTouchSensor = HardwareInitializer.init(hardwareMap, tm, TURRET_TOUCH_SENSOR);
     }
 
@@ -88,13 +84,10 @@ public class Turret {
     }
 
     public int getEncoderPosition() {
-        if (turretMotor == null) return 0;
         return turretMotor.getCurrentPosition();
     }
 
-    @Nullable
     public DcMotor.RunMode getRunMode() {
-        if (turretMotor == null) return null;
         return turretMotor.getMode();
     }
 
@@ -123,7 +116,7 @@ public class Turret {
      * Resets the turret encoder to 0 and switches back to RUN_WITHOUT_ENCODER mode.
      */
     private void resetEncoder() {
-        if (turretMotor == null) return;
+        if (!turretMotor.isInitialized()) return;
         if (abs(turretMotor.getCurrentPosition()) > 50) turretPIDController.reset();
         turretPIDController.updatePosition(0);
         if (target == Target.MANUAL) turretPIDController.setTarget(0);
@@ -141,7 +134,7 @@ public class Turret {
      * Updates the turret PID and continues aiming at the target
      */
     public void update(boolean canReset) {
-        if (turretMotor == null) return;
+        if (!turretMotor.isInitialized()) return;
 
         double motorVel = turretMotor.getVelocity();
         resetLogic(canReset, motorVel);
@@ -149,7 +142,7 @@ public class Turret {
 
         calculatePower(motorVel);
 
-        writePower(power);
+        writePower();
     }
 
     private void resetLogic(boolean canReset, double motorVel) {
@@ -167,7 +160,7 @@ public class Turret {
     }
 
     private void calculatePower(double motorVel) {
-        if (turretMotor == null) return;
+        if (!turretMotor.isInitialized()) return;
 
         if (target == Target.GOAL) {
             ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolution(poseGetter);
@@ -196,18 +189,16 @@ public class Turret {
         double pid = turretPIDController.calculate();
         if (USE_TURRET_VELOCITY_PID) pid += velocityPIDController.calculate();
         double staticFeedforward = TURRET_STATIC_FEEDFORWARD * signum(pid);
-        power = pid + feedforward + staticFeedforward;
+        double power = pid + feedforward + staticFeedforward;
         double modifier = TURRET_ADJUST_FOR_VOLTAGE ? 12 / max(voltageSensor.getVoltage(), 1e-6) : 1;
 
         power *= modifier;
         power = Math.clamp(power, -TURRET_MAX_POWER * modifier, TURRET_MAX_POWER * modifier);
+        turretMotor.setPower(power);
     }
 
-    private void writePower(double power) {
-        if (abs(power - cachedPower) > .001) {
-            cachedPower = power;
-            if (turretMotor != null) turretMotor.setPower(power);
-        }
+    private void writePower() {
+        turretMotor.writePower();
     }
 
     /**
@@ -215,8 +206,7 @@ public class Turret {
      */
     public void stop() {
         setTarget(Target.NONE);
-        if (turretMotor != null)
-            turretPIDController.setTarget(turretMotor.getCurrentPosition());
+        turretPIDController.setTarget(turretMotor.getCurrentPosition());
     }
 
     /**

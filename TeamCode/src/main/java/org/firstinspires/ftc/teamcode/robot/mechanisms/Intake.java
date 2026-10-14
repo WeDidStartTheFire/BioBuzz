@@ -10,23 +10,23 @@ import static java.lang.Math.abs;
 import androidx.annotation.Nullable;
 
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.robot.BlazeMotor;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
 public class Intake {
 
     private final @Nullable CRServo intakeServoA, intakeServoB, intakeServoC;
-    private final @Nullable DcMotorEx intakeMotor;
+    private final BlazeMotor intakeMotor;
     private double cachedOutsidePower = 0;
     private double cachedInsidePower = 0;
     private double outsidePower = 0;
     private double insidePower = 0;
 
     public Intake(HardwareMap hardwareMap, TelemetryUtils tm) {
-        intakeMotor = HardwareInitializer.init(hardwareMap, tm, INTAKE_MOTOR);
+        intakeMotor = new BlazeMotor(hardwareMap, tm, INTAKE_MOTOR);
 
         intakeServoA = HardwareInitializer.init(hardwareMap, tm, INTAKE_SERVO_A);
         intakeServoB = HardwareInitializer.init(hardwareMap, tm, INTAKE_SERVO_B);
@@ -42,7 +42,7 @@ public class Intake {
         }
         if (abs(outsidePower - cachedOutsidePower) > .02) {
             cachedOutsidePower = outsidePower;
-            if (intakeMotor != null) intakeMotor.setPower(outsidePower);
+            intakeMotor.writePower(outsidePower);
             if (intakeServoB != null) intakeServoB.setPower(outsidePower);
         }
     }

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.teleops.tests;
+package org.firstinspires.ftc.teamcode.utilities;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
@@ -10,7 +10,7 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.hardware.lynx.LynxI2cDeviceSynch;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Utility;
 
 import org.firstinspires.ftc.teamcode.MatchContext;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
@@ -18,10 +18,10 @@ import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.enums.RobotEnvironment;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
-@TeleOp(name = "Test Bus Speed", group = "Test")
+@Utility(name = "Test Bus Speed", description = "Tests bus speed impact on I2C devices")
 @Disabled
 @Configurable
-public class TeleOp_TestBusSpeed extends OpMode {
+public class TestBusSpeed extends OpMode {
     private Robot robot;
     private TelemetryUtils tm;
     private double totalColorTime = 0;
@@ -39,7 +39,8 @@ public class TeleOp_TestBusSpeed extends OpMode {
         tm = robot.tm();
         tm.setEnvironment(RobotEnvironment.DEBUG);
         if (!robot.drivetrain.isPoseValid())
-            tm.warn(TelemetryUtils.ErrorLevel.LOW, "Robot Centric driving will be used until the position is reset");
+            tm.warn(TelemetryUtils.ErrorLevel.LOW,
+                    "Robot Centric driving will be used until the position is reset");
         else tm.print("Field Centric Driving", "✅", INFO);
         tm.print("Color", "🟦Blue🟦", INFO);
     }

@@ -1,11 +1,11 @@
-package org.firstinspires.ftc.teamcode.teleops.tests;
+package org.firstinspires.ftc.teamcode.utilities;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Utility;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.MatchContext;
@@ -13,8 +13,8 @@ import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
-@TeleOp(name = "TeleOp_AprilTag_Follower", group = "Test")
-public class TeleOp_AprilTag_Follower extends OpMode {
+@Utility(name = "AprilTag Follower", description = "Follows AprilTags")
+public class AprilTagFollower extends OpMode {
     private Robot robot;
     private TeleOpController teleop;
     private Gamepad gamepad;

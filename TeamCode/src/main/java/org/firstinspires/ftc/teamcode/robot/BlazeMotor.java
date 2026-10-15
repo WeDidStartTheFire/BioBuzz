@@ -64,8 +64,8 @@ public class BlazeMotor implements DcMotorEx {
         return power;
     }
 
-    public void writePower(double power) {
-        this.power = power;
+    public void writeZeroPower() {
+        this.power = 0;
         if (powerSet) BlazeFTC.setMotorPower(hardware.hub.id(), hardware.port, power);
     }
 

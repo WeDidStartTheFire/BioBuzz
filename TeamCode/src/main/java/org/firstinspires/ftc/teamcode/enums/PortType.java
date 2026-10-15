@@ -7,7 +7,8 @@ public enum PortType {
     MOTOR("Motor Port"),
     DIGITAL("Digital Port"),
     I2C("I2C Port"),
-    USB("USB Port");
+    USB("USB Port"),
+    RS485("RS485 Port");
 
     private final String name;
 

@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.robot.mechanisms.LED;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Launcher;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Limelight;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
+import org.firstinspires.ftc.teamcode.robot.mechanisms.VoltageSensor;
 
 public class Robot {
     public final Drivetrain drivetrain;
@@ -27,6 +28,7 @@ public class Robot {
     public final Turret turret;
     public final HardwareMap hardwareMap;
     private final MatchContext context;
+    public final VoltageSensor voltageSensor;
     private final TelemetryUtils tm;
 
     public Robot(@NonNull HardwareMap hardwareMap, @NonNull Telemetry telemetry,
@@ -34,13 +36,14 @@ public class Robot {
         this.context = context;
         this.hardwareMap = hardwareMap;
         tm = new TelemetryUtils(telemetry);
+        voltageSensor = new VoltageSensor(tm, hardwareMap);
         drivetrain = new Drivetrain(hardwareMap, tm, this.context);
         intake = new Intake(hardwareMap, tm);
         colorSensor = new ColorSensor(hardwareMap, tm);
         led = new LED(hardwareMap, tm);
         limelight = new Limelight(hardwareMap, tm);
-        launcher = new Launcher(hardwareMap, tm, PoseGetter.from(drivetrain));
-        turret = new Turret(hardwareMap, tm, PoseGetter.from(drivetrain));
+        launcher = new Launcher(hardwareMap, tm, PoseGetter.from(drivetrain), voltageSensor);
+        turret = new Turret(hardwareMap, tm, PoseGetter.from(drivetrain), voltageSensor);
     }
 
     public void writeMotors() {
@@ -56,6 +59,7 @@ public class Robot {
      * start of each OpMode.
      */
     public void initBulkCache() {
+        voltageSensor.setUseCache(true);
         for (LynxModule module : hardwareMap.getAll(LynxModule.class))
             module.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
     }
@@ -65,6 +69,7 @@ public class Robot {
      * every loop.
      */
     public void updateBulkCache() {
+        voltageSensor.clearCache();
         for (LynxModule module : hardwareMap.getAll(LynxModule.class))
             module.clearBulkCache();
     }

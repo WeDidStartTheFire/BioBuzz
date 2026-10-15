@@ -6,6 +6,7 @@ import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.LOW;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.MEDIUM;
 
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -39,7 +40,8 @@ public enum Hardware {
     INTAKE_SERVO_A("Intake Servo A", CRServo.class, "intakeServoA", Hub.EXPANSION, PortType.SERVO, 3, HIGH),
     INTAKE_SERVO_B("Intake Servo B (roller)", CRServo.class, "intakeServoB", Hub.EXPANSION, PortType.SERVO, 4, LOW),
     INTAKE_SERVO_C("Intake Servo C", CRServo.class, "intakeServoC", Hub.EXPANSION, PortType.SERVO, 5, HIGH),
-    IMU("IMU", IMU.class, "imu", Hub.CONTROL, PortType.I2C, 0, MEDIUM);
+    IMU("IMU", IMU.class, "imu", Hub.CONTROL, PortType.I2C, 0, MEDIUM),
+    EXPANSION_HUB("Expansion Hub", LynxModule.class, "Expansion Hub", Hub.EXPANSION, PortType.RS485, -1, CRITICAL);
 
     public final String name;
     public final Class<?> classOrInterface;

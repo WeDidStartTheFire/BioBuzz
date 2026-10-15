@@ -17,7 +17,6 @@ import com.pedropathing.utils.Timer;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.PoseGetter;
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
@@ -41,7 +40,6 @@ public class Launcher {
     private double cachedVel;
     private double velocityModifier;
     private final @NonNull PoseGetter poseGetter;
-    private double power;
 
     /**
      * Initializes the launcher with hardware components.
@@ -49,10 +47,11 @@ public class Launcher {
      * @param hardwareMap HardwareMap containing motor configurations
      * @param tm          TelemetryUtils instance for debugging output
      */
-    public Launcher(HardwareMap hardwareMap, TelemetryUtils tm, @NonNull PoseGetter poseGetter) {
+    public Launcher(HardwareMap hardwareMap, TelemetryUtils tm, @NonNull PoseGetter poseGetter,
+                    VoltageSensor voltageSensor) {
         this.tm = tm;
         this.poseGetter = poseGetter;
-        voltageSensor = hardwareMap.voltageSensor.iterator().next();
+        this.voltageSensor = voltageSensor;
 
         launcherMotorA = new BlazeMotor(hardwareMap, tm, LAUNCHER_MOTOR_A);
         launcherMotorA.setTargetPosition(0);
@@ -90,7 +89,8 @@ public class Launcher {
      */
     public double getGoalVel(@Nullable Pose pose, @Nullable Velocity vel) {
         if (pose == null) return 0;
-        if (pose.equals(lastPose) && ((vel == null && lastVel == null) || vel != null && vel.equals(lastVel)))
+        if (pose.equals(lastPose) && ((vel == null && lastVel == null) ||
+                vel != null && vel.equals(lastVel)))
             return lastGoalVel + velocityModifier;
         ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolution(pose, vel);
         lastPose = pose;
@@ -109,17 +109,16 @@ public class Launcher {
     }
 
     public void calculate() {
-        if (!spinning) {
-            power = 0;
-            return;
-        }
+        if (!spinning) return;
         double goalVel = getGoalVel();
         double motorVel = getVel();
         pidController.setTarget(goalVel);
         pidController.updateFeedForwardInput(goalVel);
         pidController.updatePosition(motorVel);
-        double voltage = Math.max(voltageSensor.getVoltage(), 1e-6);
-        power = pidController.calculate() * 12.0 / voltage;
+        double voltage = Math.max(voltageSensor.getVoltage(launcherMotorA.hardware.hub), 1e-6);
+        double power = pidController.calculate() * 12.0 / voltage;
+        launcherMotorA.setPower(power);
+        launcherMotorB.setPower(power);
     }
 
     /**
@@ -171,8 +170,8 @@ public class Launcher {
      */
     public void stop() {
         spinning = false;
-        launcherMotorA.writePower(0);
-        launcherMotorB.writePower(0);
+        launcherMotorA.writeZeroPower();
+        launcherMotorB.writeZeroPower();
     }
 
     /**

@@ -48,7 +48,7 @@ public class Intake {
     }
 
     public void stop() {
-        intakeMotor.writePower(0);
+        intakeMotor.writeZeroPower();
         if (intakeServoA != null) intakeServoA.setPower(0);
         if (intakeServoB != null) intakeServoB.setPower(0);
         if (intakeServoC != null) intakeServoC.setPower(0);

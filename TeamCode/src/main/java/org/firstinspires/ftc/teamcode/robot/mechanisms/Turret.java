@@ -36,7 +36,6 @@ import com.pedropathing.math.Velocity;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensor;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.PoseGetter;
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
@@ -66,10 +65,11 @@ public class Turret {
         GOAL, NONE, HOLD, MANUAL
     }
 
-    public Turret(HardwareMap hardwareMap, TelemetryUtils tm, @NonNull PoseGetter poseGetter) {
+    public Turret(HardwareMap hardwareMap, TelemetryUtils tm, @NonNull PoseGetter poseGetter,
+                  VoltageSensor voltageSensor) {
         this.tm = tm;
         this.poseGetter = poseGetter;
-        voltageSensor = hardwareMap.voltageSensor.iterator().next();
+        this.voltageSensor = voltageSensor;
         turretMotor = new BlazeMotor(hardwareMap, tm, TURRET_MOTOR);
         turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -190,7 +190,7 @@ public class Turret {
         double staticFeedforward = TURRET_STATIC_FEEDFORWARD * signum(pid);
         double power = pid + feedforward + staticFeedforward;
         double modifier = TURRET_ADJUST_FOR_VOLTAGE ?
-                12 / max(voltageSensor.getVoltage(), 1e-6) : 1;
+                12 / max(voltageSensor.getVoltage(turretMotor.hardware.hub), 1e-6) : 1;
 
         power *= modifier;
         power = Math.clamp(power, -TURRET_MAX_POWER * modifier, TURRET_MAX_POWER * modifier);
@@ -203,7 +203,7 @@ public class Turret {
     public void stop() {
         setTarget(Target.NONE);
         turretPIDController.setTarget(turretMotor.getCurrentPosition());
-        turretMotor.writePower(0);
+        turretMotor.writeZeroPower();
     }
 
     /**

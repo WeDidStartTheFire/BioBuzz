@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import static dev.anygeneric.blazeftc.BlazeFTC.setMotorPowers;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -14,6 +16,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.enums.Hardware;
+import org.firstinspires.ftc.teamcode.enums.Hub;
+
+import java.util.ArrayList;
 
 import dev.anygeneric.blazeftc.BlazeFTC;
 
@@ -21,25 +26,38 @@ public class BlazeMotor implements DcMotorEx {
     @Nullable
     private final DcMotorEx device;
     public final Hardware hardware;
+    public static ArrayList<BlazeMotor> motors = new ArrayList<>();
     private double power;
+    private boolean powerSet = false;
 
     public BlazeMotor(@NonNull HardwareMap hardwareMap, @Nullable TelemetryUtils tm,
                       @NonNull Hardware hardware) {
         assert hardware.classOrInterface == DcMotorEx.class;
         device = HardwareInitializer.init(hardwareMap, tm, hardware);
         this.hardware = hardware;
+        motors.add(this);
+    }
+
+    public static void writeAllMotors() {
+        writeMotors(Hub.CONTROL);
+        writeMotors(Hub.EXPANSION);
+    }
+
+
+    public static void writeMotors(Hub hub) {
+        double[] powers = new double[]{Double.NaN, Double.NaN, Double.NaN, Double.NaN};
+        for (BlazeMotor motor : motors)
+            if (motor.hardware.hub == hub) powers[motor.hardware.port] = motor.power;
+        setMotorPowers(1, powers[0], powers[1], powers[2], powers[3]);
     }
 
     public boolean isInitialized() {
         return device != null;
     }
 
-    public void writePower() {
-        writePower(power);
-    }
-
     public void setPower(double power) {
         this.power = power;
+        powerSet = true;
     }
 
     public double getPower() {
@@ -47,7 +65,8 @@ public class BlazeMotor implements DcMotorEx {
     }
 
     public void writePower(double power) {
-        BlazeFTC.setMotorPower(hardware.hub.id(), hardware.port, power);
+        this.power = power;
+        if (powerSet) BlazeFTC.setMotorPower(hardware.hub.id(), hardware.port, power);
     }
 
     @Override

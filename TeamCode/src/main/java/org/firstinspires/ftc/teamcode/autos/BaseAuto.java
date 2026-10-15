@@ -125,7 +125,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         robot.drivetrain.update();
         pathUpdate();
         Scheduler.execute();
-        robot.turret.update(true);
+        robot.turret.calculate(true);
         intakeController.update();
         robot.led.update();
 

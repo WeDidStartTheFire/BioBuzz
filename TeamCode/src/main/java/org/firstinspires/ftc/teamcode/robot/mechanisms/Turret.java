@@ -126,14 +126,14 @@ public class Turret {
         reset = true;
     }
 
-    public void update() {
-        update(true);
+    public void calculate() {
+        calculate(true);
     }
 
     /**
      * Updates the turret PID and continues aiming at the target
      */
-    public void update(boolean canReset) {
+    public void calculate(boolean canReset) {
         if (!turretMotor.isInitialized()) return;
 
         double motorVel = turretMotor.getVelocity();
@@ -141,8 +141,6 @@ public class Turret {
         if (!reset && timesNotReset < MAX_TIMES_NOT_RESET) return;
 
         calculatePower(motorVel);
-
-        writePower();
     }
 
     private void resetLogic(boolean canReset, double motorVel) {
@@ -182,7 +180,8 @@ public class Turret {
 
         if (target == Target.NONE) return;
         double feedforward = vel == null ? 0 : -vel.omega * TURRET_FEEDFORWARD;
-        feedforward *= min(1, min(max(0, pos - TURRET_MIN_POS), max(0, TURRET_MAX_POS - pos)) / TURRET_FEEDFORWARD_SLOW_START);
+        feedforward *= min(1, min(max(0, pos - TURRET_MIN_POS), max(0, TURRET_MAX_POS - pos)) /
+                TURRET_FEEDFORWARD_SLOW_START);
         feedforward = Math.clamp(feedforward, -TURRET_MAX_POWER, TURRET_MAX_POWER);
 
         if (target == Target.HOLD || target == Target.MANUAL) feedforward = 0;
@@ -190,15 +189,12 @@ public class Turret {
         if (USE_TURRET_VELOCITY_PID) pid += velocityPIDController.calculate();
         double staticFeedforward = TURRET_STATIC_FEEDFORWARD * signum(pid);
         double power = pid + feedforward + staticFeedforward;
-        double modifier = TURRET_ADJUST_FOR_VOLTAGE ? 12 / max(voltageSensor.getVoltage(), 1e-6) : 1;
+        double modifier = TURRET_ADJUST_FOR_VOLTAGE ?
+                12 / max(voltageSensor.getVoltage(), 1e-6) : 1;
 
         power *= modifier;
         power = Math.clamp(power, -TURRET_MAX_POWER * modifier, TURRET_MAX_POWER * modifier);
         turretMotor.setPower(power);
-    }
-
-    private void writePower() {
-        turretMotor.writePower();
     }
 
     /**
@@ -207,6 +203,7 @@ public class Turret {
     public void stop() {
         setTarget(Target.NONE);
         turretPIDController.setTarget(turretMotor.getCurrentPosition());
+        turretMotor.writePower(0);
     }
 
     /**

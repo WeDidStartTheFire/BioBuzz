@@ -108,7 +108,7 @@ public class Launcher {
         spinning = true;
     }
 
-    private void calculatePower() {
+    public void calculate() {
         if (!spinning) {
             power = 0;
             return;
@@ -120,16 +120,6 @@ public class Launcher {
         pidController.updatePosition(motorVel);
         double voltage = Math.max(voltageSensor.getVoltage(), 1e-6);
         power = pidController.calculate() * 12.0 / voltage;
-    }
-
-    private void writePower() {
-        launcherMotorA.writePower(power);
-        launcherMotorB.writePower(power);
-    }
-
-    public void update() {
-        calculatePower();
-        writePower();
     }
 
     /**
@@ -149,8 +139,8 @@ public class Launcher {
     }
 
     /**
-     * Returns whether the launch motors are almost to speed (within 100 ticks/sec).
-     * WARNING: Will return true even if over required speed
+     * Returns whether the launch motors are almost to speed (within 100 ticks/sec). WARNING: Will
+     * return true even if over required speed
      *
      * @return Whether the launch motors are almost to speed (within 100 ticks/sec).
      */

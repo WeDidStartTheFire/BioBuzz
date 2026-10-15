@@ -43,6 +43,14 @@ public class Robot {
         turret = new Turret(hardwareMap, tm, PoseGetter.from(drivetrain));
     }
 
+    public void writeMotors() {
+        BlazeMotor.writeAllMotors();
+    }
+
+    public void writeExpansionHubMotors() {
+        BlazeMotor.writeAllMotors();
+    }
+
     /**
      * Initializes the bulk cache for all standard motors and servos. Should be called once at the
      * start of each OpMode.

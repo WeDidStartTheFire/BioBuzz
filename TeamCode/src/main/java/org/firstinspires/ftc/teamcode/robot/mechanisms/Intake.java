@@ -34,7 +34,7 @@ public class Intake {
         if (intakeServoC != null) intakeServoC.setDirection(REVERSE);
     }
 
-    public void update() {
+    public void calculate() {
         if (abs(insidePower - cachedInsidePower) > .02) {
             cachedInsidePower = insidePower;
             if (intakeServoA != null) intakeServoA.setPower(insidePower);
@@ -42,9 +42,16 @@ public class Intake {
         }
         if (abs(outsidePower - cachedOutsidePower) > .02) {
             cachedOutsidePower = outsidePower;
-            intakeMotor.writePower(outsidePower);
+            intakeMotor.setPower(outsidePower);
             if (intakeServoB != null) intakeServoB.setPower(outsidePower);
         }
+    }
+
+    public void stop() {
+        intakeMotor.writePower(0);
+        if (intakeServoA != null) intakeServoA.setPower(0);
+        if (intakeServoB != null) intakeServoB.setPower(0);
+        if (intakeServoC != null) intakeServoC.setPower(0);
     }
 
     /**

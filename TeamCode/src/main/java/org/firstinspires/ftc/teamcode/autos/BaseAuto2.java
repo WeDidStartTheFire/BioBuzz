@@ -120,7 +120,7 @@ public abstract class BaseAuto2<T extends AutoPaths> extends OpMode {
         robot.drivetrain.update();
         onLoop();
         Scheduler.execute();
-        robot.turret.update(true);
+        robot.turret.calculate(true);
         intakeController.update();
         robot.led.update();
 

@@ -57,20 +57,26 @@ public class TeleOp_AprilTag_Follower extends OpMode {
         LLResult result = limelight.getLatestResult();
         robot.initBulkCache();
         robot.updateBulkCache();
-        teleop.drivetrainLogic(false, false, 1);
+        teleop.drivetrainLogic(false, 1);
         for (LLResultTypes.FiducialResult fiducial : result.getFiducialResults()) {
             if (targetID == 0) {
                 targetID = fiducial.getFiducialId();
-            } if (fiducial.getFiducialId() == targetID) { // Could be problem, it could be detecting different AprilTag than the one it saw First
+            }
+            // Could be problem, it could be detecting different AprilTag than the one it saw First
+            if (fiducial.getFiducialId() == targetID) {
                 tm.print(String.valueOf(fiducial.getTargetXPixels()));
-                if (gamepad == null) { tm.print("Gamepad returning null!"); }
-                // Target pixels may be the wrong value, fine-tuning might help.
-                else if (fiducial.getTargetXPixels() <= 600) { gamepad.left_stick_x = -1f; }
-                else if (fiducial.getTargetXPixels() >= 900) { gamepad.left_stick_x = 1f; }
-                else { gamepad.left_stick_x = 0f; } // This is here for testing, I will probably remove this.
+                if (gamepad == null) tm.print("Gamepad returning null!");
+                else if (fiducial.getTargetXPixels() <= 600)
+                    // Target pixels may be the wrong value, fine-tuning might help.
+                    gamepad.left_stick_x = -1f;
+                else if (fiducial.getTargetXPixels() >= 900)
+                    gamepad.left_stick_x = 1f;
+                else gamepad.left_stick_x = 0f;
+                // This is here for testing, I will probably remove this.
             }
         }
-        // Following prints are for reading the target ID (ID it saw first), left joystick X, and just checking if gamepad exists.
+        // Following prints are for reading the target ID (ID it saw first), left joystick X, and
+        // just checking if gamepad exists.
         tm.print(String.valueOf(targetID));
         tm.print(String.valueOf(gamepad.left_stick_x));
         tm.print(String.valueOf(gamepad));

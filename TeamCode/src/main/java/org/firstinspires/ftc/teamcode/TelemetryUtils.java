@@ -1,14 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
-import static java.lang.Math.round;
-import static java.lang.Math.toDegrees;
-
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 
 public class TelemetryUtils {
     private final Telemetry telemetry;
-    private final StringBuilder poseStringBuilder = new StringBuilder();
 
     public TelemetryUtils(Telemetry telemetry) {
         this.telemetry = telemetry;

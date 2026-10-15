@@ -2,9 +2,6 @@ package org.firstinspires.ftc.teamcode.teleops;
 
 import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 
-import com.bylazar.gamepad.Gamepad;
-import com.bylazar.gamepad.GamepadManager;
-import com.bylazar.gamepad.PanelsGamepad;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -23,7 +20,6 @@ public class TeleOp_Fred extends OpMode {
     private TelemetryUtils tm;
     private TeleOpController teleop;
     private ServoFred fred;
-    private GamepadManager vgamepad1;
 
     @Override
     public void init() {
@@ -42,7 +38,7 @@ public class TeleOp_Fred extends OpMode {
     public void loop() {
         robot.initBulkCache();
         robot.updateBulkCache();
-        teleop.drivetrainLogic(false, false, 200);
+        teleop.drivetrainLogic(true, 200);
         tm.print("Claw 1 Position", fred.getClawPosition(1));
         tm.print("Claw 2 Position", fred.getClawPosition(2));
         tm.update();

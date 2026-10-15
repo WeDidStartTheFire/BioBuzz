@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.controllers;
 import static org.firstinspires.ftc.teamcode.RobotState.robotCentric;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.bylazar.gamepad.GamepadManager;
-import com.bylazar.gamepad.PanelsGamepad;
 
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.Robot;
@@ -12,16 +10,11 @@ import org.firstinspires.ftc.teamcode.robot.ServoFred;
 
 public class TeleOpController {
     Gamepad gamepad1, gamepad2;
-    GamepadManager vgamepad1, vgamepad2;
     DriveController driveController;
     ServoFred fred;
     Robot robot;
     boolean useOdometry;
     TelemetryUtils tm;
-    long lastUpdateTime;
-    int totalMs;
-    int totalUpdates;
-    int something;
 
     /**
      * Initializes the TeleOpController with robot hardware and gamepads. To be called in the init()
@@ -46,9 +39,8 @@ public class TeleOpController {
      * Logic for the drivetrain during TeleOp
      *
      * @param fieldCentric Whether to use field centric driving
-     * @param usePedro Whether to use Pedro Pathing
      */
-    public void drivetrainLogic(boolean fieldCentric, boolean usePedro, double speed) {
+    public void drivetrainLogic(boolean fieldCentric, double speed) {
         if (gamepad1.dpadLeftWasPressed()) robotCentric = true;
         else if (gamepad1.dpadRightWasPressed()) robotCentric = false;
         if (gamepad1.leftBumperWasPressed() && fred.doesClawsExist()) fred.toggleClaws();

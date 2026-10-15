@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.robot.Robot;
 
 @TeleOp(name = "Kalman Test", group = "Test")
 @Disabled
-public class TeleOp_KalmanTest extends OpMode {
+public class Test_KalmanFilter extends OpMode {
     private TeleOpController teleop;
     private Robot robot;
     private TelemetryUtils tm;

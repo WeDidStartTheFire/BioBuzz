@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.teleops.other;
+package org.firstinspires.ftc.teamcode.utilities;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.CRITICAL;
@@ -8,7 +8,7 @@ import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Utility;
 
 import org.firstinspires.ftc.teamcode.MatchContext;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
@@ -24,9 +24,10 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Locale;
 
-@TeleOp(name = "Collect Color Sensor Data", group = "C")
+@Utility(name = "Collect Color Sensor Data",
+        description = "Collects color sensor data and stores it in a file")
 @Disabled
-public class TeleOp_CollectColorSensorData extends OpMode {
+public class CollectColorSensorData extends OpMode {
     private TeleOpController teleop;
     private Robot robot;
     private FileWriter fw;
@@ -77,16 +78,16 @@ public class TeleOp_CollectColorSensorData extends OpMode {
             double distanceA = robot.colorSensor.getInchesA();
             double distanceB = robot.colorSensor.getInchesB();
             addLine(bw, String.format(Locale.US, "Green,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",
-                argbA.val[0],
-                argbA.val[1],
-                argbA.val[2],
-                argbA.val[3],
-                distanceA,
-                argbB.val[0],
-                argbB.val[1],
-                argbB.val[2],
-                argbB.val[3],
-                distanceB));
+                    argbA.val[0],
+                    argbA.val[1],
+                    argbA.val[2],
+                    argbA.val[3],
+                    distanceA,
+                    argbB.val[0],
+                    argbB.val[1],
+                    argbB.val[2],
+                    argbB.val[3],
+                    distanceB));
         }
         if (gamepad1.b) {
             Scalar argbA = robot.colorSensor.getRGB_A();
@@ -94,16 +95,16 @@ public class TeleOp_CollectColorSensorData extends OpMode {
             double distanceA = robot.colorSensor.getInchesA();
             double distanceB = robot.colorSensor.getInchesB();
             addLine(bw, String.format(Locale.US, "Purple,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",
-                argbA.val[0],
-                argbA.val[1],
-                argbA.val[2],
-                argbA.val[3],
-                distanceA,
-                argbB.val[0],
-                argbB.val[1],
-                argbB.val[2],
-                argbB.val[3],
-                distanceB));
+                    argbA.val[0],
+                    argbA.val[1],
+                    argbA.val[2],
+                    argbA.val[3],
+                    distanceA,
+                    argbB.val[0],
+                    argbB.val[1],
+                    argbB.val[2],
+                    argbB.val[3],
+                    distanceB));
         }
         if (gamepad1.x) {
             Scalar argbA = robot.colorSensor.getRGB_A();
@@ -111,16 +112,16 @@ public class TeleOp_CollectColorSensorData extends OpMode {
             double distanceA = robot.colorSensor.getInchesA();
             double distanceB = robot.colorSensor.getInchesB();
             addLine(bw, String.format(Locale.US, "Unknown,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",
-                argbA.val[0],
-                argbA.val[1],
-                argbA.val[2],
-                argbA.val[3],
-                distanceA,
-                argbB.val[0],
-                argbB.val[1],
-                argbB.val[2],
-                argbB.val[3],
-                distanceB));
+                    argbA.val[0],
+                    argbA.val[1],
+                    argbA.val[2],
+                    argbA.val[3],
+                    distanceA,
+                    argbB.val[0],
+                    argbB.val[1],
+                    argbB.val[2],
+                    argbB.val[3],
+                    distanceB));
         }
         teleop.drivetrainLogic();
         teleop.updateIntake();

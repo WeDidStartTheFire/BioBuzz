@@ -1,11 +1,11 @@
-package org.firstinspires.ftc.teamcode.teleops.tests;
+package org.firstinspires.ftc.teamcode.utilities;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.VERBOSE;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Utility;
 
 import org.firstinspires.ftc.teamcode.MatchContext;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
@@ -18,8 +18,8 @@ import org.opencv.core.Scalar;
 import java.util.Objects;
 
 
-@TeleOp(name = "Test Color Sensor", group = "Test")
-public class Test_ColorSensor extends OpMode {
+@Utility(name = "Test Color Sensor", description = "Tests the color sensor")
+public class TestColorSensor extends OpMode {
     private Robot robot;
     private TelemetryUtils tm;
     private TeleOpController teleop;

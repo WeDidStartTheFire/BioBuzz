@@ -6,13 +6,13 @@ import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 import com.pedropathing.ivy.Command;
 
 import org.firstinspires.ftc.teamcode.autos.BaseAuto2;
-import org.firstinspires.ftc.teamcode.autos.paths.Paths_StateMachine;
+import org.firstinspires.ftc.teamcode.autos.paths.Paths_MoveAroundField;
 import org.firstinspires.ftc.teamcode.enums.Color;
 
-public class Auto_StateMachine extends BaseAuto2<Paths_StateMachine> {
-    public static final String baseName = "State Machine";
+public class Auto_MoveAroundField extends BaseAuto2<Paths_MoveAroundField> {
+    public static final String baseName = "Move Around Field";
     public static final String group = "A";
-    protected final Class<Paths_StateMachine> autoPathsClass = Paths_StateMachine.class;
+    protected final Class<Paths_MoveAroundField> autoPathsClass = Paths_MoveAroundField.class;
 
     @Override
     protected Command getAutoRoutine() {

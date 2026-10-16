@@ -8,14 +8,14 @@ import com.pedropathing.paths.Path;
 
 import org.firstinspires.ftc.teamcode.enums.Color;
 
-public class Paths_StateMachine extends AutoPaths {
+public class Paths_MoveAroundField extends AutoPaths {
 
     private static final Color pathsColor = Color.BLUE;
     private Pose start, path1, point2, point3, point3Control1, point4, point4Control1,
             point5, point5Control1, point6, point6Control1, point6Control2, point7,
             point7Control1, point8, point8Control1, point9, point9Control1;
 
-    public Paths_StateMachine(Color pathsColor, Color autoColor) {
+    public Paths_MoveAroundField(Color pathsColor, Color autoColor) {
         super(pathsColor, autoColor);
     }
 

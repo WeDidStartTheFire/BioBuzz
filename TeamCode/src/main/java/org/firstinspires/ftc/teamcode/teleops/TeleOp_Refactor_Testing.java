@@ -19,7 +19,7 @@ public class TeleOp_Refactor_Testing extends OpMode {
     public void init() {
         robot = new Robot(hardwareMap, telemetry, new MatchContext(MatchContext.Mode.TELEOP, Color.BLUE));
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
-        tm = robot.drivetrain.tm;
+        tm = robot.tm();
     }
 
     @Override

@@ -38,7 +38,7 @@ import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 import org.firstinspires.ftc.teamcode.robot.Subsystem;
 
 public class Drivetrain implements Subsystem, PoseGetter {
-    private DcMotorEx lf, lb, rf, rb;
+    private final DcMotorEx lf, lb, rf, rb;
     private final @Nullable IMU imu;
     private double lfPower, lbPower, rfPower, rbPower;
     public Follower follower;
@@ -47,7 +47,6 @@ public class Drivetrain implements Subsystem, PoseGetter {
     private @Nullable Velocity vel;
     private boolean validPose = false;
 
-    public final TelemetryUtils tm;
     private final HardwareMap hardwareMap;
 
     /**
@@ -85,7 +84,6 @@ public class Drivetrain implements Subsystem, PoseGetter {
      * @param tm          TelemetryUtils instance for debugging output
      */
     public Drivetrain(HardwareMap hardwareMap, TelemetryUtils tm, MatchContext context) {
-        this.tm = tm;
         this.hardwareMap = hardwareMap;
         follower = Constants.create(hardwareMap);
         otos = HardwareInitializer.init(hardwareMap, tm, SPARKFUN_OTOS);
@@ -99,14 +97,20 @@ public class Drivetrain implements Subsystem, PoseGetter {
                 throw new RuntimeException("IMU initialization failed");
             imu.resetYaw();
         }
-        // Drive train
-        lf = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_LEFT_FRONT_MOTOR);
-        lb = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_LEFT_BACK_MOTOR);
-        rf = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_RIGHT_FRONT_MOTOR);
-        rb = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_RIGHT_BACK_MOTOR);
-        if (isMotorDisconnected()) {
-            tm.warn(CRITICAL, "At least one drive train motor is not connected, so all will be disabled");
+
+        DcMotorEx tmpLf = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_LEFT_FRONT_MOTOR);
+        DcMotorEx tmpLb = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_LEFT_BACK_MOTOR);
+        DcMotorEx tmpRf = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_RIGHT_FRONT_MOTOR);
+        DcMotorEx tmpRb = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_RIGHT_BACK_MOTOR);
+        if (tmpLf == null || tmpLb == null || tmpRf == null || tmpRb == null) {
+            tm.warn(CRITICAL, "At least one drive train motor is not connected, so all will be " +
+                    "disabled");
             lf = lb = rf = rb = null;
+        } else {
+            lf = tmpLf;
+            lb = tmpLb;
+            rf = tmpRf;
+            rb = tmpRb;
         }
 
         if (lf != null) {

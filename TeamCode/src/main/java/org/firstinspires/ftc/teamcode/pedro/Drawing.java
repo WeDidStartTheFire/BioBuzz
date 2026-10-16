@@ -19,7 +19,7 @@ import java.util.List;
  * @version 1.1, 5/19/2025
  */
 public class Drawing {
-    public static final double ROBOT_RADIUS = 9; // woah
+    private static final double ROBOT_RADIUS = 9;
     private static final FieldManager panelsField = PanelsField.INSTANCE.getField();
 
     public static final Style robotLook = new Style(

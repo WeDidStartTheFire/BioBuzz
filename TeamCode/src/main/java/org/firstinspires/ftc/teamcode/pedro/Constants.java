@@ -19,7 +19,6 @@ import org.firstinspires.ftc.teamcode.pedro.localizers.ComplementaryLocalizer;
 import org.firstinspires.ftc.teamcode.pedro.localizers.LimelightLocalizer;
 
 public class Constants {
-
     public static MecanumConfig drivetrainConfig = new MecanumConfig(c -> {
         c.frontLeftName.set("leftFront");
         c.frontRightName.set("rightFront");
@@ -87,7 +86,7 @@ public class Constants {
 
     public static Follower createLimelightFollower(HardwareMap h) {
         return new Follower(
-                new LimelightLocalizer(h, localizerConfig),
+                new LimelightLocalizer(h),
                 new Mecanum(h, drivetrainConfig),
                 new Foresight(foresightConfig)
         );

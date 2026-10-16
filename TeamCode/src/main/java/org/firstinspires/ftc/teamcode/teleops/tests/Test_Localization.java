@@ -15,14 +15,14 @@ import org.firstinspires.ftc.teamcode.robot.Robot;
 
 @TeleOp(name = "Test Localization", group = "C")
 public class Test_Localization extends OpMode {
-    public Robot robot;
-    public TelemetryUtils tm;
+    private Robot robot;
+    private TelemetryUtils tm;
 
     @Override
     public void init() {
         robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
         robot.drivetrain.setPose(loadOdometryPosition());
-        tm = robot.drivetrain.tm;
+        tm = robot.tm();
     }
 
     @Override

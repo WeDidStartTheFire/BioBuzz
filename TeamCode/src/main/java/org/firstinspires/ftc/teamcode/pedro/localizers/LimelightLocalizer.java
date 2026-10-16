@@ -12,12 +12,10 @@ import static java.lang.Math.toRadians;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.localization.Localizer;
 import com.pedropathing.localization.MotionState;
 import com.pedropathing.math.Pose;
 import com.pedropathing.math.Velocity;
-import com.pedropathing.revhub.localizers.OTOSConfig;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -32,7 +30,6 @@ import org.firstinspires.ftc.teamcode.enums.HivePosition;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Limelight;
 
-@Configurable
 public class LimelightLocalizer implements Localizer {
     private final Limelight limelight;
     @Nullable
@@ -43,12 +40,11 @@ public class LimelightLocalizer implements Localizer {
     private final Velocity vel;
     private int currentPipeline;
 
-    public LimelightLocalizer(HardwareMap map, OTOSConfig config) {
-        this(map, null, config);
+    public LimelightLocalizer(HardwareMap map) {
+        this(map, null);
     }
 
-    public LimelightLocalizer(@NonNull HardwareMap map, @Nullable Pose startPose,
-                              @NonNull OTOSConfig config) {
+    public LimelightLocalizer(@NonNull HardwareMap map, @Nullable Pose startPose) {
         imu = HardwareInitializer.init(map, null, Hardware.IMU);
         if (imu != null) {
             imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(

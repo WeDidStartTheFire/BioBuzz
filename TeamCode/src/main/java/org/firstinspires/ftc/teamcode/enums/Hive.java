@@ -15,16 +15,12 @@ public enum Hive {
     }
 
     public static boolean ifTagMatchesHive(int tagID, Hive hive) {
-        for (int tag : hive.aprilTags) {
-            if (tag == tagID) return true;
-        }
+        for (int tag : hive.aprilTags) if (tag == tagID) return true;
         return false;
     }
 
     public static Color matchTagToColor(int tagID) {
-        for (Hive hive : values()) {
-            if (ifTagMatchesHive(tagID, hive)) return hive.color;
-        }
+        for (Hive hive : values()) if (ifTagMatchesHive(tagID, hive)) return hive.color;
         return null;
     }
 }

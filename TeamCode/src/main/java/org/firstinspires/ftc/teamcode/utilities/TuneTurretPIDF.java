@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.teleops.other;
+package org.firstinspires.ftc.teamcode.utilities;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
@@ -8,8 +8,9 @@ import static java.lang.Thread.sleep;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.configurables.annotations.IgnoreConfigurable;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Utility;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.MatchContext;
@@ -23,16 +24,15 @@ import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
 
 
-@TeleOp(name = "Tune Turret PIDF", group = "D")
+@Utility(name = "Tune Turret PIDF", description = "Tunes the turret PIDF")
 @Configurable
-public class TeleOp_TuneTurretPIDF extends OpMode {
+@Disabled
+public class TuneTurretPIDF extends OpMode {
 
     @IgnoreConfigurable
     Robot robot;
     @IgnoreConfigurable
     TelemetryUtils tm;
-    @IgnoreConfigurable
-    TeleOpController teleop;
 
     // TODO: Set encoder goals based on numbers that make sense from telemetry
     public static int encoderGoalA = 0;
@@ -57,7 +57,7 @@ public class TeleOp_TuneTurretPIDF extends OpMode {
         robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
         robot.drivetrain.setPose(loadOdometryPosition());
         robot.initBulkCache();
-        tm = robot.drivetrain.tm;
+        tm = robot.tm();
         tm.setEnvironment(RobotEnvironment.DEBUG);
         tm.print("Tune Turret PIDF Initialized", INFO);
         tm.update();

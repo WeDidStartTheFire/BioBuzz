@@ -47,8 +47,8 @@ public class TeleOpController {
     public TeleOpController(Robot robot, Gamepad gamepad1, Gamepad gamepad2) {
         this.robot = robot;
         this.robot.initBulkCache();
-        tm = robot.drivetrain.tm;
-        intakeController = new IntakeController(robot, robot.intake, tm);
+        tm = robot.tm();
+        intakeController = new IntakeController(robot.intake, tm);
         driveController = new DriveController(robot.drivetrain, robot.context());
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
@@ -84,7 +84,7 @@ public class TeleOpController {
         }
         robot.turret.rotateManual(gamepad2.right_stick_x * .001 * ms);
         robot.turret.update(true);
-        tm.updateOnlyPanels(10);
+        tm.updateOnlyPanels(7);
     }
 
     /**

@@ -47,8 +47,8 @@ public class TeleOpController {
     public TeleOpController(Robot robot, Gamepad gamepad1, Gamepad gamepad2) {
         this.robot = robot;
         this.robot.initBulkCache();
-        tm = robot.drivetrain.tm;
-        intakeController = new IntakeController(robot.intake, tm);
+        tm = robot.tm();
+        intakeController = new IntakeController(robot, robot.intake, tm);
         driveController = new DriveController(robot.drivetrain, robot.context());
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
@@ -78,15 +78,12 @@ public class TeleOpController {
             tm.print("avg dt (ms)", totalMs / totalUpdates, VERBOSE);
         }
         lastUpdateTime = t;
-        robot.updateBulkCache();
-        robot.drivetrain.update();
         if (gamepad2.rightStickButtonWasPressed()) {
             robot.turret.setTarget(Turret.Target.MANUAL);
             robot.turret.toggleTargetChangeable();
         }
         robot.turret.rotateManual(gamepad2.right_stick_x * .001 * ms);
         robot.turret.update(true);
-        robot.led.update();
         tm.updateOnlyPanels(7);
     }
 
@@ -95,11 +92,9 @@ public class TeleOpController {
      * Should be called when TeleOp mode ends.
      */
     public void stop() {
-        driveController.stop();
-        intakeController.stop();
-        robot.limelight.stop();
+        robot.stop();
         tm.showLogs();
-        tm.forceUpdate();
+        tm.update();
     }
 
     /**
@@ -160,9 +155,9 @@ public class TeleOpController {
         }
         if (gamepad1.dpadLeftWasPressed()) robotCentric = true;
         else if (gamepad1.dpadRightWasPressed()) robotCentric = false;
-        fieldCentric = fieldCentric && !robotCentric;
         tm.print("Robot Centric", robotCentric, INFO);
         tm.print("Field Centric", fieldCentric, INFO);
+        fieldCentric = fieldCentric && !robotCentric;
         tm.drawRobot(follower);
         Pose pose = robot.drivetrain.pose();
         if (pose != null) tm.print(pose, DEBUG);

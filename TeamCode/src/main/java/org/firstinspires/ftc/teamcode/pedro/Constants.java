@@ -15,9 +15,10 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.pedro.localizers.ComplementaryLocalizer;
+import org.firstinspires.ftc.teamcode.pedro.localizers.LimelightLocalizer;
 
 public class Constants {
-
     public static MecanumConfig drivetrainConfig = new MecanumConfig(c -> {
         c.frontLeftName.set("leftFront");
         c.frontRightName.set("rightFront");
@@ -31,9 +32,9 @@ public class Constants {
 
     public static OTOSConfig localizerConfig = new OTOSConfig(c -> {
         c.name.set("sensorOtos");
-        c.linearScalar.set(1.01324767265);
-        c.angularScalar.set(0.9756097560975604);
-        c.offset.set(new Pose(5.7, 0, Math.toRadians(-90)));
+        c.linearScalar.set(1.0639346364846869279098346663255);
+        c.angularScalar.set(1.02564102564102);
+        c.offset.set(new Pose(-0.19824411, 5.5388, Math.toRadians(-90)));
         c.linearUnit.set(DistanceUnit.INCH);
     });
 
@@ -64,7 +65,6 @@ public class Constants {
     );
 
     public static Follower create(HardwareMap h) {
-        // return new Follower(Drivetrain, Localizer, Foresight);
         return new Follower(
                 new OTOSLocalizer(h, localizerConfig),
                 new Mecanum(h, drivetrainConfig),
@@ -72,18 +72,27 @@ public class Constants {
         );
     }
 
+    public static Follower createComplementaryFollower(HardwareMap h) {
+        return new Follower(
+                new ComplementaryLocalizer(h, localizerConfig),
+                new Mecanum(h, drivetrainConfig),
+                new Foresight(foresightConfig)
+        );
+    }
+
     public static Follower createKalmanFollower(HardwareMap h) {
-        // return new Follower(Drivetrain, Localizer, Foresight);
         return null;
     }
 
     public static Follower createLimelightFollower(HardwareMap h) {
-        // return new Follower(Drivetrain, Localizer, Foresight);
-        return null;
+        return new Follower(
+                new LimelightLocalizer(h),
+                new Mecanum(h, drivetrainConfig),
+                new Foresight(foresightConfig)
+        );
     }
 
     public static Follower createRedundantFollower(HardwareMap h) {
-        // return new Follower(Drivetrain, Localizer, Foresight);
         return null;
     }
 }

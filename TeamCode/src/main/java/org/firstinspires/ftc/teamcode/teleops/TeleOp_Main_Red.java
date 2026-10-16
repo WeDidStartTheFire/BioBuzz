@@ -16,16 +16,14 @@ import org.firstinspires.ftc.teamcode.robot.Robot;
 
 @TeleOp(name = RED_TELEOP_NAME, group = "B")
 public class TeleOp_Main_Red extends OpMode {
-    public TeleOpController teleop;
-    public Robot robot;
-    public TelemetryUtils tm;
+    private TeleOpController teleop;
 
     @Override
     public void init() {
-        robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.RED));
+        Robot robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.RED));
         robot.drivetrain.setPose(loadOdometryPosition());
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
-        tm = robot.drivetrain.tm;
+        TelemetryUtils tm = robot.tm();
         if (!robot.drivetrain.isPoseValid())
             tm.warn(TelemetryUtils.ErrorLevel.MEDIUM, "Robot Centric driving will be used until the position is reset");
         else tm.print("Field Centric Driving", "✅", INFO);
@@ -39,9 +37,6 @@ public class TeleOp_Main_Red extends OpMode {
 
     @Override
     public void loop() {
-        teleop.drivetrainLogic();
-        teleop.updateIntake();
-        teleop.updateLauncherTeleOp();
         teleop.update();
     }
 

@@ -35,17 +35,18 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.enums.Hardware;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
+import org.firstinspires.ftc.teamcode.robot.Subsystem;
 
-public class Drivetrain implements PoseGetter {
-    private DcMotorEx lf, lb, rf, rb;
+public class Drivetrain implements Subsystem, PoseGetter {
+    private final DcMotorEx lf, lb, rf, rb;
     private final @Nullable IMU imu;
+    private double lfPower, lbPower, rfPower, rbPower;
     public Follower follower;
     public final @Nullable SparkFunOTOS otos;
     private @Nullable Pose pose;
     private @Nullable Velocity vel;
     private boolean validPose = false;
 
-    public final TelemetryUtils tm;
     private final HardwareMap hardwareMap;
 
     /**
@@ -53,6 +54,13 @@ public class Drivetrain implements PoseGetter {
      */
     public void useKalmanFollower() {
         follower = Constants.createKalmanFollower(hardwareMap);
+    }
+
+    /**
+     * Configures the drivetrain to use complementary filter localization.
+     */
+    public void useComplementaryFollower() {
+        follower = Constants.createComplementaryFollower(hardwareMap);
     }
 
     /**
@@ -76,7 +84,6 @@ public class Drivetrain implements PoseGetter {
      * @param tm          TelemetryUtils instance for debugging output
      */
     public Drivetrain(HardwareMap hardwareMap, TelemetryUtils tm, MatchContext context) {
-        this.tm = tm;
         this.hardwareMap = hardwareMap;
         follower = Constants.create(hardwareMap);
         otos = HardwareInitializer.init(hardwareMap, tm, SPARKFUN_OTOS);
@@ -90,14 +97,20 @@ public class Drivetrain implements PoseGetter {
                 throw new RuntimeException("IMU initialization failed");
             imu.resetYaw();
         }
-        // Drive train
-        lf = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_LEFT_FRONT_MOTOR);
-        lb = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_LEFT_BACK_MOTOR);
-        rf = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_RIGHT_FRONT_MOTOR);
-        rb = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_RIGHT_BACK_MOTOR);
-        if (isMotorDisconnected()) {
-            tm.warn(CRITICAL, "At least one drive train motor is not connected, so all will be disabled");
+
+        DcMotorEx tmpLf = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_LEFT_FRONT_MOTOR);
+        DcMotorEx tmpLb = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_LEFT_BACK_MOTOR);
+        DcMotorEx tmpRf = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_RIGHT_FRONT_MOTOR);
+        DcMotorEx tmpRb = HardwareInitializer.init(hardwareMap, tm, DRIVETRAIN_RIGHT_BACK_MOTOR);
+        if (tmpLf == null || tmpLb == null || tmpRf == null || tmpRb == null) {
+            tm.warn(CRITICAL, "At least one drive train motor is not connected, so all will be " +
+                    "disabled");
             lf = lb = rf = rb = null;
+        } else {
+            lf = tmpLf;
+            lb = tmpLb;
+            rf = tmpRf;
+            rb = tmpRb;
         }
 
         if (lf != null) {
@@ -133,13 +146,6 @@ public class Drivetrain implements PoseGetter {
 
     public boolean isPoseValid() {
         return validPose;
-    }
-
-    public void update() {
-        if (follower == null) return;
-        follower.update();
-        pose = follower.pose();
-        vel = follower.velocity();
     }
 
     public boolean isMotorDisconnected() {
@@ -213,11 +219,10 @@ public class Drivetrain implements PoseGetter {
      * @param rfPower Right front motor velocity
      */
     public void setMotorVelocities(double lbPower, double rbPower, double lfPower, double rfPower) {
-        if (isMotorDisconnected()) return;
-        lf.setVelocity(lfPower);
-        lb.setVelocity(lbPower);
-        rf.setVelocity(rfPower);
-        rb.setVelocity(rbPower);
+        this.lbPower = lbPower;
+        this.rbPower = rbPower;
+        this.lfPower = lfPower;
+        this.rfPower = rfPower;
     }
 
     /**
@@ -233,9 +238,21 @@ public class Drivetrain implements PoseGetter {
         rb.setZeroPowerBehavior(behavior);
     }
 
-    /**
-     * Stops all drive train motors on the robot.
-     */
+    @Override
+    public void update() {
+        if (follower == null) return;
+        follower.update();
+        pose = follower.pose();
+        vel = follower.velocity();
+        if (isMotorDisconnected()) return;
+        lf.setVelocity(lfPower);
+        lb.setVelocity(lbPower);
+        rf.setVelocity(rfPower);
+        rb.setVelocity(rbPower);
+    }
+
+    /** Stops all drive train motors on the robot. */
+    @Override
     public void stop() {
         follower.stop();
 

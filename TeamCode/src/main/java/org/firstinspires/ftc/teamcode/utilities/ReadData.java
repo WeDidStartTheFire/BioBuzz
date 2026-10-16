@@ -1,11 +1,11 @@
-package org.firstinspires.ftc.teamcode.teleops.other;
+package org.firstinspires.ftc.teamcode.utilities;
 
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Utility;
 
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
@@ -14,14 +14,14 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-@TeleOp(name = "Read Data", group = "C")
+@Utility(name = "Read Data", description = "Reads color sensor data from file")
 @Configurable
 @Disabled
-public class TeleOp_ReadData extends OpMode {
-    public TelemetryUtils tm;
-    public static int i = 0;
-    public File dir;
-    public File file;
+public class ReadData extends OpMode {
+    private TelemetryUtils tm;
+    private static int i = 0;
+    private File dir;
+    private File file;
 
     @Override
     public void init() {

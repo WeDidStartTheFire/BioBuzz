@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.teleops.other;
+package org.firstinspires.ftc.teamcode.utilities;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
@@ -9,7 +9,7 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.configurables.annotations.IgnoreConfigurable;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Utility;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.teamcode.MatchContext;
@@ -20,10 +20,10 @@ import org.firstinspires.ftc.teamcode.enums.RobotEnvironment;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 
-@TeleOp(name = "Tune Flywheel PIDF", group = "D")
+@Utility(name = "Tune Flywheel PIDF", description = "Tunes the flywheel PIDF")
 @Configurable
 @Disabled
-public class TeleOp_TuneFlywheelPIDF extends OpMode {
+public class TuneFlywheelPIDF extends OpMode {
 
     @IgnoreConfigurable
     Robot robot;
@@ -49,7 +49,7 @@ public class TeleOp_TuneFlywheelPIDF extends OpMode {
         robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
         robot.drivetrain.setPose(loadOdometryPosition());
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
-        tm = robot.drivetrain.tm;
+        tm = robot.tm();
         tm.setEnvironment(RobotEnvironment.DEBUG);
         tm.print("Tune Flywheel PIDF Initialized", INFO);
         tm.update();

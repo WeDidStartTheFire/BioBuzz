@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.enums.Color;
 @Autonomous(name = Auto_Test3.name, group = "B")
 public class Auto_Test3 extends BaseAuto2<Paths_Test3> {
     private final Color color = Color.BLUE;
-    public static final String name = "Test Auto 2";
+    public static final String name = "Test Auto 3";
     private final Class<Paths_Test3> pathsClass = Paths_Test3.class;
 
     @Override

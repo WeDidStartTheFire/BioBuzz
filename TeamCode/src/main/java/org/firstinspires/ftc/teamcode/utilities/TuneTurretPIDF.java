@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.teleops.other;
+package org.firstinspires.ftc.teamcode.utilities;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
@@ -10,12 +10,13 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.configurables.annotations.IgnoreConfigurable;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Utility;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.MatchContext;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.constants.TurretConstants;
+import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.enums.RobotEnvironment;
 import org.firstinspires.ftc.teamcode.pedro.controllers.PIDFCoefficients;
@@ -23,11 +24,10 @@ import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
 
 
-@SuppressWarnings("CanBeFinal")
-@TeleOp(name = "Tune Turret PIDF", group = "D")
+@Utility(name = "Tune Turret PIDF", description = "Tunes the turret PIDF")
 @Configurable
 @Disabled
-public class TeleOp_TuneTurretPIDF extends OpMode {
+public class TuneTurretPIDF extends OpMode {
 
     @IgnoreConfigurable
     Robot robot;
@@ -57,7 +57,7 @@ public class TeleOp_TuneTurretPIDF extends OpMode {
         robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
         robot.drivetrain.setPose(loadOdometryPosition());
         robot.initBulkCache();
-        tm = robot.drivetrain.tm;
+        tm = robot.tm();
         tm.setEnvironment(RobotEnvironment.DEBUG);
         tm.print("Tune Turret PIDF Initialized", INFO);
         tm.update();

@@ -44,13 +44,13 @@ import org.firstinspires.ftc.teamcode.ProjectileSolver;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.pedro.controllers.PIDFController;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
+import org.firstinspires.ftc.teamcode.robot.Subsystem;
 
-@Configurable
-public class Turret {
+public class Turret implements Subsystem {
     public static boolean panelsResetTurret = false;
 
-    private final @Nullable DcMotorEx turretMotor;
-    private final @Nullable TouchSensor turretTouchSensor;
+    public final @Nullable DcMotorEx turretMotor;
+    public final @Nullable TouchSensor turretTouchSensor;
     private final VoltageSensor voltageSensor;
     private Target target = Target.HOLD;
     public final PIDFController turretPIDController = new PIDFController(turretMotorPID);
@@ -61,6 +61,7 @@ public class Turret {
     private int timesNotReset = 0;
     private boolean reset = false;
     private final @NonNull PoseGetter poseGetter;
+    private double power, modifier;
 
     public enum Target {
         GOAL, NONE, HOLD, MANUAL
@@ -161,29 +162,36 @@ public class Turret {
         turretPIDController.updatePosition(pos);
         Velocity vel = poseGetter.vel();
         if (vel != null)
-            velocityPIDController.setTarget(-toDegrees(vel.toVector2D().theta()) * TURRET_ENCODERS_PER_DEGREE);
+            velocityPIDController.setTarget(-toDegrees(vel.omega) * TURRET_ENCODERS_PER_DEGREE);
         velocityPIDController.updatePosition(motorVel);
         tm.print("Turret Pos", pos, VERBOSE);
         tm.print("Turret Goal", turretPIDController.target(), VERBOSE);
         tm.print("Turret Offset", offset, INFO);
         tm.print("Turret Vel", motorVel, DEBUG);
         if (target == Target.NONE) return;
-        double feedforward = vel == null ? 0 : -vel.toVector2D().theta() * TURRET_FEEDFORWARD;
+        double feedforward = vel == null ? 0 : -vel.omega * TURRET_FEEDFORWARD;
         feedforward *= min(1, min(max(0, pos - TURRET_MIN_POS), max(0, TURRET_MAX_POS - pos)) / TURRET_FEEDFORWARD_SLOW_START);
         feedforward = Math.clamp(feedforward, -TURRET_MAX_POWER, TURRET_MAX_POWER);
         if (target == Target.HOLD || target == Target.MANUAL) feedforward = 0;
         double pid = turretPIDController.calculate();
         if (USE_TURRET_VELOCITY_PID) pid += velocityPIDController.calculate();
         double staticFeedforward = TURRET_STATIC_FEEDFORWARD * signum(pid);
-        double power = pid + feedforward + staticFeedforward;
-        double modifier = TURRET_ADJUST_FOR_VOLTAGE ? 12 / max(voltageSensor.getVoltage(), 1e-6) : 1;
+        power = pid + feedforward + staticFeedforward;
+        modifier = TURRET_ADJUST_FOR_VOLTAGE ? 12 / max(voltageSensor.getVoltage(), 1e-6) : 1;
         power *= modifier;
-        turretMotor.setPower(Math.clamp(power, -TURRET_MAX_POWER * modifier, TURRET_MAX_POWER * modifier));
+    }
+
+    @Override
+    public void update() {
+        update(true);
+        if (turretMotor != null)
+            turretMotor.setPower(Math.clamp(power, -TURRET_MAX_POWER * modifier, TURRET_MAX_POWER * modifier));
     }
 
     /**
      * Stops the turret by aiming for its current position
      */
+    @Override
     public void stop() {
         setTarget(Target.NONE);
         if (turretMotor != null)

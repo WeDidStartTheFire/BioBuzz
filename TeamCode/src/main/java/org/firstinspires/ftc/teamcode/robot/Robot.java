@@ -17,7 +17,10 @@ import org.firstinspires.ftc.teamcode.robot.mechanisms.Launcher;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Limelight;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
 
-public class Robot {
+import java.util.ArrayList;
+import java.util.List;
+
+public class Robot implements Subsystem {
     public final Drivetrain drivetrain;
     public final ColorSensor colorSensor;
     public final Intake intake;
@@ -27,12 +30,14 @@ public class Robot {
     public final Turret turret;
     public final HardwareMap hardwareMap;
     private final MatchContext context;
+    private final TelemetryUtils tm;
+    private final List<Subsystem> subsystems = new ArrayList<>();
 
     public Robot(@NonNull HardwareMap hardwareMap, @NonNull Telemetry telemetry,
                  MatchContext context) {
         this.context = context;
         this.hardwareMap = hardwareMap;
-        TelemetryUtils tm = new TelemetryUtils(telemetry);
+        tm = new TelemetryUtils(telemetry);
         drivetrain = new Drivetrain(hardwareMap, tm, this.context);
         intake = new Intake(hardwareMap, tm);
         colorSensor = new ColorSensor(hardwareMap, tm);
@@ -40,19 +45,60 @@ public class Robot {
         limelight = new Limelight(hardwareMap, tm);
         launcher = new Launcher(hardwareMap, tm, PoseGetter.from(drivetrain));
         turret = new Turret(hardwareMap, tm, PoseGetter.from(drivetrain));
+
+        subsystems.add(drivetrain);
+        subsystems.add(intake);
+        subsystems.add(led);
+        subsystems.add(colorSensor);
+        subsystems.add(limelight);
+        subsystems.add(launcher);
+        subsystems.add(turret);
     }
 
+    /**
+     * Initializes the bulk cache for all standard motors and servos. Should be called once at the
+     * start of each OpMode.
+     */
     public void initBulkCache() {
         for (LynxModule module : hardwareMap.getAll(LynxModule.class))
             module.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
     }
 
+    /**
+     * Updates the bulk cache for all standard motors and servos. Should be called at the start of
+     * every loop.
+     */
     public void updateBulkCache() {
         for (LynxModule module : hardwareMap.getAll(LynxModule.class))
             module.clearBulkCache();
     }
 
+    @Override
+    public void update() {
+        updateBulkCache();
+        for (Subsystem subsystem : subsystems) subsystem.update();
+    }
+
+    @Override
+    public void stop() {
+        for (Subsystem subsystem : subsystems) subsystem.stop();
+    }
+
+    /**
+     * Returns the {@link MatchContext} instance for the current match
+     *
+     * @return {@link MatchContext} instance
+     */
     public MatchContext context() {
         return context;
+    }
+
+    /**
+     * Returns the {@link TelemetryUtils} instance for debugging output
+     *
+     * @return {@link TelemetryUtils} instance
+     */
+    public TelemetryUtils tm() {
+        return tm;
     }
 }

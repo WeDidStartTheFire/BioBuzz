@@ -16,10 +16,8 @@ import org.firstinspires.ftc.teamcode.robot.Robot;
 
 @TeleOp(name = "Slow", group = "C")
 public class TeleOp_Slow extends OpMode {
-    public final TelemetryUtils tm = new TelemetryUtils(telemetry);
-    public Robot robot;
-    public final double baseSpeedMultiplier = .7;
-    public final double baseTurnSpeed = .625;
+    private final TelemetryUtils tm = new TelemetryUtils(telemetry);
+    private Robot robot;
 
     @Override
     public void init() {
@@ -34,6 +32,9 @@ public class TeleOp_Slow extends OpMode {
 
         xMove = gamepad1.left_stick_x;
         yMove = gamepad1.left_stick_y;
+
+        double baseSpeedMultiplier = .7;
+        double baseTurnSpeed = .625;
 
         axial = yMove * baseSpeedMultiplier;
         lateral = -xMove * baseSpeedMultiplier;

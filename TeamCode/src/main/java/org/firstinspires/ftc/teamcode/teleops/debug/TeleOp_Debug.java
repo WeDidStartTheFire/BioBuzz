@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.teleops.debug;
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.LOW;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -16,32 +17,24 @@ import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 @TeleOp(name = "Test", group = "Test")
+@Configurable
 public class TeleOp_Debug extends OpMode {
 
-    double axial = 0.0;
-    double lateral = 0.0;
-    double yaw = 0.0;
-    double leftFrontPower = 0.0;
-    double rightFrontPower = 0.0;
-    double leftBackPower = 0.0;
-    double rightBackPower = 0.0;
-    double max = 0.0;
-    static final double SPEED_MULTIPLIER = 0.75;
-    static final double BASE_TURN_SPEED = 2.5;
-    double slowdownMultiplier = 0.0;
-    boolean wasDownA = false;
-    boolean wasDownB = false;
-    public Servo servoA, servoB, servoC, servoD;
-    public DcMotorEx motorA, motorB;
-    public Robot robot;
-    public final double MOTOR_SPEED = 1;
-    public TelemetryUtils tm;
+    public static double SPEED_MULTIPLIER = 0.75;
+    public static double BASE_TURN_SPEED = 2.5;
+    public static double MOTOR_SPEED = 1;
+    private boolean wasDownA = false;
+    private boolean wasDownB = false;
+    private Servo servoA, servoB, servoC, servoD;
+    private DcMotorEx motorA, motorB;
+    private Robot robot;
+    private TelemetryUtils tm;
 
     @Override
     public void init() {
         robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
 
-        tm = robot.drivetrain.tm;
+        tm = robot.tm();
         tm.setEnvironment(RobotEnvironment.PRACTICE);
         servoA = HardwareInitializer.init(hardwareMap, Servo.class, "servoA");
         servoB = HardwareInitializer.init(hardwareMap, Servo.class, "servoB");
@@ -61,20 +54,20 @@ public class TeleOp_Debug extends OpMode {
     @Override
     public void loop() {
         // Slows down movement for better handling the more the right trigger is held down
-        slowdownMultiplier = (1.0 - gamepad1.right_trigger) * 0.7 + 0.3;
+        double slowdownMultiplier = (1.0 - gamepad1.right_trigger) * 0.7 + 0.3;
         // f (gamepad1.left_stick_button || gamepad1.right_stick_button) {
         // slowdownMultiplier *= 0.5; }
 
-        axial = ((-gamepad1.left_stick_y * SPEED_MULTIPLIER) * slowdownMultiplier);
-        lateral = ((gamepad1.left_stick_x * SPEED_MULTIPLIER) * slowdownMultiplier);
-        yaw = ((gamepad1.right_stick_x * BASE_TURN_SPEED) * slowdownMultiplier);
+        double axial = ((-gamepad1.left_stick_y * SPEED_MULTIPLIER) * slowdownMultiplier);
+        double lateral = ((gamepad1.left_stick_x * SPEED_MULTIPLIER) * slowdownMultiplier);
+        double yaw = ((gamepad1.right_stick_x * BASE_TURN_SPEED) * slowdownMultiplier);
 
-        leftFrontPower = axial + lateral + yaw;
-        rightFrontPower = axial - lateral - yaw;
-        leftBackPower = axial - lateral + yaw;
-        rightBackPower = axial + lateral - yaw;
+        double leftFrontPower = axial + lateral + yaw;
+        double rightFrontPower = axial - lateral - yaw;
+        double leftBackPower = axial - lateral + yaw;
+        double rightBackPower = axial + lateral - yaw;
 
-        max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
+        double max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
         max = Math.max(max, Math.abs(leftBackPower));
         max = Math.max(max, Math.abs(rightBackPower));
 

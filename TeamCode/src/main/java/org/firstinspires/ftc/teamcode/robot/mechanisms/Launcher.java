@@ -25,10 +25,11 @@ import org.firstinspires.ftc.teamcode.ProjectileSolver;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.pedro.controllers.PIDFController;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
+import org.firstinspires.ftc.teamcode.robot.Subsystem;
 
 import java.util.concurrent.TimeUnit;
 
-public class Launcher {
+public class Launcher implements Subsystem {
 
     private final @Nullable DcMotorEx launcherMotorA, launcherMotorB;
     private final @NonNull Timer spinningTimer;
@@ -43,6 +44,7 @@ public class Launcher {
     private double cachedVel;
     private double velocityModifier;
     private final @NonNull PoseGetter poseGetter;
+    private double power;
 
     /**
      * Initializes the launcher with hardware components.
@@ -168,9 +170,16 @@ public class Launcher {
         return vel > motorVel + 50;
     }
 
+    @Override
+    public void update() {
+        if (launcherMotorA != null) launcherMotorA.setPower(power);
+        if (launcherMotorB != null) launcherMotorB.setPower(power);
+    }
+
     /**
      * Stops the launch motors
      */
+    @Override
     public void stop() {
         if (!spinning && cachedPower == 0) return;
         spinning = false;

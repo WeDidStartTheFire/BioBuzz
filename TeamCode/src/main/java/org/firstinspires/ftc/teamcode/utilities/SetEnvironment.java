@@ -30,7 +30,7 @@ public class SetEnvironment extends OpMode {
         tm.print("Current Environment", TelemetryUtils.globalEnvironment, INFO);
         tm.print("====================", INFO);
         tm.print("The environment determines the frequency and type/verbosity of " +
-            "telemetry to Panels and the Driver Hub.", INFO);
+                "telemetry to Panels and the Driver Hub.", INFO);
         tm.print("To change environment:", INFO);
         tm.print("Press A for PRACTICE", INFO);
         tm.print("Press B for COMPETITION", INFO);

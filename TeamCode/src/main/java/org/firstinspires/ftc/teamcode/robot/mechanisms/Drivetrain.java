@@ -34,10 +34,11 @@ import org.firstinspires.ftc.teamcode.enums.Hardware;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.robot.BlazeMotor;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
+import org.firstinspires.ftc.teamcode.robot.Subsystem;
 
 import dev.anygeneric.blazeftc.BlazeFTC;
 
-public class Drivetrain implements PoseGetter {
+public class Drivetrain implements Subsystem, PoseGetter {
     private final BlazeMotor lf, lb, rf, rb;
     private final boolean disabled;
     private final @Nullable IMU imu;
@@ -237,9 +238,8 @@ public class Drivetrain implements PoseGetter {
         rb.setZeroPowerBehavior(behavior);
     }
 
-    /**
-     * Stops all drive train motors on the robot.
-     */
+    /** Stops all drive train motors on the robot. */
+    @Override
     public void stop() {
         follower.stop();
         setMotorPowers(0);

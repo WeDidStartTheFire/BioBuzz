@@ -18,7 +18,10 @@ import org.firstinspires.ftc.teamcode.robot.mechanisms.Limelight;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.VoltageSensor;
 
-public class Robot {
+import java.util.ArrayList;
+import java.util.List;
+
+public class Robot implements Subsystem {
     public final Drivetrain drivetrain;
     public final ColorSensor colorSensor;
     public final Intake intake;
@@ -30,6 +33,7 @@ public class Robot {
     private final MatchContext context;
     public final VoltageSensor voltageSensor;
     private final TelemetryUtils tm;
+    private final List<Subsystem> subsystems = new ArrayList<>();
 
     public Robot(@NonNull HardwareMap hardwareMap, @NonNull Telemetry telemetry,
                  MatchContext context) {
@@ -44,6 +48,14 @@ public class Robot {
         limelight = new Limelight(hardwareMap, tm);
         launcher = new Launcher(hardwareMap, tm, PoseGetter.from(drivetrain), voltageSensor);
         turret = new Turret(hardwareMap, tm, PoseGetter.from(drivetrain), voltageSensor);
+
+        subsystems.add(drivetrain);
+        subsystems.add(intake);
+        subsystems.add(led);
+        subsystems.add(colorSensor);
+        subsystems.add(limelight);
+        subsystems.add(launcher);
+        subsystems.add(turret);
     }
 
     public void writeMotors() {
@@ -72,6 +84,17 @@ public class Robot {
         voltageSensor.clearCache();
         for (LynxModule module : hardwareMap.getAll(LynxModule.class))
             module.clearBulkCache();
+    }
+
+    @Override
+    public void update() {
+        updateBulkCache();
+        for (Subsystem subsystem : subsystems) subsystem.update();
+    }
+
+    @Override
+    public void stop() {
+        for (Subsystem subsystem : subsystems) subsystem.stop();
     }
 
     /**

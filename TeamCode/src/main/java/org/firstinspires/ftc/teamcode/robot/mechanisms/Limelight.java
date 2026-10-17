@@ -14,10 +14,11 @@ import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.enums.Hive;
 import org.firstinspires.ftc.teamcode.enums.HivePosition;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
+import org.firstinspires.ftc.teamcode.robot.Subsystem;
 
 import java.util.List;
 
-public class Limelight {
+public class Limelight implements Subsystem {
 
     public final @Nullable Limelight3A limelight;
 
@@ -33,9 +34,15 @@ public class Limelight {
         if (limelight != null) limelight.start();
     }
 
+    @Override
+    public void update() {
+        // Nothing much to update.}
+    }
+
     /**
      * Stops polling of Limelight data.
      */
+    @Override
     public void stop() {
         if (limelight != null) limelight.stop();
     }

@@ -37,8 +37,6 @@ public class TeleOp_AlwaysFieldCentric extends OpMode {
     @Override
     public void loop() {
         teleop.drivetrainLogic(true);
-        teleop.updateIntake();
-        teleop.updateLauncherTeleOp();
         teleop.update();
     }
 }

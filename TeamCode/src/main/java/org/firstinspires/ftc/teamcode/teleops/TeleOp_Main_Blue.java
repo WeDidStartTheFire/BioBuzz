@@ -37,9 +37,6 @@ public class TeleOp_Main_Blue extends OpMode {
 
     @Override
     public void loop() {
-        teleop.drivetrainLogic();
-        teleop.updateIntake();
-        teleop.updateLauncherTeleOp();
         teleop.update();
     }
 

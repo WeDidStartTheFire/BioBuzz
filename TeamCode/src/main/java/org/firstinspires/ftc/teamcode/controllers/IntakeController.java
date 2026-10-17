@@ -43,14 +43,13 @@ public class IntakeController {
         switch (state) {
             case IDLE:
                 isBusy = false;
-                intake.power(0);
+                intake.setBehavior(Intake.Behavior.OFF);
                 break;
-            case MANUAL_INTAKE:
             case INTAKE:
-                intake.power(-1);
+                intake.setBehavior(Intake.Behavior.INTAKE);
                 break;
             case OUTTAKE:
-                intake.power(1);
+                intake.setBehavior(Intake.Behavior.OUTTAKE);
                 break;
         }
     }
@@ -89,6 +88,14 @@ public class IntakeController {
     public void stop() {
         if (state != State.IDLE) setState(State.IDLE);
         isBusy = false;
+    }
+
+    /**
+     * Manually stops the motor instead of just changing the state.
+     */
+    public void forceStop() {
+        intake.stop();
+        setState(State.IDLE);
     }
 
     private void setState(State state) {

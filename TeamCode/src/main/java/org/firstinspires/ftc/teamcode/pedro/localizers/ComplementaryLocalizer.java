@@ -83,7 +83,7 @@ public class ComplementaryLocalizer implements Localizer {
     public void update() {
         relativeLocalizer.update();
 
-        double yawRate = relativeLocalizer.velocity().omega; // imu.getRobotAngularVelocity(RADIANS).zRotationRate;
+        double yawRate = relativeLocalizer.velocity().omega;
 
         Pose relPose = relativeLocalizer.pose();
         Pose relPoseDelta = relPose.minus(prevRelPose);
@@ -106,7 +106,8 @@ public class ComplementaryLocalizer implements Localizer {
             if (hivesMatchFMap()) {
                 Pose3D botpose = result.getBotpose_MT2();
 
-                if (result.getBotposeTagCount() > 0 && abs(yawRate) < toRadians(360) && hypot(vel.vx, vel.vy) < 7) {
+                if (result.getBotposeTagCount() > 0 && abs(yawRate) < toRadians(360) &&
+                        hypot(vel.vx, vel.vy) < 7) {
                     double angle = result.getBotpose().getOrientation().getYaw(DEGREES) - 90;
                     if (angle < 0) angle += 360;
                     LLPose = pose3DToPose(botpose).withHeading(toRadians(angle));
@@ -133,15 +134,16 @@ public class ComplementaryLocalizer implements Localizer {
         if (LLPose != null) {
             if (invalidPose) {
                 Pose3D botpose = result.getBotpose();
-                if (result.getBotposeTagCount() > 0 && abs(yawRate) < toRadians(360) && hypot(vel.vx, vel.vy) < 7) {
+                if (result.getBotposeTagCount() > 0 && abs(yawRate) < toRadians(360) &&
+                        hypot(vel.vx, vel.vy) < 7) {
                     invalidPose = false;
                     LLPose = pose3DToPose(botpose);
                     setPose(LLPose);
                 }
                 return;
             }
-            linAlpha = useMetaTag2 ? clamp(Utils.lerp(sqrt(result.getBotposeTagCount() / 4.0), 1, .95), .95, 1) :
-                    clamp(Utils.lerp(sqrt(tagsCounted / 4.0), 1, .97), .97, 1);
+            linAlpha = useMetaTag2 ? clamp(Utils.lerp(sqrt(result.getBotposeTagCount() / 4.0), 1,
+                    .95), .95, 1) : clamp(Utils.lerp(sqrt(tagsCounted / 4.0), 1, .97), .97, 1);
             pose = new Pose(LLPose.x() * (1 - linAlpha) + pose.x() * linAlpha,
                     LLPose.y() * (1 - linAlpha) + pose.y() * linAlpha,
                     normalizeRadians(LLPose.heading() + angAlpha

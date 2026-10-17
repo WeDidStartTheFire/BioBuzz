@@ -38,15 +38,17 @@ public class AprilTagFollower extends OpMode {
     @Override
     public void loop() {
         teleop.drivetrainLogic();
-        teleop.updateIntake();
-        teleop.updateLauncherTeleOp();
         if (robot.limelight.getFiducials() != null) {
             for (LLResultTypes.FiducialResult fiducial : robot.limelight.getFiducials()) {
                 if (targetID == 0) {
                     targetID = fiducial.getFiducialId();
-                } if (fiducial.getFiducialId() == targetID) {
-                    if (fiducial.getTargetXPixels() <= -0.5) { gamepad.left_stick_x = -0.25f; }
-                    else if (fiducial.getTargetXPixels() >= 0.5) { gamepad.left_stick_x = 0.25f; }
+                }
+                if (fiducial.getFiducialId() == targetID) {
+                    if (fiducial.getTargetXPixels() <= -0.5) {
+                        gamepad.left_stick_x = -0.25f;
+                    } else if (fiducial.getTargetXPixels() >= 0.5) {
+                        gamepad.left_stick_x = 0.25f;
+                    }
                 }
             }
         }

@@ -15,15 +15,21 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.BlazeMotor;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
+import org.firstinspires.ftc.teamcode.robot.Subsystem;
 
-public class Intake {
-
+public class Intake implements Subsystem {
     private final @Nullable CRServo intakeServoA, intakeServoB, intakeServoC;
     private final BlazeMotor intakeMotor;
     private double cachedOutsidePower = 0;
     private double cachedInsidePower = 0;
     private double outsidePower = 0;
     private double insidePower = 0;
+
+    public enum Behavior {
+        OFF, INTAKE, OUTTAKE
+    }
+
+    private Behavior behavior = Behavior.OFF;
 
     public Intake(HardwareMap hardwareMap, TelemetryUtils tm) {
         intakeMotor = new BlazeMotor(hardwareMap, tm, INTAKE_MOTOR);
@@ -32,6 +38,29 @@ public class Intake {
         intakeServoB = HardwareInitializer.init(hardwareMap, tm, INTAKE_SERVO_B);
         intakeServoC = HardwareInitializer.init(hardwareMap, tm, INTAKE_SERVO_C);
         if (intakeServoC != null) intakeServoC.setDirection(REVERSE);
+    }
+
+    public void setBehavior(Behavior behavior) {
+        this.behavior = behavior;
+        switch (behavior) {
+            case OFF:
+                powerInside(0);
+                powerOutside(0);
+            case INTAKE:
+                powerInside(-1);
+                powerOutside(-1);
+            case OUTTAKE:
+                powerInside(1);
+                powerOutside(1);
+        }
+    }
+
+    public Behavior getBehavior() {
+        return behavior;
+    }
+
+    public void update() {
+        calculate();
     }
 
     public void calculate() {

@@ -59,7 +59,8 @@ public abstract class BaseAuto2<T extends AutoPaths> extends OpMode {
      *                       prepended to the name (e.g. "Auto" -> "🟥Red🟥 Auto").
      * @see configure()
      */
-    protected void configure(Class<T> pathsClass, Color color, String name, boolean addColorToName) {
+    protected void configure(Class<T> pathsClass, Color color, String name,
+                             boolean addColorToName) {
         this.paths = AutoPaths.get(pathsClass, color);
         this.color = color;
         this.name = addColorToName ? color + name : name;

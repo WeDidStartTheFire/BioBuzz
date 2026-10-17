@@ -43,13 +43,13 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.pedro.controllers.PIDFController;
 import org.firstinspires.ftc.teamcode.robot.BlazeMotor;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
+import org.firstinspires.ftc.teamcode.robot.Subsystem;
 
-@Configurable
-public class Turret {
+public class Turret implements Subsystem {
     public static boolean panelsResetTurret = false;
 
-    private final BlazeMotor turretMotor;
-    private final @Nullable TouchSensor turretTouchSensor;
+    public final BlazeMotor turretMotor;
+    public final @Nullable TouchSensor turretTouchSensor;
     private final VoltageSensor voltageSensor;
     private Target target = Target.HOLD;
     public final PIDFController turretPIDController = new PIDFController(turretMotorPID);
@@ -60,6 +60,7 @@ public class Turret {
     private int timesNotReset = 0;
     private boolean reset = false;
     private final @NonNull PoseGetter poseGetter;
+    private double power, modifier;
 
     public enum Target {
         GOAL, NONE, HOLD, MANUAL
@@ -188,18 +189,23 @@ public class Turret {
         double pid = turretPIDController.calculate();
         if (USE_TURRET_VELOCITY_PID) pid += velocityPIDController.calculate();
         double staticFeedforward = TURRET_STATIC_FEEDFORWARD * signum(pid);
-        double power = pid + feedforward + staticFeedforward;
-        double modifier = TURRET_ADJUST_FOR_VOLTAGE ?
+        power = pid + feedforward + staticFeedforward;
+        modifier = TURRET_ADJUST_FOR_VOLTAGE ?
                 12 / max(voltageSensor.getVoltage(turretMotor.hardware.hub), 1e-6) : 1;
-
         power *= modifier;
         power = Math.clamp(power, -TURRET_MAX_POWER * modifier, TURRET_MAX_POWER * modifier);
         turretMotor.setPower(power);
     }
 
+    @Override
+    public void update() {
+        calculate();
+    }
+
     /**
      * Stops the turret by aiming for its current position
      */
+    @Override
     public void stop() {
         setTarget(Target.NONE);
         turretPIDController.setTarget(turretMotor.getCurrentPosition());

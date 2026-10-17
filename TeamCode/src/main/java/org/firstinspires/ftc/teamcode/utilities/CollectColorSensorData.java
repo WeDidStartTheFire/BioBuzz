@@ -123,9 +123,6 @@ public class CollectColorSensorData extends OpMode {
                     argbB.val[3],
                     distanceB));
         }
-        teleop.drivetrainLogic();
-        teleop.updateIntake();
-        teleop.updateLauncherTeleOp();
         teleop.update();
     }
 

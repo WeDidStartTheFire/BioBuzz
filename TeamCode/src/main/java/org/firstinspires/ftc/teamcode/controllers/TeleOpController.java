@@ -78,8 +78,6 @@ public class TeleOpController {
             tm.print("avg dt (ms)", totalMs / totalUpdates, VERBOSE);
         }
         lastUpdateTime = t;
-        robot.updateBulkCache();
-        robot.drivetrain.update();
         if (gamepad2.rightStickButtonWasPressed()) {
             robot.turret.setTarget(Turret.Target.MANUAL);
             robot.turret.toggleTargetChangeable();
@@ -96,11 +94,9 @@ public class TeleOpController {
      * Should be called when TeleOp mode ends.
      */
     public void stop() {
-        driveController.stop();
-        intakeController.stop();
-        robot.limelight.stop();
+        robot.stop();
         tm.showLogs();
-        tm.forceUpdate();
+        tm.update();
     }
 
     /**

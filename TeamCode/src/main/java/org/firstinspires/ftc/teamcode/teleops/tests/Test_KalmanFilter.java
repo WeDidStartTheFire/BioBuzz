@@ -53,9 +53,6 @@ public class Test_KalmanFilter extends OpMode {
 
     @Override
     public void loop() {
-        teleop.drivetrainLogic();
-        teleop.updateIntake();
-        teleop.updateLauncherTeleOp();
         LLResult result = robot.limelight.getLatestResult();
         if (result != null) {
             tm.print("LL Pose MT1", result.getBotpose(), VERBOSE);

@@ -22,8 +22,5 @@ dependencies {
     implementation 'com.pedropathing:revhub:3.0.2'
     implementation 'com.pedropathing:tuning:1.0.3-beta.1'
     implementation 'com.pedropathing.ivy:pedro:1.1.1'
-
-    // EJML, for Kalman filter
-    implementation 'org.ejml:ejml-simple:0.46.1'
 }
 

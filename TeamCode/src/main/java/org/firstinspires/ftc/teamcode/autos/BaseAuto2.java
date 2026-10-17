@@ -59,7 +59,8 @@ public abstract class BaseAuto2<T extends AutoPaths> extends OpMode {
      *                       prepended to the name (e.g. "Auto" -> "🟥Red🟥 Auto").
      * @see configure()
      */
-    protected void configure(Class<T> pathsClass, Color color, String name, boolean addColorToName) {
+    protected void configure(Class<T> pathsClass, Color color, String name,
+                             boolean addColorToName) {
         this.paths = AutoPaths.get(pathsClass, color);
         this.color = color;
         this.name = addColorToName ? color + name : name;
@@ -97,7 +98,7 @@ public abstract class BaseAuto2<T extends AutoPaths> extends OpMode {
         follower = robot.drivetrain.follower;
         follower.setPose(paths.start());
         tm = robot.tm();
-        intakeController = new IntakeController(robot, robot.intake, tm);
+        intakeController = new IntakeController(robot.intake, tm);
         tm.print(name + " auto initialized", INFO);
         tm.update();
         robot.initBulkCache();

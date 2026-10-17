@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.controllers;
 import com.pedropathing.utils.Timer;
 
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
-import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Intake;
 
 import java.util.concurrent.TimeUnit;
@@ -14,7 +13,6 @@ public class IntakeController {
     private final Timer stateTimer = new Timer();
 
     private boolean isBusy;
-    private final Robot robot;
     private final Intake intake;
     private final TelemetryUtils tm;
 
@@ -25,10 +23,9 @@ public class IntakeController {
         OUTTAKE,
     }
 
-    public IntakeController(Robot robot, Intake intake, TelemetryUtils tm) {
+    public IntakeController(Intake intake, TelemetryUtils tm) {
         this.tm = tm;
         setState(State.IDLE);
-        this.robot = robot;
         this.intake = intake;
         isBusy = false;
     }
@@ -46,13 +43,13 @@ public class IntakeController {
         switch (state) {
             case IDLE:
                 isBusy = false;
-                robot.intake.setBehavior(Intake.Behavior.OFF);
+                intake.setBehavior(Intake.Behavior.OFF);
                 break;
             case INTAKE:
-                robot.intake.setBehavior(Intake.Behavior.INTAKE);
+                intake.setBehavior(Intake.Behavior.INTAKE);
                 break;
             case OUTTAKE:
-                robot.intake.setBehavior(Intake.Behavior.OUTTAKE);
+                intake.setBehavior(Intake.Behavior.OUTTAKE);
                 break;
         }
     }
@@ -97,7 +94,7 @@ public class IntakeController {
      * Manually stops the motor instead of just changing the state.
      */
     public void forceStop() {
-        robot.intake.stop();
+        intake.stop();
         setState(State.IDLE);
     }
 

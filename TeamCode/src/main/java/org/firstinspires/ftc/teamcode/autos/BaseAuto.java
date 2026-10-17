@@ -101,7 +101,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         robot.drivetrain.follower.setPose(startPose);
         tm = robot.tm();
         buildPaths();
-        intakeController = new IntakeController(robot, robot.intake, tm);
+        intakeController = new IntakeController(robot.intake, tm);
         tm.print(name + " auto initialized", INFO);
         tm.update();
         setStateNoWait(initialState);

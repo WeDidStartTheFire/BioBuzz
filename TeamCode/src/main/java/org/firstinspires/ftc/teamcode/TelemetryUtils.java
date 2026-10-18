@@ -175,7 +175,8 @@ public class TelemetryUtils {
         double h = round(toDegrees(pose.heading()) * 100) / 100.0;
 
         poseStringBuilder.setLength(0);
-        poseStringBuilder.append('(').append(x).append(", ").append(y).append(", ").append(h).append(')');
+        poseStringBuilder.append('(').append(x).append(", ").append(y).append(", ")
+                .append(h).append(')');
         print("Pose", poseStringBuilder.toString(), level);
     }
 

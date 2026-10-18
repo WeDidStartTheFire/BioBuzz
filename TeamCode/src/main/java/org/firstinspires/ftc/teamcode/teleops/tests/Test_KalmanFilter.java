@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleops.tests;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.MEDIUM;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.VERBOSE;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
@@ -32,7 +33,7 @@ public class Test_KalmanFilter extends OpMode {
         tm = robot.tm();
         tm.setEnvironment(RobotEnvironment.DEBUG);
         if (!robot.drivetrain.isPoseValid())
-            tm.warn(TelemetryUtils.ErrorLevel.MEDIUM, "Robot Centric driving will be used until the position is reset");
+            tm.warn(MEDIUM, "Robot Centric driving will be used until the position is reset");
         else tm.print("Field Centric Driving", "✅", INFO);
         tm.print("Color", "🟦🟦Blue🟦🟦", INFO);
     }

@@ -36,7 +36,6 @@ public class Limelight implements Subsystem {
 
     @Override
     public void update() {
-        // Nothing much to update.}
     }
 
     /**

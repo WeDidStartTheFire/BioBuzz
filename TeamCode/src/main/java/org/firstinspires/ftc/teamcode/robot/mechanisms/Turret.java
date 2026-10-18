@@ -30,7 +30,6 @@ import static java.lang.Math.toDegrees;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.math.Pose;
 import com.pedropathing.math.Velocity;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -60,7 +59,7 @@ public class Turret implements Subsystem {
     private int timesNotReset = 0;
     private boolean reset = false;
     private final @NonNull PoseGetter poseGetter;
-    private double power, modifier;
+    private double power;
 
     public enum Target {
         GOAL, NONE, HOLD, MANUAL
@@ -190,7 +189,7 @@ public class Turret implements Subsystem {
         if (USE_TURRET_VELOCITY_PID) pid += velocityPIDController.calculate();
         double staticFeedforward = TURRET_STATIC_FEEDFORWARD * signum(pid);
         power = pid + feedforward + staticFeedforward;
-        modifier = TURRET_ADJUST_FOR_VOLTAGE ?
+        double modifier = TURRET_ADJUST_FOR_VOLTAGE ?
                 12 / max(voltageSensor.getVoltage(turretMotor.hardware.hub), 1e-6) : 1;
         power *= modifier;
         power = Math.clamp(power, -TURRET_MAX_POWER * modifier, TURRET_MAX_POWER * modifier);

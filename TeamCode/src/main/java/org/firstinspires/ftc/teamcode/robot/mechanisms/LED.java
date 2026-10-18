@@ -17,6 +17,7 @@ public class LED implements Subsystem {
     private final @Nullable Servo led;
     private int highestPriorityThisLoop = -1;
     private double color;
+
     public enum Priority {
         LOW(0),
         MEDIUM(1),

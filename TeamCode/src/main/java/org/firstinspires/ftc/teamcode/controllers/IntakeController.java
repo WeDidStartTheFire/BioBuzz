@@ -31,9 +31,8 @@ public class IntakeController {
     }
 
     /**
-     * Updates the LEDs and the IntakeController state machine:<p>
-     * INTAKE -> IDLE: When indexer is full<p>
-     * Other transitions controlled via calling methods
+     * Updates the LEDs and the IntakeController state machine:<p> INTAKE -> IDLE: When indexer is
+     * full<p> Other transitions controlled via calling methods
      *
      * @see #intake()
      * @see #outtake()
@@ -88,14 +87,6 @@ public class IntakeController {
     public void stop() {
         if (state != State.IDLE) setState(State.IDLE);
         isBusy = false;
-    }
-
-    /**
-     * Manually stops the motor instead of just changing the state.
-     */
-    public void forceStop() {
-        intake.stop();
-        setState(State.IDLE);
     }
 
     private void setState(State state) {

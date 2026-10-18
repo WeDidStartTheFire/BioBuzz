@@ -28,7 +28,8 @@ public class TeleOp_Slow extends OpMode {
     @Override
     public void loop() {
         double axial, lateral, yaw, xMove, yMove;
-        double speedMultiplier = gamepad1.left_bumper ? speeds[0] : gamepad1.right_bumper ? speeds[2] : speeds[1];
+        double speedMultiplier = gamepad1.left_bumper ? speeds[0] :
+                gamepad1.right_bumper ? speeds[2] : speeds[1];
 
         xMove = gamepad1.left_stick_x;
         yMove = gamepad1.left_stick_y;
@@ -61,7 +62,8 @@ public class TeleOp_Slow extends OpMode {
         leftBackPower *= baseSpeedMultiplier;
         rightBackPower *= baseSpeedMultiplier;
 
-        robot.drivetrain.setMotorPowers(leftBackPower, rightBackPower, leftFrontPower, rightFrontPower);
+        robot.drivetrain.setMotorPowers(leftBackPower, rightBackPower, leftFrontPower,
+                rightFrontPower);
 
         tm.print("Speed Multiplier", speedMultiplier, INFO);
     }

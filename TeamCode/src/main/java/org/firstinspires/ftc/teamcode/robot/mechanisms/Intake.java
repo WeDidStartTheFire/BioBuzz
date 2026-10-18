@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_MOTOR;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_SERVO_A;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_SERVO_B;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_SERVO_C;
+
 import static java.lang.Math.abs;
 
 import androidx.annotation.Nullable;
@@ -53,10 +54,6 @@ public class Intake implements Subsystem {
                 powerInside(1);
                 powerOutside(1);
         }
-    }
-
-    public Behavior getBehavior() {
-        return behavior;
     }
 
     public void update() {

@@ -72,14 +72,14 @@ public class TestBusSpeed extends OpMode {
         totalColorCalls++;
         tm.print("Bus Speed", fastMode ? "Fast" : "Standard", VERBOSE);
         tm.print("Color Sensor Time (ms)", (t1 - t0) * 1000, VERBOSE);
-        tm.print("Color Sensor Average Time (ms)", totalColorTime / totalColorCalls * 1000, VERBOSE);
+        tm.print("Color Sensor Avg Time (ms)", totalColorTime / totalColorCalls * 1000, VERBOSE);
         t0 = getRuntime();
         if (robot.drivetrain.otos != null) robot.drivetrain.follower.update();
         t1 = getRuntime();
         totalOTOSTime += t1 - t0;
         totalOTOSCalls++;
         tm.print("OTOS Time (ms)", (t1 - t0) * 1000, VERBOSE);
-        tm.print("OTOS Average Time (ms)", totalOTOSTime / totalOTOSCalls * 1000, VERBOSE);
+        tm.print("OTOS Avg Time (ms)", totalOTOSTime / totalOTOSCalls * 1000, VERBOSE);
         tm.updateOnlyPanels();
         try {
             sleep(ARTIFICIAL_WAIT);

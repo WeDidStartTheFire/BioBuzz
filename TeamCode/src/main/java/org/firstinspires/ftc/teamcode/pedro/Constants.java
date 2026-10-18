@@ -96,8 +96,4 @@ public class Constants {
                 new Foresight(foresightConfig)
         );
     }
-
-    public static Follower createRedundantFollower(HardwareMap h) {
-        return null;
-    }
 }

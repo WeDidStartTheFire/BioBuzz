@@ -142,8 +142,8 @@ public class Launcher implements Subsystem {
     }
 
     /**
-     * Returns whether the launch motors are almost to speed (within 100 ticks/sec).
-     * WARNING: Will return true even if over required speed
+     * Returns whether the launch motors are almost to speed (within 100 ticks/sec). WARNING: Will
+     * return true even if over required speed
      *
      * @return Whether the launch motors are almost to speed (within 100 ticks/sec).
      */

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.utilities;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.CRITICAL;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.MEDIUM;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
 import static org.firstinspires.ftc.teamcode.Utils.addLine;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
@@ -60,7 +61,7 @@ public class CollectColorSensorData extends OpMode {
             throw new RuntimeException(e);
         }
         if (!robot.drivetrain.isPoseValid())
-            tm.warn(TelemetryUtils.ErrorLevel.MEDIUM, "Robot Centric driving will be used until the position is reset");
+            tm.warn(MEDIUM, "Robot Centric driving will be used until the position is reset");
         else tm.print("Field Centric Driving", "✅", INFO);
         tm.print("Color", "🟦🟦Blue🟦🟦", INFO);
     }

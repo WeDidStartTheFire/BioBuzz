@@ -5,7 +5,6 @@ import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_MOTOR;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_SERVO_A;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_SERVO_B;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_SERVO_C;
-import static java.lang.Math.abs;
 
 import androidx.annotation.Nullable;
 
@@ -40,10 +39,6 @@ public class Intake implements Subsystem {
 
     public void setBehavior(Behavior behavior) {
         this.behavior = behavior;
-    }
-
-    public Behavior getBehavior() {
-        return behavior;
     }
 
     @Override

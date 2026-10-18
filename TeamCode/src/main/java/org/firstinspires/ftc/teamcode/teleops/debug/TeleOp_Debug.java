@@ -79,7 +79,8 @@ public class TeleOp_Debug extends OpMode {
         }
 
         // Send calculated power to wheels
-        robot.drivetrain.setMotorPowers(leftBackPower, rightBackPower, leftFrontPower, rightFrontPower);
+        robot.drivetrain.setMotorPowers(leftBackPower, rightBackPower, leftFrontPower,
+                rightFrontPower);
 
         if (servoA != null) {
             if (gamepad1.a && !wasDownA) {

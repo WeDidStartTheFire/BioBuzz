@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleops;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.MEDIUM;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 import static org.firstinspires.ftc.teamcode.constants.TeleOpConstants.BLUE_TELEOP_NAME;
@@ -25,7 +26,7 @@ public class TeleOp_Main_Blue extends OpMode {
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
         TelemetryUtils tm = robot.tm();
         if (!robot.drivetrain.isPoseValid())
-            tm.warn(TelemetryUtils.ErrorLevel.MEDIUM, "Robot Centric driving will be used until the position is reset");
+            tm.warn(MEDIUM, "Robot Centric driving will be used until the position is reset");
         else tm.print("Field Centric Driving", "✅", INFO);
         tm.print("Color", "🟦🟦Blue🟦🟦", INFO);
     }

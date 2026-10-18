@@ -80,9 +80,11 @@ public class DriveController {
         if (heading >= 2 * PI) heading -= 2 * PI;
         else if (heading < 0) heading += 2 * PI;
         double x = pose == null ? (context.alliance() == BLUE ? WALL_HIGH : WALL_LOW) : pose.x();
-        x = abs(x - WALL_LOW) <= SNAP_THRESHOLD_DISTANCE ? WALL_LOW : abs(x - WALL_HIGH) <= SNAP_THRESHOLD_DISTANCE ? WALL_HIGH : x;
+        x = abs(x - WALL_LOW) <= SNAP_THRESHOLD_DISTANCE ? WALL_LOW :
+                abs(x - WALL_HIGH) <= SNAP_THRESHOLD_DISTANCE ? WALL_HIGH : x;
         double y = pose == null ? WALL_LOW : pose.y();
-        y = abs(y - WALL_LOW) <= SNAP_THRESHOLD_DISTANCE ? WALL_LOW : abs(y - WALL_HIGH) <= SNAP_THRESHOLD_DISTANCE ? WALL_HIGH : y;
+        y = abs(y - WALL_LOW) <= SNAP_THRESHOLD_DISTANCE ? WALL_LOW :
+                abs(y - WALL_HIGH) <= SNAP_THRESHOLD_DISTANCE ? WALL_HIGH : y;
         if (abs(heading - 0) < .0001) x -= 2;
         else if (abs(heading - PI / 2) < .0001) y -= 2;
         else if (abs(heading - PI) < .0001) x += 2;

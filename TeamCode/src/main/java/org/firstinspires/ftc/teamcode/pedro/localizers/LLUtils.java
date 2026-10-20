@@ -14,9 +14,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class LimelightHelpers {
+public class LLUtils {
 
-    public static JSONObject getMatchingFiducialJSON(LLResult result, FiducialResult fiducial) {
+    private static JSONObject getMatchingFiducialJSON(LLResult result, FiducialResult fiducial) {
         String jsonString = result.toString();
         try {
             JSONObject jsonData = new JSONObject(jsonString);

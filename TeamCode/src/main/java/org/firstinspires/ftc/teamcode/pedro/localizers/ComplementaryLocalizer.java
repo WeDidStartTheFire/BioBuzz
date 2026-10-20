@@ -3,11 +3,10 @@ package org.firstinspires.ftc.teamcode.pedro.localizers;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.normalizeRadians;
 import static org.firstinspires.ftc.teamcode.Utils.pose3DToPose;
-import static org.firstinspires.ftc.teamcode.constants.LimelightLocalizationConstants.MAX_ANG_VEL;
-import static org.firstinspires.ftc.teamcode.constants.LimelightLocalizationConstants.MAX_LIN_VEL;
-import static org.firstinspires.ftc.teamcode.constants.LimelightLocalizationConstants.MAX_TAG_DISTANCE;
-import static org.firstinspires.ftc.teamcode.constants.LimelightLocalizationConstants.MIN_MT1_TAG_AREA;
-import static org.firstinspires.ftc.teamcode.constants.LimelightLocalizationConstants.MIN_MT2_TAG_AREA;
+import static org.firstinspires.ftc.teamcode.constants.LocalizationConstants.MAX_ANG_VEL;
+import static org.firstinspires.ftc.teamcode.constants.LocalizationConstants.MAX_DIST;
+import static org.firstinspires.ftc.teamcode.constants.LocalizationConstants.MAX_LIN_VEL;
+import static org.firstinspires.ftc.teamcode.constants.LocalizationConstants.MAX_TAG_DISTANCE;
 import static java.lang.Math.abs;
 import static java.lang.Math.clamp;
 import static java.lang.Math.hypot;
@@ -105,8 +104,7 @@ public class ComplementaryLocalizer implements Localizer {
         LLResult result = limelight.getLatestResult();
 
         if (result == null || !result.isValid() || abs(vel.omega) > MAX_ANG_VEL ||
-                hypot(vel.vx, vel.vy) > MAX_LIN_VEL || result.getBotposeTagCount() <= 0 ||
-                result.getTa() < MIN_MT2_TAG_AREA) return;
+                hypot(vel.vx, vel.vy) > MAX_LIN_VEL || result.getBotposeTagCount() <= 0) return;
 
         Pose LLPose = null;
         boolean useMetaTag2 = false;
@@ -123,8 +121,7 @@ public class ComplementaryLocalizer implements Localizer {
                 Pose botpose = pose3DToPose(fiducial.getRobotPoseFieldSpace());
                 double distance =
                         pose3DToPose(fiducial.getTargetPoseCameraSpace()).distance(Pose.zero());
-                if (tagMatchesFMap(fiducial) && botpose.distance(pose) < 12 &&
-                        fiducial.getTargetArea() > MIN_MT1_TAG_AREA &&
+                if (tagMatchesFMap(fiducial) && botpose.distance(pose) < MAX_DIST &&
                         distance < MAX_TAG_DISTANCE) {
                     totalPos = totalPos.plus(botpose);
                     tagsCounted++;

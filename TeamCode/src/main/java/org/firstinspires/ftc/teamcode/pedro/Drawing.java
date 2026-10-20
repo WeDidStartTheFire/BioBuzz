@@ -48,8 +48,6 @@ public class Drawing {
             drawRobot(follower.closestPose(), robotLook);
         }
         drawRobot(follower.pose(), historyLook);
-
-        sendPacket();
     }
 
     /**

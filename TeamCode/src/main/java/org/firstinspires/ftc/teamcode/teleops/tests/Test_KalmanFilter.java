@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.enums.RobotEnvironment;
+import org.firstinspires.ftc.teamcode.pedro.localizers.KalmanLocalizer;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 @TeleOp(name = "Kalman Test", group = "Test")
@@ -32,6 +33,8 @@ public class Test_KalmanFilter extends OpMode {
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
         tm = robot.tm();
         tm.setEnvironment(RobotEnvironment.DEBUG);
+        ((KalmanLocalizer) robot.drivetrain.follower.localizer).enableTelemetry(tm);
+        ((KalmanLocalizer) robot.drivetrain.follower.localizer).enableLogging();
         if (!robot.drivetrain.isPoseValid())
             tm.warn(MEDIUM, "Robot Centric driving will be used until the position is reset");
         else tm.print("Field Centric Driving", "✅", INFO);
@@ -52,7 +55,9 @@ public class Test_KalmanFilter extends OpMode {
 
     @Override
     public void loop() {
+        robot.drivetrain.update();
         LLResult result = robot.limelight.getLatestResult();
+        tm.drawRobot(robot.drivetrain.follower);
         if (result != null) {
             tm.print("LL Pose MT1", result.getBotpose(), VERBOSE);
             tm.print("LL Std Dev MT1 X", result.getStddevMt1()[0], VERBOSE);

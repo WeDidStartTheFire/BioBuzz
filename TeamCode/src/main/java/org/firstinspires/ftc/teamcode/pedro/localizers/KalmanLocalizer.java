@@ -1,15 +1,23 @@
 package org.firstinspires.ftc.teamcode.pedro.localizers;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
+import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.DEBUG;
+import static org.firstinspires.ftc.teamcode.Utils.lerp;
 import static org.firstinspires.ftc.teamcode.Utils.pose3DToPose;
-import static org.firstinspires.ftc.teamcode.constants.LimelightLocalizationConstants.MAX_ANG_VEL;
-import static org.firstinspires.ftc.teamcode.constants.LimelightLocalizationConstants.MAX_LIN_VEL;
-import static org.firstinspires.ftc.teamcode.constants.LimelightLocalizationConstants.MAX_TAG_DISTANCE;
-import static org.firstinspires.ftc.teamcode.constants.LimelightLocalizationConstants.MIN_MT1_TAG_AREA;
-import static org.firstinspires.ftc.teamcode.constants.LimelightLocalizationConstants.MIN_MT2_TAG_AREA;
+import static org.firstinspires.ftc.teamcode.constants.LocalizationConstants.LERP_END_WEIGHT;
+import static org.firstinspires.ftc.teamcode.constants.LocalizationConstants.LERP_START;
+import static org.firstinspires.ftc.teamcode.constants.LocalizationConstants.MAX_AMBIGUITY;
+import static org.firstinspires.ftc.teamcode.constants.LocalizationConstants.MAX_ANG_VEL;
+import static org.firstinspires.ftc.teamcode.constants.LocalizationConstants.MAX_DIST;
+import static org.firstinspires.ftc.teamcode.constants.LocalizationConstants.MAX_LIN_VEL;
+import static org.firstinspires.ftc.teamcode.constants.LocalizationConstants.MAX_TAG_DISTANCE;
 import static java.lang.Math.abs;
 import static java.lang.Math.clamp;
 import static java.lang.Math.hypot;
+import static java.lang.Math.max;
+import static java.lang.Math.pow;
+import static java.lang.Math.sqrt;
 import static java.lang.Math.toDegrees;
 import static java.lang.Math.toRadians;
 
@@ -29,10 +37,13 @@ import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.enums.Hive;
 import org.firstinspires.ftc.teamcode.enums.HivePosition;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Limelight;
+
+import java.util.Locale;
 
 @Configurable
 public class KalmanLocalizer implements Localizer {
@@ -43,13 +54,20 @@ public class KalmanLocalizer implements Localizer {
     public static Pose PROCESS_VARIANCE = new Pose(1, 1, 2.5e-6);
     private static final Pose MEASUREMENT_VARIANCE =
             new Pose(81, 81, toRadians(20) * toRadians(20));
-    public static double MAX_MT2_LIN_VARIANCE = 81;
-    public static double MAX_MT1_LIN_VARIANCE = 144;
+    public static double MAX_MT2_LIN_VAR = 81;
+    public static double MAX_FILTERED_LIN_VAR = 144;
     public static double MAX_LL_ANG_VARIANCE = toRadians(20) * toRadians(20);
     public static int MAX_TAG_VAR_REDUCTION = 4;
+    public static boolean USE_MEASUREMENT_VARIANCE = true;
     private static final int BUFFER_SIZE = 100;
     private boolean invalidPose = false;
     private int currentPipeline;
+    @Nullable
+    private TelemetryUtils tm;
+    private long lastMeasurmentTime;
+    private StringBuilder log = new StringBuilder();
+    private boolean logging = false;
+    private final Localizer relativeLocalizer;
 
 
     public KalmanLocalizer(HardwareMap map, OTOSConfig config) {
@@ -69,20 +87,44 @@ public class KalmanLocalizer implements Localizer {
             invalidPose = true;
         }
 
-        Localizer relativeLocalizer = new OTOSLocalizer(map, config);
+        relativeLocalizer = new OTOSLocalizer(map, config);
         fusionLocalizer = new FusionLocalizer(relativeLocalizer, INITIAL_COVARIANCE,
                 PROCESS_VARIANCE, MEASUREMENT_VARIANCE, BUFFER_SIZE);
         fusionLocalizer.setStartPose(startPose);
     }
 
-    public void correctPose(@NonNull Pose correctedPose) {
-        fusionLocalizer.correctPose(correctedPose);
-        invalidPose = false;
-    }
-
     public void setPose(@NonNull Pose setPose) {
         fusionLocalizer.setPose(setPose);
         invalidPose = false;
+    }
+
+    public void enableTelemetry(TelemetryUtils tm) {
+        this.tm = tm;
+    }
+
+    public void enableLogging() {
+        this.logging = true;
+    }
+
+    public String getLog() {
+        return log.toString();
+    }
+
+    private void addLog(@NonNull Object caption, @NonNull Object content) {
+        if (tm != null) tm.print(caption, content, DEBUG);
+        if (logging) {
+            if (content instanceof Pose) {
+                log.append(String.format(Locale.US, "%s,%s,%s,",
+                        ((Pose) content).x(), ((Pose) content).y(), ((Pose) content).heading()));
+            } else if (content instanceof Velocity) {
+                log.append(String.format(Locale.US, "%s,%s,%s,", ((Velocity) content).vx,
+                        ((Velocity) content).vy, ((Velocity) content).omega));
+            } else log.append(String.format(Locale.US, "%s,", content));
+        }
+    }
+
+    private void resetLog() {
+        log = new StringBuilder();
     }
 
     @Override
@@ -91,9 +133,17 @@ public class KalmanLocalizer implements Localizer {
     }
 
     public void update() {
+        resetLog();
+
         fusionLocalizer.update();
         Pose pose = fusionLocalizer.pose();
         Velocity vel = fusionLocalizer.velocity();
+
+        addLog("position", pose);
+        addLog("velocity", vel);
+        addLog("otos pose", relativeLocalizer.pose());
+        if (tm != null) tm.drawRobot(relativeLocalizer.pose(), false);
+        addLog("invalid pose", invalidPose);
 
         if (limelight.limelight == null) return;
 
@@ -101,53 +151,101 @@ public class KalmanLocalizer implements Localizer {
         limelight.limelight.updateRobotOrientation(toDegrees(pose.heading()) + 90);
         LLResult result = limelight.getLatestResult();
 
+        addLog("timestamp", result != null ? result.getControlHubTimeStampNanos() : 0);
+        addLog("pipeline", currentPipeline);
+        addLog("valid result", result != null && result.isValid());
+        addLog("angular velocity", abs(vel.omega));
+        addLog("linear velocity", hypot(vel.vx, vel.vy));
+        addLog("tag count", result != null && result.isValid() ?
+                result.getBotposeTagCount() : 0);
+
         if (result == null || !result.isValid() || abs(vel.omega) > MAX_ANG_VEL ||
-                hypot(vel.vx, vel.vy) > MAX_LIN_VEL || result.getBotposeTagCount() <= 0 ||
-                result.getTa() < MIN_MT2_TAG_AREA) return;
+                hypot(vel.vx, vel.vy) > MAX_LIN_VEL || result.getBotposeTagCount() <= 0) {
+            addLog("rejected", true);
+            return;
+        }
+
+        if (tm == null && !logging && lastMeasurmentTime == result.getControlHubTimeStampNanos())
+            return;
+
+        addLog("rejected", false);
+        addLog("hives match", hivesMatchFMap());
 
         Pose LLPose = null;
-        boolean useMetaTag2 = false;
+        boolean useAll = false;
         int tagsCounted = 0;
+        double totalWeight = 0;
         if (hivesMatchFMap()) {
-            Pose3D botpose = result.getBotpose_MT2();
+            Pose3D botpose = invalidPose ? result.getBotpose() : result.getBotpose_MT2();
             double angle = result.getBotpose().getOrientation().getYaw(DEGREES) - 90;
             if (angle < 0) angle += 360;
             LLPose = pose3DToPose(botpose).withHeading(toRadians(angle));
-            useMetaTag2 = true;
+            useAll = true;
         } else {
-            Pose totalPos = Pose.zero();
+            Pose weightedTotal = Pose.zero();
+            Pose totalPose = Pose.zero();
             for (LLResultTypes.FiducialResult fiducial : result.getFiducialResults()) {
-                Pose botpose = pose3DToPose(fiducial.getRobotPoseFieldSpace());
-                double distance =
-                        pose3DToPose(fiducial.getTargetPoseCameraSpace()).distance(Pose.zero());
-                if (tagMatchesFMap(fiducial) && botpose.distance(pose) < 12 &&
-                        fiducial.getTargetArea() > MIN_MT1_TAG_AREA &&
-                        distance < MAX_TAG_DISTANCE) {
-                    totalPos = totalPos.plus(botpose);
+                Pose3D botpose3d = invalidPose ? fiducial.getRobotPoseFieldSpace() :
+                        LLUtils.getRobotPoseFieldSpace_MT2(result, fiducial);
+                if (botpose3d == null) continue;
+                double heading = fiducial.getRobotPoseFieldSpace().getOrientation().getYaw(RADIANS);
+                Pose botpose = pose3DToPose(botpose3d).withHeading(heading);
+                double tagDist = pose3DToPose(fiducial.getTargetPoseCameraSpace())
+                        .distance(Pose.zero());
+                double distFromCurrentEstimate = botpose.distance(pose);
+                if (tagMatchesFMap(fiducial) && distFromCurrentEstimate <= MAX_DIST &&
+                        tagDist <= MAX_TAG_DISTANCE &&
+                        LLUtils.getAmbiguity(result, fiducial) <= MAX_AMBIGUITY) {
+                    double weight = clamp(lerp((distFromCurrentEstimate - LERP_START) /
+                            (MAX_DIST - LERP_START), 1, LERP_END_WEIGHT), LERP_END_WEIGHT, 1);
+                    weightedTotal = weightedTotal.plus(botpose.times(weight));
+                    if (tm != null) totalPose = totalPose.plus(botpose);
+                    totalWeight += weight;
                     tagsCounted++;
                 }
             }
             if (tagsCounted > 0) {
-                totalPos = totalPos.div(tagsCounted);
-                LLPose = totalPos;
+                weightedTotal = weightedTotal.div(totalWeight);
+                LLPose = weightedTotal;
+                Pose avgPose = totalPose.div(tagsCounted);
+                addLog("avg dist", pose.distance(avgPose));
+                addLog("weighted dist", pose.distance(LLPose));
             }
         }
 
+        int numTags = useAll ? result.getBotposeTagCount() : tagsCounted;
+        addLog("valid tags", numTags);
+        addLog("total weight", totalWeight);
+
         if (LLPose == null) return;
-        if (invalidPose) {
-            Pose3D botpose = result.getBotpose();
-            LLPose = useMetaTag2 ? pose3DToPose(botpose) : LLPose;
-            correctPose(LLPose);
-            return;
-        }
-        int numTags = useMetaTag2 ? result.getBotposeTagCount() : tagsCounted;
+        addLog("ll pose", LLPose);
+        if (tm != null) tm.drawRobot(LLPose, false);
+
         numTags = clamp(numTags, 0, MAX_TAG_VAR_REDUCTION);
         if (numTags == 0) return;
-        double linVar = useMetaTag2 ? MAX_MT2_LIN_VARIANCE / numTags
-                : MAX_MT1_LIN_VARIANCE / numTags;
+        double linVar = useAll ? MAX_MT2_LIN_VAR / numTags : MAX_FILTERED_LIN_VAR / numTags;
         double angVar = MAX_LL_ANG_VARIANCE / numTags;
-        fusionLocalizer.addMeasurement(LLPose, result.getControlHubTimeStampNanos(),
-                new Pose(linVar, linVar, angVar));
+        double[] stddevs = result.getStddevMt2();
+        double xVar = max(1, pow(stddevs[0] * 39.37, 2));
+        double yVar = max(1, pow(stddevs[1] * 39.37, 2));
+        double hVar = max(pow(toRadians(10), 2), pow(toRadians(result.getStddevMt1()[5]), 2));
+
+        addLog("lin var", linVar);
+        addLog("ang var", pow(toDegrees(sqrt(angVar)), 2));
+        addLog("x var", xVar);
+        addLog("y var", yVar);
+        addLog("head var", pow(result.getStddevMt1()[5], 2));
+
+        if (invalidPose) {
+            setPose(LLPose);
+            return;
+        }
+
+        Pose measurementVar = new Pose(xVar, yVar, hVar);
+        if (result.getControlHubTimeStampNanos() != lastMeasurmentTime)
+            fusionLocalizer.addMeasurement(LLPose, result.getControlHubTimeStampNanos(),
+                    USE_MEASUREMENT_VARIANCE ? measurementVar : new Pose(linVar, linVar, angVar));
+        lastMeasurmentTime = result.getControlHubTimeStampNanos();
     }
 
     @Override

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.teleops;
+package org.firstinspires.ftc.teamcode.teleops.tests;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
 import static org.firstinspires.ftc.teamcode.enums.Color.BLUE;
@@ -11,8 +11,8 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
-@TeleOp(name = "TeleOp_Refactor_Testing", group = "B")
-public class TeleOp_Refactor_Testing extends OpMode {
+@TeleOp(name = "Refactor Testing", group = "B")
+public class Test_Refactor extends OpMode {
     public TeleOpController teleop;
     public Robot robot;
     public TelemetryUtils tm;

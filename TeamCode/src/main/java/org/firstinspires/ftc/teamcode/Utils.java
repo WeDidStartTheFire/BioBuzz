@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
+import static java.lang.Math.PI;
 import static java.lang.Math.toRadians;
 
 import androidx.annotation.NonNull;
@@ -62,9 +63,10 @@ public class Utils {
      * @param pose3D {@link Pose3D} to convert
      * @return Converted {@link Pose}
      */
+    @NonNull
     public static Pose pose3DToPose(@NonNull Pose3D pose3D) {
         double angle = toRadians(pose3D.getOrientation().getYaw(DEGREES) - 90);
-        if (angle < 0) angle += 360;
+        if (angle < 0) angle += 2 * PI;
         return new Pose(pose3D.getPosition().y / 0.0254 + 72,
                 -pose3D.getPosition().x / 0.0254 + 72, angle);
     }

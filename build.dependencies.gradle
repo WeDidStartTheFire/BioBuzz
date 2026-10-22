@@ -1,8 +1,8 @@
 repositories {
     mavenCentral()
     google() // Needed for androidx
-    maven { url 'https://repo.dairy.foundation/releases/'}
-    maven { url = "https://mymaven.bylazar.com/releases" } // For Panels
+    maven { url 'https://repo.dairy.foundation/releases/' }
+    maven { url = 'https://mymaven.bylazar.com/releases' } // For Panels
     maven { url = 'https://maven.anygeneric.dev/' } // For Blaze FTC
 }
 

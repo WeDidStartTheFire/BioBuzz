@@ -10,7 +10,6 @@ import org.firstinspires.ftc.teamcode.enums.Color;
 
 public class Paths_8Pt_Down extends AutoPaths {
 
-    private Pose start, path1, path1Control1;
     private static final Color pathsColor = Color.BLUE;
 
     public Paths_8Pt_Down(Color autoColor) {
@@ -19,17 +18,18 @@ public class Paths_8Pt_Down extends AutoPaths {
 
     @Override
     protected void buildPoints() {
-        start = poseFactory.of(80.25, 9, 90);
-        path1 = poseFactory.of(126.5, 21, 90);
-        path1Control1 = poseFactory.of(80.25, 33.9073, 0);
     }
 
     @Override
     public Pose start() {
-        return start;
+        return path1().get(0);
     }
 
     public Path path1() {
-        return curve(start, path1Control1, path1).constant(path1);
+        return curve(
+                poseFactory.of(81.500, 10.250, 0.0),
+                poseFactory.of(75.725, 20.887, 0.0),
+                poseFactory.of(126.370, 21.000, 0.0)
+        ).linear(Math.toRadians(90), Math.toRadians(90));
     }
 }

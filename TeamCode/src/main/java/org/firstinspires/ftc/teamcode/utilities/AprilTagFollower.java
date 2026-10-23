@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.utilities;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
-import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
+import static org.firstinspires.ftc.teamcode.utils.Utils.loadOdometryPosition;
 
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;

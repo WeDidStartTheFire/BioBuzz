@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.enums;
 
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.CRITICAL;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.HIGH;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.LOW;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.MEDIUM;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.ErrorLevel.CRITICAL;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.ErrorLevel.HIGH;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.ErrorLevel.LOW;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.ErrorLevel.MEDIUM;
 
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.lynx.LynxModule;
@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 
 public enum Hardware {
     DRIVETRAIN_LEFT_FRONT_MOTOR("Left Front Drivetrain Motor", DcMotorEx.class, "leftFront", Hub.CONTROL, PortType.MOTOR, 1, CRITICAL),

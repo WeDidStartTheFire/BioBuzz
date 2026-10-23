@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.DEBUG;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.VERBOSE;
 import static org.firstinspires.ftc.teamcode.constants.TurretConstants.MAX_TIMES_NOT_RESET;
 import static org.firstinspires.ftc.teamcode.constants.TurretConstants.TURRET_ADJUST_FOR_VOLTAGE;
 import static org.firstinspires.ftc.teamcode.constants.TurretConstants.TURRET_ENCODERS_PER_DEGREE;
@@ -21,6 +18,9 @@ import static org.firstinspires.ftc.teamcode.constants.TurretConstants.turretMot
 import static org.firstinspires.ftc.teamcode.constants.TurretConstants.turretVelocityPID;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.TURRET_MOTOR;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.TURRET_TOUCH_SENSOR;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.DEBUG;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.INFO;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.VERBOSE;
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -38,11 +38,11 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.PoseGetter;
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
-import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.pedro.controllers.PIDFController;
 import org.firstinspires.ftc.teamcode.robot.BlazeMotor;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 import org.firstinspires.ftc.teamcode.robot.Subsystem;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 
 public class Turret implements Subsystem {
     public static boolean panelsResetTurret = false;
@@ -59,7 +59,6 @@ public class Turret implements Subsystem {
     private int timesNotReset = 0;
     private boolean reset = false;
     private final @NonNull PoseGetter poseGetter;
-    private double power;
 
     public enum Target {
         GOAL, NONE, HOLD, MANUAL
@@ -188,7 +187,7 @@ public class Turret implements Subsystem {
         double pid = turretPIDController.calculate();
         if (USE_TURRET_VELOCITY_PID) pid += velocityPIDController.calculate();
         double staticFeedforward = TURRET_STATIC_FEEDFORWARD * signum(pid);
-        power = pid + feedforward + staticFeedforward;
+        double power = pid + feedforward + staticFeedforward;
         double modifier = TURRET_ADJUST_FOR_VOLTAGE ?
                 12 / max(voltageSensor.getVoltage(turretMotor.hardware.hub), 1e-6) : 1;
         power *= modifier;

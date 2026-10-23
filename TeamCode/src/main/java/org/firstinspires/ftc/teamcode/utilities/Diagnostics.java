@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.utilities;
 
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.VERBOSE;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.COLOR_SENSOR_A;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.COLOR_SENSOR_B;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.DRIVETRAIN_LEFT_BACK_MOTOR;
@@ -24,6 +23,7 @@ import static org.firstinspires.ftc.teamcode.enums.Hardware.TOUCH_SENSOR_A;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.TOUCH_SENSOR_B;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.TURRET_MOTOR;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.TURRET_TOUCH_SENSOR;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.VERBOSE;
 
 import androidx.annotation.Nullable;
 
@@ -32,9 +32,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Utility;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.enums.RobotEnvironment;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 
 @Utility(name = "Diagnostics")
 public class Diagnostics extends LinearOpMode {

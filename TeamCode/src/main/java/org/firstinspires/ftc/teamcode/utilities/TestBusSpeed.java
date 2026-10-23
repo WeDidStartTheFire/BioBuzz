@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.utilities;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.VERBOSE;
-import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.INFO;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.VERBOSE;
+import static org.firstinspires.ftc.teamcode.utils.Utils.loadOdometryPosition;
 import static java.lang.Thread.sleep;
 
 import com.bylazar.configurables.annotations.Configurable;
@@ -13,10 +13,10 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Utility;
 
 import org.firstinspires.ftc.teamcode.MatchContext;
-import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.enums.RobotEnvironment;
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 
 @Utility(name = "Test Bus Speed", description = "Tests bus speed impact on I2C devices")
 @Disabled

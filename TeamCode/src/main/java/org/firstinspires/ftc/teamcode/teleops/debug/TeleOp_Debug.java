@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleops.debug;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.LOW;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.ErrorLevel.LOW;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -10,11 +10,11 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.MatchContext;
-import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.enums.RobotEnvironment;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 
 @TeleOp(name = "Test", group = "Test")
 @Configurable

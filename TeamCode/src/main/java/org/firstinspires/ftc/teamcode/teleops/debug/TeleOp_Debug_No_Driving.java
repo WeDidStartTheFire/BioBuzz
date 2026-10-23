@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleops.debug;
 
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.LOW;
 import static org.firstinspires.ftc.teamcode.enums.RobotEnvironment.PRACTICE;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.ErrorLevel.LOW;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -9,8 +9,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 
 @TeleOp(name = "Test No Driving", group = "Test")
 @Configurable

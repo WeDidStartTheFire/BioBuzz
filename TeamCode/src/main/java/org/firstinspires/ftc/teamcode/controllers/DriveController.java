@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.controllers;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
 import static org.firstinspires.ftc.teamcode.ProjectileSolver.getLaunchSolution;
-import static org.firstinspires.ftc.teamcode.Utils.lerp;
 import static org.firstinspires.ftc.teamcode.constants.ResetConstants.SNAP_THRESHOLD_DISTANCE;
 import static org.firstinspires.ftc.teamcode.constants.ResetConstants.SNAP_THRESHOLD_HEADING;
 import static org.firstinspires.ftc.teamcode.constants.ResetConstants.WALL_HIGH;
@@ -13,6 +12,7 @@ import static org.firstinspires.ftc.teamcode.constants.TeleOpConstants.speeds;
 import static org.firstinspires.ftc.teamcode.constants.TeleOpConstants.teleopHeadingPID;
 import static org.firstinspires.ftc.teamcode.enums.Color.BLUE;
 import static org.firstinspires.ftc.teamcode.enums.Color.RED;
+import static org.firstinspires.ftc.teamcode.utils.Utils.lerp;
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
 import static java.lang.Math.round;

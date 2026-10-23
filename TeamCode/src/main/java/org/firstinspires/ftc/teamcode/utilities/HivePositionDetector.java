@@ -1,16 +1,16 @@
 package org.firstinspires.ftc.teamcode.utilities;
 
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.VERBOSE;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.INFO;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.VERBOSE;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Utility;
 
-import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.enums.Hive;
 import org.firstinspires.ftc.teamcode.enums.RobotEnvironment;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Limelight;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 
 @Utility(name = "Hive Position Detector", description = "Detects the hive positions")
 public class HivePositionDetector extends OpMode {

@@ -2,8 +2,8 @@ package org.firstinspires.ftc.teamcode.controllers;
 
 import com.pedropathing.utils.Timer;
 
-import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Intake;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 
 import java.util.concurrent.TimeUnit;
 

@@ -2,9 +2,6 @@ package org.firstinspires.ftc.teamcode.pedro.localizers;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.DEBUG;
-import static org.firstinspires.ftc.teamcode.Utils.lerp;
-import static org.firstinspires.ftc.teamcode.Utils.pose3DToPose;
 import static org.firstinspires.ftc.teamcode.constants.LocalizationConstants.LERP_END_WEIGHT;
 import static org.firstinspires.ftc.teamcode.constants.LocalizationConstants.LERP_START;
 import static org.firstinspires.ftc.teamcode.constants.LocalizationConstants.MAX_AMBIGUITY;
@@ -12,6 +9,9 @@ import static org.firstinspires.ftc.teamcode.constants.LocalizationConstants.MAX
 import static org.firstinspires.ftc.teamcode.constants.LocalizationConstants.MAX_DIST;
 import static org.firstinspires.ftc.teamcode.constants.LocalizationConstants.MAX_LIN_VEL;
 import static org.firstinspires.ftc.teamcode.constants.LocalizationConstants.MAX_TAG_DISTANCE;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.DEBUG;
+import static org.firstinspires.ftc.teamcode.utils.Utils.lerp;
+import static org.firstinspires.ftc.teamcode.utils.Utils.pose3DToPose;
 import static java.lang.Math.abs;
 import static java.lang.Math.clamp;
 import static java.lang.Math.hypot;
@@ -37,11 +37,12 @@ import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.enums.Hive;
 import org.firstinspires.ftc.teamcode.enums.HivePosition;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Limelight;
+import org.firstinspires.ftc.teamcode.utils.LLUtils;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 
 import java.util.Locale;
 

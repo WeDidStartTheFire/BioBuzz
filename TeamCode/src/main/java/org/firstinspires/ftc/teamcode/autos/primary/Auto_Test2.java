@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.autos.primary;
 
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.INFO;
 
 import com.pedropathing.api.Paths;
 import com.pedropathing.api.PoseFactory;

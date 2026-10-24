@@ -123,6 +123,9 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
     public final void loop() {
         pathUpdate();
         Scheduler.execute();
+
+        robot.readSensors();
+        robot.think();
         robot.update();
 
         tm.drawRobot(robot.drivetrain.follower);

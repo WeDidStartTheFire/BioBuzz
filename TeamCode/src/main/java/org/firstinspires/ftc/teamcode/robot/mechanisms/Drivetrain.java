@@ -239,11 +239,20 @@ public class Drivetrain implements Subsystem, PoseGetter {
     }
 
     @Override
-    public void update() {
+    public void readSensors() {
+
+    }
+
+    @Override
+    public void think() {
         if (follower == null) return;
         follower.update();
         pose = follower.pose();
         vel = follower.velocity();
+    }
+
+    @Override
+    public void update() {
         if (isMotorDisconnected()) return;
         lf.setVelocity(lfPower);
         lb.setVelocity(lbPower);

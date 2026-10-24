@@ -30,7 +30,6 @@ import static java.lang.Math.toDegrees;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.math.Pose;
 import com.pedropathing.math.Velocity;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -182,8 +181,17 @@ public class Turret implements Subsystem {
     }
 
     @Override
-    public void update() {
+    public void readSensors() {
+
+    }
+
+    @Override
+    public void think() {
         update(true);
+    }
+
+    @Override
+    public void update() {
         if (turretMotor != null)
             turretMotor.setPower(Math.clamp(power, -TURRET_MAX_POWER * modifier, TURRET_MAX_POWER * modifier));
     }

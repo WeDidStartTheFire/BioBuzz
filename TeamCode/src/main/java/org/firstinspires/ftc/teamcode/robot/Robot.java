@@ -74,6 +74,16 @@ public class Robot implements Subsystem {
     }
 
     @Override
+    public void readSensors() {
+        for (Subsystem subsystem : subsystems) subsystem.readSensors();
+    }
+
+    @Override
+    public void think() {
+        for (Subsystem subsystem : subsystems) subsystem.think();
+    }
+
+    @Override
     public void update() {
         updateBulkCache();
         for (Subsystem subsystem : subsystems) subsystem.update();

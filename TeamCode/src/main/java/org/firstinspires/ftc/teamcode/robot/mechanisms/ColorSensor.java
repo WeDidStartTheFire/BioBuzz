@@ -106,6 +106,16 @@ public class ColorSensor implements Subsystem {
     }
 
     @Override
+    public void readSensors() {
+
+    }
+
+    @Override
+    public void think() {
+
+    }
+
+    @Override
     public void update() {
 
     }

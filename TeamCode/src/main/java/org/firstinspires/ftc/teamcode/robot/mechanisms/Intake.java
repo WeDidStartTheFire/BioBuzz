@@ -5,7 +5,6 @@ import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_MOTOR;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_SERVO_A;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_SERVO_B;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_SERVO_C;
-import static java.lang.Math.abs;
 
 import androidx.annotation.Nullable;
 
@@ -47,7 +46,12 @@ public class Intake implements Subsystem {
     }
 
     @Override
-    public void update() {
+    public void readSensors() {
+
+    }
+
+    @Override
+    public void think() {
         switch (behavior) {
             case OFF:
                 insidePower = 0;
@@ -64,6 +68,10 @@ public class Intake implements Subsystem {
                 outsidePower = 1;
                 break;
         }
+    }
+
+    @Override
+    public void update() {
         if (intakeMotor != null) intakeMotor.setPower(outsidePower);
         if (intakeServoB != null) intakeServoB.setPower(outsidePower);
         if (intakeServoA != null) intakeServoA.setPower(insidePower);

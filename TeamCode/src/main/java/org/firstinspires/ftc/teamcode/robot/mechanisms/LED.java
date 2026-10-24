@@ -40,6 +40,16 @@ public class LED implements Subsystem {
         this.color = color.position();
     }
 
+    @Override
+    public void readSensors() {
+
+    }
+
+    @Override
+    public void think() {
+
+    }
+
     /**
      * Shows the highest and most recent color that has been set since last update
      */

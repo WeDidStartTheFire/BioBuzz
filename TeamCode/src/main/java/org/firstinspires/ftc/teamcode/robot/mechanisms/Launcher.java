@@ -119,9 +119,7 @@ public class Launcher implements Subsystem {
         pidController.updateFeedForwardInput(goalVel);
         pidController.updatePosition(motorVel);
         double voltage = Math.max(voltageSensor.getVoltage(), 1e-6);
-        double power = pidController.calculate() * 12.0 / voltage;
-        if (launcherMotorA != null) launcherMotorA.setPower(power);
-        if (launcherMotorB != null) launcherMotorB.setPower(power);
+        power = pidController.calculate() * 12.0 / voltage;
     }
 
     /**
@@ -168,6 +166,16 @@ public class Launcher implements Subsystem {
     public boolean overSpeed(double vel) {
         double motorVel = getGoalVel();
         return vel > motorVel + 50;
+    }
+
+    @Override
+    public void readSensors() {
+
+    }
+
+    @Override
+    public void think() {
+
     }
 
     @Override

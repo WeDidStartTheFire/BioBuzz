@@ -2,7 +2,11 @@ package org.firstinspires.ftc.teamcode.pedro.localizers;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.normalizeRadians;
-import static org.firstinspires.ftc.teamcode.Utils.pose3DToPose;
+import static org.firstinspires.ftc.teamcode.constants.LocalizationConstants.MAX_ANG_VEL;
+import static org.firstinspires.ftc.teamcode.constants.LocalizationConstants.MAX_DIST;
+import static org.firstinspires.ftc.teamcode.constants.LocalizationConstants.MAX_LIN_VEL;
+import static org.firstinspires.ftc.teamcode.constants.LocalizationConstants.MAX_TAG_DISTANCE;
+import static org.firstinspires.ftc.teamcode.utils.Utils.pose3DToPose;
 import static java.lang.Math.abs;
 import static java.lang.Math.clamp;
 import static java.lang.Math.hypot;
@@ -25,11 +29,11 @@ import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-import org.firstinspires.ftc.teamcode.Utils;
 import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.enums.Hive;
 import org.firstinspires.ftc.teamcode.enums.HivePosition;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Limelight;
+import org.firstinspires.ftc.teamcode.utils.Utils;
 
 @Configurable
 public class ComplementaryLocalizer implements Localizer {
@@ -43,8 +47,10 @@ public class ComplementaryLocalizer implements Localizer {
     private final Localizer relativeLocalizer;
     private boolean invalidPose = false;
     private int currentPipeline;
-    public static double linAlpha = .97;
-    public static double angAlpha = .999;
+    public static double MAX_TAG_ALPHA_REDUCTION = 4;
+    public static double MIN_MT2_LIN_ALPHA = .95;
+    public static double MIN_MT1_LIN_ALPHA = .97;
+    public static double ANG_ALPHA = .999;
 
     public ComplementaryLocalizer(HardwareMap map, OTOSConfig config) {
         this(map, null, config);
@@ -83,8 +89,6 @@ public class ComplementaryLocalizer implements Localizer {
     public void update() {
         relativeLocalizer.update();
 
-        double yawRate = relativeLocalizer.velocity().omega; // imu.getRobotAngularVelocity(RADIANS).zRotationRate;
-
         Pose relPose = relativeLocalizer.pose();
         Pose relPoseDelta = relPose.minus(prevRelPose);
         prevRelPose = relPose;
@@ -99,54 +103,52 @@ public class ComplementaryLocalizer implements Localizer {
 
         LLResult result = limelight.getLatestResult();
 
+        if (result == null || !result.isValid() || abs(vel.omega) > MAX_ANG_VEL ||
+                hypot(vel.vx, vel.vy) > MAX_LIN_VEL || result.getBotposeTagCount() <= 0) return;
+
         Pose LLPose = null;
         boolean useMetaTag2 = false;
         int tagsCounted = 0;
-        if (result != null && result.isValid()) {
-            if (hivesMatchFMap()) {
-                Pose3D botpose = result.getBotpose_MT2();
-
-                if (result.getBotposeTagCount() > 0 && abs(yawRate) < toRadians(360) && hypot(vel.vx, vel.vy) < 7) {
-                    double angle = result.getBotpose().getOrientation().getYaw(DEGREES) - 90;
-                    if (angle < 0) angle += 360;
-                    LLPose = pose3DToPose(botpose).withHeading(toRadians(angle));
+        if (hivesMatchFMap()) {
+            Pose3D botpose = result.getBotpose_MT2();
+            double angle = result.getBotpose().getOrientation().getYaw(DEGREES) - 90;
+            if (angle < 0) angle += 360;
+            LLPose = pose3DToPose(botpose).withHeading(toRadians(angle));
+            useMetaTag2 = true;
+        } else {
+            Pose totalPos = Pose.zero();
+            for (LLResultTypes.FiducialResult fiducial : result.getFiducialResults()) {
+                Pose botpose = pose3DToPose(fiducial.getRobotPoseFieldSpace());
+                double distance =
+                        pose3DToPose(fiducial.getTargetPoseCameraSpace()).distance(Pose.zero());
+                if (tagMatchesFMap(fiducial) && botpose.distance(pose) < MAX_DIST &&
+                        distance < MAX_TAG_DISTANCE) {
+                    totalPos = totalPos.plus(botpose);
+                    tagsCounted++;
                 }
-                useMetaTag2 = true;
-            } else {
-                Pose totalPos = Pose.zero();
-                for (LLResultTypes.FiducialResult fiducial : result.getFiducialResults()) {
-                    if (tagMatchesFMap(fiducial)) {
-                        Pose botpose = pose3DToPose(fiducial.getRobotPoseFieldSpace());
-                        if (botpose.distance(pose) < 12) {
-                            totalPos = totalPos.plus(botpose);
-                            tagsCounted++;
-                        }
-                    }
-                }
-                if (tagsCounted > 0) {
-                    totalPos = totalPos.div(tagsCounted);
-                    LLPose = totalPos;
-                }
+            }
+            if (tagsCounted > 0) {
+                totalPos = totalPos.div(tagsCounted);
+                LLPose = totalPos;
             }
         }
 
-        if (LLPose != null) {
-            if (invalidPose) {
-                Pose3D botpose = result.getBotpose();
-                if (result.getBotposeTagCount() > 0 && abs(yawRate) < toRadians(360) && hypot(vel.vx, vel.vy) < 7) {
-                    invalidPose = false;
-                    LLPose = pose3DToPose(botpose);
-                    setPose(LLPose);
-                }
-                return;
-            }
-            linAlpha = useMetaTag2 ? clamp(Utils.lerp(sqrt(result.getBotposeTagCount() / 4.0), 1, .95), .95, 1) :
-                    clamp(Utils.lerp(sqrt(tagsCounted / 4.0), 1, .97), .97, 1);
-            pose = new Pose(LLPose.x() * (1 - linAlpha) + pose.x() * linAlpha,
-                    LLPose.y() * (1 - linAlpha) + pose.y() * linAlpha,
-                    normalizeRadians(LLPose.heading() + angAlpha
-                            * normalizeRadians(pose.heading() - LLPose.heading())));
+        if (LLPose == null) return;
+        if (invalidPose) {
+            Pose3D botpose = result.getBotpose();
+            LLPose = useMetaTag2 ? pose3DToPose(botpose) : LLPose;
+            setPose(LLPose);
+            return;
         }
+        double linAlpha = useMetaTag2 ?
+                clamp(Utils.lerp(sqrt(result.getBotposeTagCount() / MAX_TAG_ALPHA_REDUCTION), 1,
+                        MIN_MT2_LIN_ALPHA), MIN_MT2_LIN_ALPHA, 1) :
+                clamp(Utils.lerp(sqrt(tagsCounted / MAX_TAG_ALPHA_REDUCTION), 1,
+                        MIN_MT1_LIN_ALPHA), MIN_MT1_LIN_ALPHA, 1);
+        pose = new Pose(LLPose.x() * (1 - linAlpha) + pose.x() * linAlpha,
+                LLPose.y() * (1 - linAlpha) + pose.y() * linAlpha,
+                normalizeRadians(LLPose.heading() + ANG_ALPHA
+                        * normalizeRadians(pose.heading() - LLPose.heading())));
     }
 
     @Override

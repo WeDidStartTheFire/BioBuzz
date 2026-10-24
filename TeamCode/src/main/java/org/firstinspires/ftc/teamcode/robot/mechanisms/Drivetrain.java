@@ -7,13 +7,13 @@ import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.FLOAT;
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.CRITICAL;
 import static org.firstinspires.ftc.teamcode.constants.DrivetrainConstants.IMU_PARAMS;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.DRIVETRAIN_LEFT_BACK_MOTOR;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.DRIVETRAIN_LEFT_FRONT_MOTOR;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.DRIVETRAIN_RIGHT_BACK_MOTOR;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.DRIVETRAIN_RIGHT_FRONT_MOTOR;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.SPARKFUN_OTOS;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.ErrorLevel.CRITICAL;
 
 import androidx.annotation.Nullable;
 
@@ -31,11 +31,11 @@ import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.MatchContext;
 import org.firstinspires.ftc.teamcode.PoseGetter;
-import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.enums.Hardware;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 import org.firstinspires.ftc.teamcode.robot.Subsystem;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 
 public class Drivetrain implements Subsystem, PoseGetter {
     private final DcMotorEx lf, lb, rf, rb;
@@ -68,13 +68,6 @@ public class Drivetrain implements Subsystem, PoseGetter {
      */
     public void useLimelightFollower() {
         follower = Constants.createLimelightFollower(hardwareMap);
-    }
-
-    /**
-     * Configures the drivetrain to use Limelight localization.
-     */
-    public void useRedundantFollower() {
-        follower = Constants.createRedundantFollower(hardwareMap);
     }
 
     /**

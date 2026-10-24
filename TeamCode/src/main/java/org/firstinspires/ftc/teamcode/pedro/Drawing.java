@@ -48,8 +48,6 @@ public class Drawing {
             drawRobot(follower.closestPose(), robotLook);
         }
         drawRobot(follower.pose(), historyLook);
-
-        sendPacket();
     }
 
     /**
@@ -60,9 +58,8 @@ public class Drawing {
      * @param style the parameters used to draw the robot with
      */
     public static void drawRobot(Pose pose, Style style) {
-        if (pose == null || Double.isNaN(pose.x()) || Double.isNaN(pose.y()) || Double.isNaN(pose.heading())) {
-            return;
-        }
+        if (pose == null || Double.isNaN(pose.x()) || Double.isNaN(pose.y()) ||
+                Double.isNaN(pose.heading())) return;
 
         panelsField.setStyle(style);
         panelsField.moveCursor(pose.x(), pose.y());

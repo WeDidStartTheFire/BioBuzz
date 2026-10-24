@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.DEBUG;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.VERBOSE;
 import static org.firstinspires.ftc.teamcode.constants.TurretConstants.MAX_TIMES_NOT_RESET;
 import static org.firstinspires.ftc.teamcode.constants.TurretConstants.TURRET_ADJUST_FOR_VOLTAGE;
 import static org.firstinspires.ftc.teamcode.constants.TurretConstants.TURRET_ENCODERS_PER_DEGREE;
@@ -21,6 +18,9 @@ import static org.firstinspires.ftc.teamcode.constants.TurretConstants.turretMot
 import static org.firstinspires.ftc.teamcode.constants.TurretConstants.turretVelocityPID;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.TURRET_MOTOR;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.TURRET_TOUCH_SENSOR;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.DEBUG;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.INFO;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.VERBOSE;
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -40,10 +40,10 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.PoseGetter;
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
-import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.pedro.controllers.PIDFController;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 import org.firstinspires.ftc.teamcode.robot.Subsystem;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 
 public class Turret implements Subsystem {
     public static boolean panelsResetTurret = false;
@@ -60,7 +60,7 @@ public class Turret implements Subsystem {
     private int timesNotReset = 0;
     private boolean reset = false;
     private final @NonNull PoseGetter poseGetter;
-    private double power, modifier;
+    private double power;
 
     public enum Target {
         GOAL, NONE, HOLD, MANUAL
@@ -109,7 +109,7 @@ public class Turret implements Subsystem {
     public void rotateManual(double speed) {
         if (target == Target.MANUAL) {
             turretPIDController.setTarget(-turretPIDController.target() +
-                speed * TURRET_SPEED_MANUAL);
+                    speed * TURRET_SPEED_MANUAL);
             velocityPIDController.setTarget(TURRET_SPEED_MANUAL);
             return;
         }
@@ -145,7 +145,7 @@ public class Turret implements Subsystem {
         // side, so the "zero" on the touch sensor is always on the right side, and not changing
         // between the left and right sides
         if (turretTouchSensor != null && turretTouchSensor.isPressed() && motorVel < 50 &&
-            (canReset || !reset))
+                (canReset || !reset))
             resetEncoder();
 
         if (!reset) timesNotReset++;
@@ -176,8 +176,9 @@ public class Turret implements Subsystem {
         if (USE_TURRET_VELOCITY_PID) pid += velocityPIDController.calculate();
         double staticFeedforward = TURRET_STATIC_FEEDFORWARD * signum(pid);
         power = pid + feedforward + staticFeedforward;
-        modifier = TURRET_ADJUST_FOR_VOLTAGE ? 12 / max(voltageSensor.getVoltage(), 1e-6) : 1;
+        double modifier = TURRET_ADJUST_FOR_VOLTAGE ? 12 / max(voltageSensor.getVoltage(), 1e-6) : 1;
         power *= modifier;
+        power = Math.clamp(power, -TURRET_MAX_POWER * modifier, TURRET_MAX_POWER * modifier);
     }
 
     @Override
@@ -192,8 +193,7 @@ public class Turret implements Subsystem {
 
     @Override
     public void update() {
-        if (turretMotor != null)
-            turretMotor.setPower(Math.clamp(power, -TURRET_MAX_POWER * modifier, TURRET_MAX_POWER * modifier));
+        if (turretMotor != null) turretMotor.setPower(power);
     }
 
     /**
@@ -214,9 +214,9 @@ public class Turret implements Subsystem {
     private void setRobotCentricAngle(double angle) {
         if (turretMotor == null) return;
         turretPIDController.setTarget(
-            Math.clamp((int) (normalizeAngle(toDegrees(angle) + TURRET_OFFSET)
-                    * TURRET_ENCODERS_PER_DEGREE + offset - TURRET_TS_OFFSET_ENC),
-                TURRET_MIN_POS, TURRET_MAX_POS));
+                Math.clamp((int) (normalizeAngle(toDegrees(angle) + TURRET_OFFSET)
+                                * TURRET_ENCODERS_PER_DEGREE + offset - TURRET_TS_OFFSET_ENC),
+                        TURRET_MIN_POS, TURRET_MAX_POS));
     }
 
     private double normalizeAngle(double angle) {
@@ -224,7 +224,7 @@ public class Turret implements Subsystem {
         // turret snaps to the closest point it's able to reach. This means the +/-180° wraparound
         // is in the middle of the deadzone and technically has different numbers (e.g. +210, -150)
         double rangeStart = TURRET_MIN_POS / TURRET_ENCODERS_PER_DEGREE -
-            (360 - (TURRET_MAX_POS - TURRET_MIN_POS) / TURRET_ENCODERS_PER_DEGREE) / 2;
+                (360 - (TURRET_MAX_POS - TURRET_MIN_POS) / TURRET_ENCODERS_PER_DEGREE) / 2;
         return normalizeAngle(angle, rangeStart);
     }
 

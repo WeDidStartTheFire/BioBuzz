@@ -1,10 +1,10 @@
 package org.firstinspires.ftc.teamcode.autos;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.AUTO;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.DEBUG;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.VERBOSE;
-import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.DEBUG;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.INFO;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.VERBOSE;
+import static org.firstinspires.ftc.teamcode.utils.Utils.saveOdometryPosition;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Command;
@@ -13,12 +13,12 @@ import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.MatchContext;
-import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.autos.paths.AutoPaths;
 import org.firstinspires.ftc.teamcode.controllers.IntakeController;
 import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 
 public abstract class BaseAuto2<T extends AutoPaths> extends OpMode {
     protected Robot robot;
@@ -59,7 +59,8 @@ public abstract class BaseAuto2<T extends AutoPaths> extends OpMode {
      *                       prepended to the name (e.g. "Auto" -> "🟥Red🟥 Auto").
      * @see configure()
      */
-    protected void configure(Class<T> pathsClass, Color color, String name, boolean addColorToName) {
+    protected void configure(Class<T> pathsClass, Color color, String name,
+                             boolean addColorToName) {
         this.paths = AutoPaths.get(pathsClass, color);
         this.color = color;
         this.name = addColorToName ? color + name : name;
@@ -97,7 +98,7 @@ public abstract class BaseAuto2<T extends AutoPaths> extends OpMode {
         follower = robot.drivetrain.follower;
         follower.setPose(paths.start());
         tm = robot.tm();
-        intakeController = new IntakeController(robot, robot.intake, tm);
+        intakeController = new IntakeController(robot.intake, tm);
         tm.print(name + " auto initialized", INFO);
         tm.update();
         robot.initBulkCache();

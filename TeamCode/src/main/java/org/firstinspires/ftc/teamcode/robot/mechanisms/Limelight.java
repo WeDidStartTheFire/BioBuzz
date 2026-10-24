@@ -4,23 +4,27 @@ import static org.firstinspires.ftc.teamcode.enums.Hardware.LIMELIGHT;
 
 import androidx.annotation.Nullable;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.enums.Hive;
 import org.firstinspires.ftc.teamcode.enums.HivePosition;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 import org.firstinspires.ftc.teamcode.robot.Subsystem;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 
 import java.util.List;
 
+@Configurable
 public class Limelight implements Subsystem {
 
     public final @Nullable Limelight3A limelight;
+    public static double HIVE_UP_MIN_HEIGHT = -1.20;
+    public static double HIVE_DOWN_MAX_HEIGHT = -0.91;
 
     public Limelight(HardwareMap hardwareMap, @Nullable TelemetryUtils tm) {
         limelight = HardwareInitializer.init(hardwareMap, tm, LIMELIGHT);
@@ -46,7 +50,6 @@ public class Limelight implements Subsystem {
 
     @Override
     public void update() {
-        // Nothing much to update.
     }
 
     /**
@@ -93,16 +96,16 @@ public class Limelight implements Subsystem {
         if (alliance == Color.BLUE) {
             HivePosition positionAccordingToAudience = HivePosition.TRANSITIONING;
             HivePosition positionAccordingToStage = HivePosition.TRANSITIONING;
-            if (getAverageHiveY(Hive.BLUE_AUDIENCE) <= -1.20)
+            if (getAverageHiveY(Hive.BLUE_AUDIENCE) <= HIVE_UP_MIN_HEIGHT)
                 positionAccordingToAudience = HivePosition.AUDIENCE;
-            else if (getAverageHiveY(Hive.BLUE_AUDIENCE) >= -.91)
+            else if (getAverageHiveY(Hive.BLUE_AUDIENCE) >= HIVE_DOWN_MAX_HEIGHT)
                 positionAccordingToAudience = HivePosition.STAGE;
             else if (Double.isNaN(getAverageHiveY(Hive.BLUE_AUDIENCE)))
                 positionAccordingToAudience = HivePosition.UNKNOWN;
 
-            if (getAverageHiveY(Hive.BLUE_STAGE) <= -1.20)
+            if (getAverageHiveY(Hive.BLUE_STAGE) <= HIVE_UP_MIN_HEIGHT)
                 positionAccordingToStage = HivePosition.STAGE;
-            else if (getAverageHiveY(Hive.BLUE_STAGE) >= -.91)
+            else if (getAverageHiveY(Hive.BLUE_STAGE) >= HIVE_DOWN_MAX_HEIGHT)
                 positionAccordingToStage = HivePosition.AUDIENCE;
             else if (Double.isNaN(getAverageHiveY(Hive.BLUE_STAGE)))
                 positionAccordingToStage = HivePosition.UNKNOWN;
@@ -119,16 +122,16 @@ public class Limelight implements Subsystem {
         if (alliance == Color.RED) {
             HivePosition positionAccordingToAudience = HivePosition.TRANSITIONING;
             HivePosition positionAccordingToStage = HivePosition.TRANSITIONING;
-            if (getAverageHiveY(Hive.RED_AUDIENCE) <= -1.20)
+            if (getAverageHiveY(Hive.RED_AUDIENCE) <= HIVE_UP_MIN_HEIGHT)
                 positionAccordingToAudience = HivePosition.AUDIENCE;
-            else if (getAverageHiveY(Hive.RED_AUDIENCE) >= -.91)
+            else if (getAverageHiveY(Hive.RED_AUDIENCE) >= HIVE_DOWN_MAX_HEIGHT)
                 positionAccordingToAudience = HivePosition.STAGE;
             else if (Double.isNaN(getAverageHiveY(Hive.RED_AUDIENCE)))
                 positionAccordingToAudience = HivePosition.UNKNOWN;
 
-            if (getAverageHiveY(Hive.RED_STAGE) <= -1.20)
+            if (getAverageHiveY(Hive.RED_STAGE) <= HIVE_UP_MIN_HEIGHT)
                 positionAccordingToStage = HivePosition.STAGE;
-            else if (getAverageHiveY(Hive.RED_STAGE) >= -.91)
+            else if (getAverageHiveY(Hive.RED_STAGE) >= HIVE_DOWN_MAX_HEIGHT)
                 positionAccordingToStage = HivePosition.AUDIENCE;
             else if (Double.isNaN(getAverageHiveY(Hive.RED_STAGE)))
                 positionAccordingToStage = HivePosition.UNKNOWN;

@@ -1,12 +1,12 @@
 package org.firstinspires.ftc.teamcode.utilities;
 
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.INFO;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Utility;
 
-import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.enums.RobotEnvironment;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 
 @Utility(name = "Set Competition Environment (for Telemetry)")
 public class SetEnvironment extends OpMode {

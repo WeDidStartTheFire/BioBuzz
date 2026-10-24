@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode.teleops.tests;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.VERBOSE;
-import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.VERBOSE;
+import static org.firstinspires.ftc.teamcode.utils.Utils.loadOdometryPosition;
 
 import com.pedropathing.math.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
@@ -10,10 +10,10 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.MatchContext;
-import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 
 @TeleOp(name = "Limelight Test", group = "Test")
 public class Test_Limelight extends OpMode {

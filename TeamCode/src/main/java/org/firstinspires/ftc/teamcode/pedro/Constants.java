@@ -16,6 +16,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.pedro.localizers.ComplementaryLocalizer;
+import org.firstinspires.ftc.teamcode.pedro.localizers.KalmanLocalizer;
 import org.firstinspires.ftc.teamcode.pedro.localizers.LimelightLocalizer;
 
 public class Constants {
@@ -81,7 +82,11 @@ public class Constants {
     }
 
     public static Follower createKalmanFollower(HardwareMap h) {
-        return null;
+        return new Follower(
+                new KalmanLocalizer(h, localizerConfig),
+                new Mecanum(h, drivetrainConfig),
+                new Foresight(foresightConfig)
+        );
     }
 
     public static Follower createLimelightFollower(HardwareMap h) {
@@ -90,9 +95,5 @@ public class Constants {
                 new Mecanum(h, drivetrainConfig),
                 new Foresight(foresightConfig)
         );
-    }
-
-    public static Follower createRedundantFollower(HardwareMap h) {
-        return null;
     }
 }

@@ -2,8 +2,13 @@ package org.firstinspires.ftc.teamcode.pedro.localizers;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
-import static org.firstinspires.ftc.teamcode.Utils.pose3DToPose;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
 import static org.firstinspires.ftc.teamcode.constants.DrivetrainConstants.IMU_PARAMS;
+import static org.firstinspires.ftc.teamcode.constants.LocalizationConstants.MAX_ANG_VEL;
+import static org.firstinspires.ftc.teamcode.constants.LocalizationConstants.MAX_LIN_VEL;
+import static org.firstinspires.ftc.teamcode.constants.LocalizationConstants.MAX_TAG_DISTANCE;
+import static org.firstinspires.ftc.teamcode.utils.Utils.pose3DToPose;
 import static java.lang.Math.abs;
 import static java.lang.Math.hypot;
 import static java.lang.Math.toDegrees;
@@ -18,7 +23,6 @@ import com.pedropathing.math.Pose;
 import com.pedropathing.math.Velocity;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
@@ -37,8 +41,10 @@ public class LimelightLocalizer implements Localizer {
     @NonNull
     private Pose pose;
     @NonNull
-    private final Velocity vel;
+    private Velocity vel;
     private int currentPipeline;
+    private long lastUpdate;
+    private double imuOffset;
 
     public LimelightLocalizer(HardwareMap map) {
         this(map, null);
@@ -47,9 +53,6 @@ public class LimelightLocalizer implements Localizer {
     public LimelightLocalizer(@NonNull HardwareMap map, @Nullable Pose startPose) {
         imu = HardwareInitializer.init(map, null, Hardware.IMU);
         if (imu != null) {
-            imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
-                    RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-                    RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
             if (!imu.initialize(IMU_PARAMS))
                 throw new RuntimeException("IMU initialization failed");
             imu.resetYaw();
@@ -63,12 +66,14 @@ public class LimelightLocalizer implements Localizer {
         limelight.start();
         if (startPose == null) startPose = Pose.zero();
 
-        vel = Velocity.zero();
-        pose = startPose;
+        setPose(startPose);
     }
 
     public void setPose(@NonNull Pose setPose) {
+        vel = Velocity.zero();
         pose = setPose;
+        imuOffset = pose.heading() - (imu == null ? 0 :
+                imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle);
     }
 
     @Override
@@ -80,42 +85,48 @@ public class LimelightLocalizer implements Localizer {
         if (limelight.limelight == null) return;
 
         double yawRate = imu == null ? 0 : imu.getRobotAngularVelocity(RADIANS).zRotationRate;
+        double yaw = imu == null ? 0 :
+                imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle + imuOffset;
 
         switchLimelightPipeline();
-
-        limelight.limelight.updateRobotOrientation(toDegrees(pose.heading()) + 90);
-
+        limelight.limelight.updateRobotOrientation(toDegrees(yaw) + 90);
         LLResult result = limelight.getLatestResult();
+
+        if (result == null || !result.isValid() || abs(yawRate) > MAX_ANG_VEL ||
+                hypot(vel.vx, vel.vy) > MAX_LIN_VEL || result.getBotposeTagCount() <= 0) return;
+
 
         Pose LLPose = null;
         int tagsCounted = 0;
-        if (result != null && result.isValid()) {
-            if (hivesMatchFMap()) {
-                Pose3D botpose = result.getBotpose_MT2();
-
-                if (result.getBotposeTagCount() > 0 && abs(yawRate) < toRadians(360) && hypot(vel.vx, vel.vy) < 7) {
-                    double angle = result.getBotpose().getOrientation().getYaw(DEGREES) - 90;
-                    if (angle < 0) angle += 360;
-                    LLPose = pose3DToPose(botpose).withHeading(toRadians(angle));
-                }
-            } else {
-                Pose totalPos = Pose.zero();
-                for (LLResultTypes.FiducialResult fiducial : result.getFiducialResults()) {
-                    if (tagMatchesFMap(fiducial)) {
-                        Pose botpose = pose3DToPose(fiducial.getRobotPoseFieldSpace());
-                        if (botpose.distance(pose) < 12) {
-                            totalPos = totalPos.plus(botpose);
-                            tagsCounted++;
-                        }
-                    }
-                }
-                if (tagsCounted > 0) {
-                    totalPos = totalPos.div(tagsCounted);
-                    LLPose = totalPos;
+        if (hivesMatchFMap()) {
+            Pose3D botpose = result.getBotpose_MT2();
+            double angle = result.getBotpose().getOrientation().getYaw(DEGREES) - 90;
+            if (angle < 0) angle += 360;
+            LLPose = pose3DToPose(botpose).withHeading(toRadians(angle));
+        } else {
+            Pose totalPos = Pose.zero();
+            for (LLResultTypes.FiducialResult fiducial : result.getFiducialResults()) {
+                Pose botpose = pose3DToPose(fiducial.getRobotPoseFieldSpace());
+                double distance =
+                        pose3DToPose(fiducial.getTargetPoseCameraSpace()).distance(Pose.zero());
+                if (tagMatchesFMap(fiducial) && botpose.distance(pose) < 12 &&
+                        distance < MAX_TAG_DISTANCE) {
+                    totalPos = totalPos.plus(botpose);
+                    tagsCounted++;
                 }
             }
+            if (tagsCounted > 0) {
+                totalPos = totalPos.div(tagsCounted);
+                LLPose = totalPos;
+            }
         }
-        if (LLPose != null) pose = LLPose;
+
+        if (LLPose == null) return;
+        double dt = (result.getControlHubTimeStampNanos() - lastUpdate) / 1e9;
+        Pose dPose = LLPose.minus(pose);
+        pose = LLPose;
+        vel = new Velocity(dPose.x() / dt, dPose.y() / dt, dPose.heading() / dt);
+        lastUpdate = result.getControlHubTimeStampNanos();
     }
 
     @Override

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.utils;
 
 import static java.lang.Math.min;
 import static java.lang.Math.round;
@@ -13,6 +13,7 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.LogEntry;
 import org.firstinspires.ftc.teamcode.enums.RobotEnvironment;
 import org.firstinspires.ftc.teamcode.pedro.Drawing;
 
@@ -24,7 +25,7 @@ public class TelemetryUtils {
     private final Telemetry telemetry;
     private static final TelemetryManager telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
     private final ArrayList<LogEntry> log = new ArrayList<>();
-    private long lastDraw;
+    private long lastDrawUpdate;
     private final StringBuilder poseStringBuilder = new StringBuilder();
     /// Environment the robot is in. Is persistent between OpModes and resets to
     /// {@link RobotEnvironment#PRACTICE} on power cycle.
@@ -175,7 +176,8 @@ public class TelemetryUtils {
         double h = round(toDegrees(pose.heading()) * 100) / 100.0;
 
         poseStringBuilder.setLength(0);
-        poseStringBuilder.append('(').append(x).append(", ").append(y).append(", ").append(h).append(')');
+        poseStringBuilder.append('(').append(x).append(", ").append(y).append(", ")
+                .append(h).append(')');
         print("Pose", poseStringBuilder.toString(), level);
     }
 
@@ -290,17 +292,57 @@ public class TelemetryUtils {
 
 
     /**
-     * Draws the robot in panels if enough time has passed since the last draw (time according to
-     * {@link RobotEnvironment#getPanelsTransmissionIntervalMs()}).
+     * Draws the robot in panels if enough time has passed since the last draw update (time
+     * according to {@link RobotEnvironment#getPanelsTransmissionIntervalMs()}).
      *
      * @param follower Follower object to retrieve pose history from
+     * @param update   Whether to update the Panels field
+     * @see #drawRobot(Follower)
+     * @see #drawRobot(Pose, boolean)
+     * @see RobotEnvironment
+     */
+    public void drawRobot(Follower follower, boolean update) {
+        if (environment == RobotEnvironment.COMPETITION || System.currentTimeMillis() - lastDrawUpdate <
+                environment.getPanelsTransmissionIntervalMs()) return;
+        lastDrawUpdate = System.currentTimeMillis();
+        Drawing.drawDebug(follower);
+        if (update) {
+            lastDrawUpdate = System.currentTimeMillis();
+            Drawing.sendPacket();
+        }
+    }
+
+    /**
+     * Draws the robot in panels if enough time has passed since the last draw update (time
+     * according to {@link RobotEnvironment#getPanelsTransmissionIntervalMs()}).
+     *
+     * @param follower Follower object to retrieve pose history from
+     * @see #drawRobot(Follower, boolean)
+     * @see #drawRobot(Pose, boolean)
      * @see RobotEnvironment
      */
     public void drawRobot(Follower follower) {
-        if (environment == RobotEnvironment.COMPETITION || System.currentTimeMillis() - lastDraw <
+        drawRobot(follower, true);
+    }
+
+    /**
+     * Draws the robot in panels if enough time has passed since the last draw update (time
+     * according to {@link RobotEnvironment#getPanelsTransmissionIntervalMs()}).
+     *
+     * @param pose   Posititon to draw the robot to
+     * @param update Whether to update the Panels field
+     * @see drawRobot(Follower)
+     * @see #drawRobot(Follower, boolean)
+     * @see RobotEnvironment
+     */
+    public void drawRobot(Pose pose, boolean update) {
+        if (environment == RobotEnvironment.COMPETITION || System.currentTimeMillis() - lastDrawUpdate <
                 environment.getPanelsTransmissionIntervalMs()) return;
-        lastDraw = System.currentTimeMillis();
-        Drawing.drawDebug(follower);
+        Drawing.drawRobot(pose, Drawing.robotLook);
+        if (update) {
+            lastDrawUpdate = System.currentTimeMillis();
+            Drawing.sendPacket();
+        }
     }
 
     /**

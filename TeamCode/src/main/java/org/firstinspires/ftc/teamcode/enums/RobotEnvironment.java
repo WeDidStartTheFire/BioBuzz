@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.enums;
 
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
+
 /**
  * Different environments the robot can be in. It currently affects telemetry transmission intervals
  * and what messages are displayed.
@@ -12,9 +14,9 @@ package org.firstinspires.ftc.teamcode.enums;
  *     <li> {@link RobotEnvironment#PRACTICE} is in between
  * </ul>
  *
- * @see org.firstinspires.ftc.teamcode.TelemetryUtils#setEnvironment(RobotEnvironment)
+ * @see TelemetryUtils#setEnvironment(RobotEnvironment)
  * {@code TelemetryUtils.setEnvironment(RobotEnvironment environment)}
- * @see org.firstinspires.ftc.teamcode.TelemetryUtils#setGlobalEnvironment(RobotEnvironment)
+ * @see TelemetryUtils#setGlobalEnvironment(RobotEnvironment)
  * {@code TelemetryUtils.setGlobalEnvironment(RobotEnvironment environment)}
  */
 public enum RobotEnvironment {

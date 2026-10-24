@@ -1,24 +1,24 @@
 package org.firstinspires.ftc.teamcode.controllers;
 
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.DEBUG;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.VERBOSE;
 import static org.firstinspires.ftc.teamcode.constants.Positions.BLUE_PARK;
 import static org.firstinspires.ftc.teamcode.constants.Positions.RED_PARK;
 import static org.firstinspires.ftc.teamcode.constants.ResetConstants.HARD_RESET_WAIT;
 import static org.firstinspires.ftc.teamcode.constants.ResetConstants.SOFT_RESET_WAIT;
 import static org.firstinspires.ftc.teamcode.enums.Color.BLUE;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.DEBUG;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.INFO;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.VERBOSE;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 import com.pedropathing.utils.Timer;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.enums.LEDColors;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.LED;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 
 import java.util.concurrent.TimeUnit;
 
@@ -48,7 +48,7 @@ public class TeleOpController {
         this.robot = robot;
         this.robot.initBulkCache();
         tm = robot.tm();
-        intakeController = new IntakeController(robot, robot.intake, tm);
+        intakeController = new IntakeController(robot.intake, tm);
         driveController = new DriveController(robot.drivetrain, robot.context());
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;

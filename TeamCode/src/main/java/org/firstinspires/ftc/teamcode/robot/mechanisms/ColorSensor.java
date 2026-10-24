@@ -12,9 +12,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 import org.firstinspires.ftc.teamcode.robot.Subsystem;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 import org.opencv.core.Scalar;
 
 public class ColorSensor implements Subsystem {
@@ -51,7 +51,8 @@ public class ColorSensor implements Subsystem {
         colorB = bothSensors || aLast ? getRGB_B() : colorB;
         aLast = !aLast;
         if (colorA != null && colorB != null)
-            return new Scalar((colorA.val[0] + colorB.val[0]) / 2, (colorA.val[1] + colorB.val[1]) / 2, (colorA.val[2] + colorB.val[2]) / 2);
+            return new Scalar((colorA.val[0] + colorB.val[0]) / 2,
+                    (colorA.val[1] + colorB.val[1]) / 2, (colorA.val[2] + colorB.val[2]) / 2);
         return colorA != null ? colorA : colorB;
     }
 

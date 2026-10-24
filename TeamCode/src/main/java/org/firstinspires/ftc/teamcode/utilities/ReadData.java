@@ -1,13 +1,13 @@
 package org.firstinspires.ftc.teamcode.utilities;
 
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.INFO;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Utility;
 
-import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -22,11 +22,13 @@ public class ReadData extends OpMode {
     private static int i = 0;
     private File dir;
     private File file;
+    private int prefixIndex = 0;
+    private final String[] prefixes = {"kalman_data_", "colors_"};
 
     @Override
     public void init() {
         dir = new File(hardwareMap.appContext.getFilesDir().toURI());
-        file = new File(dir, "colors_0.csv");
+        file = new File(dir, "kalman_data_0.csv");
         tm = new TelemetryUtils(telemetry);
         tm.print(file.getName(), INFO);
         tm.print(file.exists() ? "Exists" : "Does not exist", INFO);
@@ -35,16 +37,21 @@ public class ReadData extends OpMode {
 
     @Override
     public void init_loop() {
+        boolean updateFile = false;
+        if (gamepad1.aWasPressed()) {
+            prefixIndex = (prefixIndex + 1) % prefixes.length;
+            updateFile = true;
+        }
         if (gamepad1.dpadUpWasPressed()) {
             i++;
-            file = new File(dir, "colors_" + i + ".csv");
-            tm.print(file.getName(), INFO);
-            tm.print(file.exists() ? "Exists" : "Does not exist", INFO);
-            tm.update();
+            updateFile = true;
         }
         if (gamepad1.dpadDownWasPressed()) {
             i--;
-            file = new File(dir, "colors_" + i + ".csv");
+            updateFile = true;
+        }
+        if (updateFile) {
+            file = new File(dir, prefixes[prefixIndex] + i + ".csv");
             tm.print(file.getName(), INFO);
             tm.print(file.exists() ? "Exists" : "Does not exist", INFO);
             tm.update();
@@ -53,7 +60,7 @@ public class ReadData extends OpMode {
 
     @Override
     public void start() {
-        file = new File(dir, "colors_" + i + ".csv");
+        file = new File(dir, prefixes[prefixIndex] + i + ".csv");
         try {
             FileReader fr = new FileReader(file);
             BufferedReader br = new BufferedReader(fr);

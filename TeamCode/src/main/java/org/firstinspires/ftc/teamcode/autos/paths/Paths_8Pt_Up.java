@@ -28,7 +28,8 @@ public class Paths_8Pt_Up extends AutoPaths {
     public Path path1() {
         return curve(
                 poseFactory.of(81.400, 133.750, 0.0),
-                poseFactory.of(125.417, 89.124, 0.0),
+                poseFactory.of(113.972, 102.851, 0.0),
+                poseFactory.of(114.450, 103.486, 0.0),
                 poseFactory.of(126.500, 51.000, 0.0)
         ).linear(Math.toRadians(-90), Math.toRadians(180));
     }

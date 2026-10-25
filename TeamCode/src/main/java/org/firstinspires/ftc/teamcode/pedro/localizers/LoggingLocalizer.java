@@ -21,7 +21,6 @@ public abstract class LoggingLocalizer implements Localizer {
     protected String[] columns;
     @NonNull
     private final Map<Object, Object> log = new HashMap<>();
-    private boolean titlesPrinted;
 
     public void enableTelemetry(TelemetryUtils tm) {
         this.tm = tm;
@@ -29,10 +28,9 @@ public abstract class LoggingLocalizer implements Localizer {
 
     public void initializeLogging() {
         this.logging = true;
-        this.titlesPrinted = false;
     }
 
-    private String getHeader() {
+    public String getHeader() {
         StringBuilder header = new StringBuilder();
         for (String title : columns) header.append(title).append(',');
         return header.toString();
@@ -41,7 +39,6 @@ public abstract class LoggingLocalizer implements Localizer {
     public String getLog() {
         StringBuilder row = new StringBuilder();
         for (String title : columns) row.append(log.getOrDefault(title, "")).append(',');
-        if (!titlesPrinted) return getHeader() + row;
         return row.toString();
     }
 
@@ -69,5 +66,4 @@ public abstract class LoggingLocalizer implements Localizer {
     protected void resetLog() {
         log.clear();
     }
-
 }

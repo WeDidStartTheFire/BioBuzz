@@ -92,6 +92,14 @@ public class KalmanLocalizer extends LoggingLocalizer {
         fusionLocalizer.setStartPose(startPose);
     }
 
+    private void reinitialize(@NonNull Pose pose) {
+        fusionLocalizer = new FusionLocalizer(relativeLocalizer, MEASUREMENT_VARIANCE,
+                PROCESS_VARIANCE, MEASUREMENT_VARIANCE, BUFFER_SIZE);
+        fusionLocalizer.setStartPose(pose);
+        invalidPose = false;
+        lastMeasurmentTime = 0;
+    }
+
     public void setPose(@Nullable Pose setPose) {
         if (setPose == null) return;
         fusionLocalizer.setPose(setPose);
@@ -216,7 +224,7 @@ public class KalmanLocalizer extends LoggingLocalizer {
 
         if (LLPose == null) return;
         if (invalidPose && !logging && tm == null) {
-            setPose(LLPose);
+            reinitialize(LLPose);
             lastMeasurmentTime = result.getControlHubTimeStampNanos();
             return;
         }
@@ -240,7 +248,7 @@ public class KalmanLocalizer extends LoggingLocalizer {
         addLog("head var", hVar / ANG_VAR_SCALAR);
 
         if (invalidPose) {
-            setPose(LLPose);
+            reinitialize(LLPose);
             lastMeasurmentTime = result.getControlHubTimeStampNanos();
             return;
         }

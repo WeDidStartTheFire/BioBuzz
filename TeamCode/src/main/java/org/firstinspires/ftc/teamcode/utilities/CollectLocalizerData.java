@@ -104,6 +104,7 @@ public class CollectLocalizerData extends OpMode {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        addLine(bw, ((LoggingLocalizer) robot.drivetrain.follower.localizer).getHeader());
         teleop.start();
     }
 

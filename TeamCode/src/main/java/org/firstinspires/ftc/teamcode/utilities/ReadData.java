@@ -23,7 +23,8 @@ public class ReadData extends OpMode {
     private File dir;
     private File file;
     private int prefixIndex = 0;
-    private final String[] prefixes = {"kalman_data_", "colors_"};
+    private final String[] prefixes = {"kalman_data_", "complementary_data_", "limelight_data_",
+            "colors_"};
 
     @Override
     public void init() {

@@ -84,6 +84,7 @@ public class TeleOpController {
         }
         robot.turret.rotateManual(gamepad2.right_stick_x * .001 * ms);
         robot.turret.update(true);
+        updateIntake();
         tm.updateOnlyPanels(7);
     }
 

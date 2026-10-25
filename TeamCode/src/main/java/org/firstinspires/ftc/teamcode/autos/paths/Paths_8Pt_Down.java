@@ -29,7 +29,7 @@ public class Paths_8Pt_Down extends AutoPaths {
         return curve(
                 poseFactory.of(81.400, 10.250, 0.0),
                 poseFactory.of(75.325, 23.893, 0.0),
-                poseFactory.of(126.370, 21.000, 0.0)
+                poseFactory.of(128.370, 24.000, 0.0)
         ).constant(Math.toRadians(90));
     }
 }

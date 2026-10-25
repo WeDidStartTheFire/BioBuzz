@@ -53,7 +53,7 @@ public class KalmanLocalizer extends LoggingLocalizer {
     FusionLocalizer fusionLocalizer;
     private final Limelight limelight;
     public static Pose INITIAL_COVARIANCE = new Pose(.02, .02, toRadians(1) * toRadians(1));
-    public static Pose PROCESS_VARIANCE = new Pose(1, 1, 2.5e-6);
+    public static Pose PROCESS_VARIANCE = new Pose(0.2, 0.2, 1.1984518791e-5);
     private static final Pose MEASUREMENT_VARIANCE =
             new Pose(81, 81, toRadians(20) * toRadians(20));
     public static double MAX_MT2_LIN_VAR = 81;

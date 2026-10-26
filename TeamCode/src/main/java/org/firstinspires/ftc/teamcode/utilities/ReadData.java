@@ -41,6 +41,10 @@ public class ReadData extends OpMode {
             prefixIndex = (prefixIndex + 1) % prefixes.length;
             updateFile = true;
         }
+        if (gamepad1.bWasPressed()) {
+            prefixIndex = (prefixIndex + prefixes.length - 1) % prefixes.length;
+            updateFile = true;
+        }
         if (gamepad1.dpadUpWasPressed()) {
             i++;
             updateFile = true;

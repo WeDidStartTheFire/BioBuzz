@@ -143,8 +143,10 @@ public class KalmanLocalizer extends LoggingLocalizer {
         switchLimelightPipeline();
         limelight.limelight.updateRobotOrientation(toDegrees(pose.heading()) + 90);
         LLResult result = limelight.getLatestResult();
+        long resultTimestamp = result == null ? 0 : System.nanoTime() - 1_000_000L *
+                (System.currentTimeMillis() - result.getControlHubTimeStamp());
 
-        addLog("ll timestamp", result != null ? result.getControlHubTimeStampNanos() : 0);
+        addLog("ll timestamp", resultTimestamp);
         addLog("pipeline", currentPipeline);
         addLog("valid result", result != null && result.isValid());
         addLog("angular velocity", abs(vel.omega));
@@ -158,7 +160,7 @@ public class KalmanLocalizer extends LoggingLocalizer {
             return;
         }
 
-        if (tm == null && !logging && lastMeasurmentTime == result.getControlHubTimeStampNanos())
+        if (tm == null && !logging && lastMeasurmentTime == resultTimestamp)
             return;
 
         addLog("rejected", false);
@@ -225,7 +227,7 @@ public class KalmanLocalizer extends LoggingLocalizer {
         if (LLPose == null) return;
         if (invalidPose && !logging && tm == null) {
             reinitialize(LLPose);
-            lastMeasurmentTime = result.getControlHubTimeStampNanos();
+            lastMeasurmentTime = resultTimestamp;
             return;
         }
         addLog("ll pose", LLPose);
@@ -249,17 +251,17 @@ public class KalmanLocalizer extends LoggingLocalizer {
 
         if (invalidPose) {
             reinitialize(LLPose);
-            lastMeasurmentTime = result.getControlHubTimeStampNanos();
+            lastMeasurmentTime = resultTimestamp;
             return;
         }
-        if (result.getControlHubTimeStampNanos() == lastMeasurmentTime) return;
+        if (resultTimestamp == lastMeasurmentTime) return;
 
-        fusionLocalizer.addMeasurement(LLPose, result.getControlHubTimeStampNanos(),
+        fusionLocalizer.addMeasurement(LLPose, resultTimestamp,
                 USE_MEASUREMENT_VARIANCE ? new Pose(xVar, yVar, hVar) :
                         new Pose(linVar, linVar, angVar));
         addLog("corrected pose", fusionLocalizer.pose());
         addLog("corrected vel", fusionLocalizer.velocity());
-        lastMeasurmentTime = result.getControlHubTimeStampNanos();
+        lastMeasurmentTime = resultTimestamp;
     }
 
     @Override

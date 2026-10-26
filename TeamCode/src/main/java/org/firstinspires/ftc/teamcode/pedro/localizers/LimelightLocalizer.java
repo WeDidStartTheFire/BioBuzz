@@ -129,8 +129,10 @@ public class LimelightLocalizer extends LoggingLocalizer {
         switchLimelightPipeline();
         limelight.limelight.updateRobotOrientation(toDegrees(yaw) + 90);
         LLResult result = limelight.getLatestResult();
+        long resultTimestamp = result == null ? 0 : System.nanoTime() - 1_000_000L *
+                (System.currentTimeMillis() - result.getControlHubTimeStamp());
 
-        addLog("ll timestamp", result != null ? result.getControlHubTimeStampNanos() : 0);
+        addLog("ll timestamp", result != null ? resultTimestamp : 0);
         addLog("pipeline", currentPipeline);
         addLog("valid result", result != null && result.isValid());
         addLog("angular velocity", abs(vel.omega));
@@ -144,7 +146,7 @@ public class LimelightLocalizer extends LoggingLocalizer {
             return;
         }
 
-        if (tm == null && !logging && lastMeasurementTime == result.getControlHubTimeStampNanos())
+        if (tm == null && !logging && lastMeasurementTime == resultTimestamp)
             return;
 
         addLog("rejected", false);
@@ -209,12 +211,12 @@ public class LimelightLocalizer extends LoggingLocalizer {
         if (tm != null) tm.drawRobot(LLPose, false);
         if (invalidAngle) {
             setPose(LLPose);
-            lastMeasurementTime = result.getControlHubTimeStampNanos();
+            lastMeasurementTime = resultTimestamp;
             return;
         }
 
-        if (lastMeasurementTime == result.getControlHubTimeStampNanos()) return;
-        double dt = (result.getControlHubTimeStampNanos() - lastMeasurementTime) / 1e9;
+        if (lastMeasurementTime == resultTimestamp) return;
+        double dt = (resultTimestamp - lastMeasurementTime) / 1e9;
         Pose dPose = LLPose.minus(pose);
         Velocity tempVel = new Velocity(dPose.x() / dt, dPose.y() / dt, dPose.heading() / dt);
         if (hypot(tempVel.vx, tempVel.vy) > MAX_LIN_VEL) {
@@ -224,7 +226,7 @@ public class LimelightLocalizer extends LoggingLocalizer {
         }
         pose = LLPose;
         vel = tempVel;
-        lastMeasurementTime = result.getControlHubTimeStampNanos();
+        lastMeasurementTime = resultTimestamp;
     }
 
     @Override

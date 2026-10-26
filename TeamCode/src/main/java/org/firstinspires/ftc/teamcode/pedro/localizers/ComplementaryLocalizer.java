@@ -132,8 +132,10 @@ public class ComplementaryLocalizer extends LoggingLocalizer {
         switchLimelightPipeline();
         limelight.limelight.updateRobotOrientation(toDegrees(pose.heading()) + 90);
         LLResult result = limelight.getLatestResult();
+        long resultTimestamp = result == null ? 0 : System.nanoTime() - 1_000_000L *
+                (System.currentTimeMillis() - result.getControlHubTimeStamp());
 
-        addLog("ll timestamp", result != null ? result.getControlHubTimeStampNanos() : 0);
+        addLog("ll timestamp", result != null ? resultTimestamp : 0);
         addLog("pipeline", currentPipeline);
         addLog("valid result", result != null && result.isValid());
         addLog("angular velocity", abs(vel.omega));
@@ -148,7 +150,7 @@ public class ComplementaryLocalizer extends LoggingLocalizer {
             return;
         }
 
-        if (tm == null && !logging && lastMeasurmentTime == result.getControlHubTimeStampNanos())
+        if (tm == null && !logging && lastMeasurmentTime == resultTimestamp)
             return;
 
         addLog("rejected", false);
@@ -215,7 +217,7 @@ public class ComplementaryLocalizer extends LoggingLocalizer {
 
         if (invalidPose) {
             setPose(LLPose);
-            lastMeasurmentTime = result.getControlHubTimeStampNanos();
+            lastMeasurmentTime = resultTimestamp;
             return;
         }
 
@@ -228,15 +230,15 @@ public class ComplementaryLocalizer extends LoggingLocalizer {
         addLog("lin alpha", linAlpha);
         if (invalidPose) {
             setPose(LLPose);
-            lastMeasurmentTime = result.getControlHubTimeStampNanos();
+            lastMeasurmentTime = resultTimestamp;
             return;
         }
-        if (result.getControlHubTimeStampNanos() == lastMeasurmentTime) return;
+        if (resultTimestamp == lastMeasurmentTime) return;
 
         pose = new Pose(LLPose.x() * (1 - linAlpha) + pose.x() * linAlpha,
                 LLPose.y() * (1 - linAlpha) + pose.y() * linAlpha, pose.heading());
         addLog("corrected pose", pose);
-        lastMeasurmentTime = result.getControlHubTimeStampNanos();
+        lastMeasurmentTime = resultTimestamp;
     }
 
     @Override

@@ -53,6 +53,24 @@ public class ReadData extends OpMode {
             i--;
             updateFile = true;
         }
+        if (gamepad1.dpadLeftWasPressed()) {
+            i = 0;
+            updateFile = true;
+        }
+        if (gamepad1.dpadRightWasPressed()) {
+            int max = -1;
+            File testFile;
+            int testI = 0;
+            while (true) {
+                testFile = new File(dir, prefixes[prefixIndex] + i + ".csv");
+                if (testFile.exists()) {
+                    max = testI;
+                    testI++;
+                } else break;
+            }
+            if (max != -1) i = max;
+            updateFile = true;
+        }
         if (updateFile) {
             file = new File(dir, prefixes[prefixIndex] + i + ".csv");
             tm.print(file.getName(), INFO);

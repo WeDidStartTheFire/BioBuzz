@@ -64,13 +64,9 @@ public class ReadData extends OpMode {
     @Override
     public void start() {
         file = new File(dir, prefixes[prefixIndex] + i + ".csv");
-        try {
-            FileReader fr = new FileReader(file);
-            BufferedReader br = new BufferedReader(fr);
+        try (FileReader fr = new FileReader(file); BufferedReader br = new BufferedReader(fr)) {
             Object[] lines = br.lines().toArray();
             for (Object line : lines) tm.print("", line, INFO);
-            br.close();
-            fr.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.utilities;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
 import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.ErrorLevel.CRITICAL;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.ErrorLevel.HIGH;
 import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.ErrorLevel.MEDIUM;
 import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.INFO;
 import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.VERBOSE;
@@ -31,7 +32,6 @@ public class CollectLocalizerData extends OpMode {
     private TeleOpController teleop;
     private Robot robot;
     private TelemetryUtils tm;
-    private FileWriter fw;
     private BufferedWriter bw;
     private String followerType = "kalman";
 
@@ -49,15 +49,9 @@ public class CollectLocalizerData extends OpMode {
 
     @Override
     public void init_loop() {
-        if (gamepad1.aWasPressed() || gamepad2.aWasPressed()) {
-            followerType = "kalman";
-        }
-        if (gamepad1.bWasPressed() || gamepad2.bWasPressed()) {
-            followerType = "complementary";
-        }
-        if (gamepad1.xWasPressed() || gamepad2.xWasPressed()) {
-            followerType = "limelight";
-        }
+        if (gamepad1.aWasPressed() || gamepad2.aWasPressed()) followerType = "kalman";
+        if (gamepad1.bWasPressed() || gamepad2.bWasPressed()) followerType = "complementary";
+        if (gamepad1.xWasPressed() || gamepad2.xWasPressed()) followerType = "limelight";
         tm.print("Localizer Type", followerType, INFO);
         tm.print("", INFO);
         tm.print("Options:", INFO);
@@ -87,20 +81,22 @@ public class CollectLocalizerData extends OpMode {
         File dir = new File(hardwareMap.appContext.getFilesDir().toURI());
         File file = new File(dir, followerType + "_data_0.csv");
         int i = 0;
-        while (true) {
-            try {
-                if (file.createNewFile()) break;
-            } catch (IOException e) {
-                tm.warn(CRITICAL, Arrays.toString(e.getStackTrace()));
-                tm.update();
-                throw new RuntimeException(e);
-            }
+        while (file.exists()) {
             i++;
             file = new File(dir, followerType + "_data_" + i + ".csv");
         }
         try {
-            fw = new FileWriter(file, true);
-            bw = new BufferedWriter(fw);
+            if (!file.createNewFile()) {
+                tm.warn(HIGH, "File already exists (even after it said it didn't)");
+                tm.update();
+            }
+        } catch (IOException e) {
+            tm.warn(CRITICAL, Arrays.toString(e.getStackTrace()));
+            tm.update();
+            throw new RuntimeException(e);
+        }
+        try {
+            bw = new BufferedWriter(new FileWriter(file, true));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -133,9 +129,8 @@ public class CollectLocalizerData extends OpMode {
     @Override
     public void stop() {
         teleop.stop();
-        try {
-            bw.close();
-            fw.close();
+        try (BufferedWriter closer = bw) {
+            closer.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

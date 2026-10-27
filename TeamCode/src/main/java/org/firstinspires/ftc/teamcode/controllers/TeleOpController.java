@@ -86,6 +86,7 @@ public class TeleOpController {
         robot.turret.calculate(true);
         robot.led.update();
         robot.writeMotors();
+        updateIntake();
         tm.updateOnlyPanels(7);
     }
 

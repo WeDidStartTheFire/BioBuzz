@@ -127,10 +127,11 @@ public class Drivetrain implements Subsystem, PoseGetter {
         return vel;
     }
 
-    public void setPose(Pose pose) {
-        follower.setPose(pose);
+    public void setPose(@Nullable Pose pose) {
         validPose = pose != null;
         this.pose = pose;
+        if (pose == null) return;
+        follower.setPose(pose);
     }
 
     public boolean isPoseValid() {

@@ -13,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.SavedVariables;
 
 import java.io.BufferedWriter;
+import java.util.ArrayList;
 
 public class Utils {
 
@@ -57,9 +58,9 @@ public class Utils {
     }
 
     /**
-     * Converts a {@link Pose3D} to a {@link Pose} and converts from the Limelight coordinate
-     * system (in meters, degrees, and different rotation) to the Pedro Pathing coordinate system
-     * (in inches, radians).
+     * Converts a {@link Pose3D} to a {@link Pose} and converts from the Limelight coordinate system
+     * (in meters, degrees, and different rotation) to the Pedro Pathing coordinate system (in
+     * inches, radians).
      *
      * @param pose3D {@link Pose3D} to convert
      * @return Converted {@link Pose}
@@ -70,5 +71,26 @@ public class Utils {
         if (angle < 0) angle += 2 * PI;
         return new Pose(pose3D.getPosition().y / 0.0254 + 72,
                 -pose3D.getPosition().x / 0.0254 + 72, angle);
+    }
+
+    public static double angleAverage(ArrayList<Double> angles) {
+        double weightedCosineSum = 0;
+        double weightedSineSum = 0;
+        for (int i = 0; i < angles.size(); i++) {
+            weightedCosineSum += Math.cos(angles.get(i));
+            weightedSineSum += Math.sin(angles.get(i));
+        }
+        return Math.atan2(weightedSineSum, weightedCosineSum);
+    }
+
+    public static double weightedAngleAverage(ArrayList<Double> angles, ArrayList<Double> weights) {
+        assert angles.size() == weights.size();
+        double weightedCosineSum = 0;
+        double weightedSineSum = 0;
+        for (int i = 0; i < angles.size(); i++) {
+            weightedCosineSum += weights.get(i) * Math.cos(angles.get(i));
+            weightedSineSum += weights.get(i) * Math.sin(angles.get(i));
+        }
+        return Math.atan2(weightedSineSum, weightedCosineSum);
     }
 }

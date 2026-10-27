@@ -131,10 +131,11 @@ public class Drivetrain implements Subsystem, PoseGetter {
         return vel;
     }
 
-    public void setPose(Pose pose) {
-        follower.setPose(pose);
+    public void setPose(@Nullable Pose pose) {
         validPose = pose != null;
         this.pose = pose;
+        if (pose == null) return;
+        follower.setPose(pose);
     }
 
     public boolean isPoseValid() {
@@ -246,11 +247,7 @@ public class Drivetrain implements Subsystem, PoseGetter {
 
     @Override
     public void update() {
-        if (isMotorDisconnected()) return;
-        lf.setVelocity(lfPower);
-        lb.setVelocity(lbPower);
-        rf.setVelocity(rfPower);
-        rb.setVelocity(rbPower);
+
     }
 
     /** Stops all drive train motors on the robot. */

@@ -15,7 +15,14 @@ public class Auto_Red extends BaseAuto2<org.firstinspires.ftc.teamcode.autos.pat
     @Override
     protected Command getAutoRoutine() {
         return sequential(
-                follow(follower, paths.startToShoot1())
+                follow(follower, paths.startToShoot1()),
+                follow(follower, paths.shootToPrepPickup()),
+                follow(follower, paths.prepPickupToPickup()),
+                follow(follower, paths.pickupToBackUp()),
+                follow(follower, paths.backUpToShoot2()),
+                follow(follower, paths.shoot2ToPark1()),
+                follow(follower, paths.park1ToPark2()),
+                follow(follower, paths.park2ToPark3())
         );
     }
 

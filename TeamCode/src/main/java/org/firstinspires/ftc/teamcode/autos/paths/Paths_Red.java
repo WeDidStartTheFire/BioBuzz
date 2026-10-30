@@ -7,6 +7,8 @@ import com.pedropathing.paths.Path;
 import org.firstinspires.ftc.teamcode.enums.Color;
 
 public class Paths_Red extends AutoPaths {
+
+    // To preview this path, go to https://drive.google.com/file/d/1_F6lwjFkEukZpYYJoJS5zcTTrUIc843F/view?usp=sharing
     private Pose start, startToShoot1, shootToPrepPickupStart, shootToPrepPickup,
             prepPickupToPickup, pickupToBackUp, pickupToBackUpControl1,
             backUpToShoot2Start, backUpToShoot2, shoot2ToPark1,

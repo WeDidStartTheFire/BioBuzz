@@ -69,8 +69,8 @@ public class Utils {
     public static Pose pose3DToPose(@NonNull Pose3D pose3D) {
         double angle = toRadians(pose3D.getOrientation().getYaw(DEGREES) - 90);
         if (angle < 0) angle += 2 * PI;
-        return new Pose(pose3D.getPosition().y / 0.0254 + 72,
-                -pose3D.getPosition().x / 0.0254 + 72, angle);
+        return new Pose(pose3D.getPosition().y / 0.0254 + 70.75,
+                -pose3D.getPosition().x / 0.0254 + 70.75, angle);
     }
 
     public static double angleAverage(ArrayList<Double> angles) {

@@ -94,14 +94,7 @@ public class Launcher implements Subsystem {
      * @return The target velocity in ticks/sec
      */
     public double getGoalVel(@Nullable Pose pose, @Nullable Velocity vel) {
-        if (pose == null) return 0;
-        if (pose.equals(lastPose) && ((vel == null && lastVel == null) || vel != null && vel.equals(lastVel)))
-            return lastGoalVel + velocityModifier;
-        ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolution(pose, vel);
-        lastPose = pose;
-        lastVel = vel;
-        lastGoalVel = sol != null ? ballVelToMotorVel(sol.w) : 0;
-        return lastGoalVel + velocityModifier;
+        return 1000;
     }
 
     /**

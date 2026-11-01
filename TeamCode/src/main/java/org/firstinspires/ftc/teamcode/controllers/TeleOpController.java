@@ -85,6 +85,7 @@ public class TeleOpController {
         robot.turret.rotateManual(gamepad2.right_stick_x * .001 * ms);
         robot.turret.update(true);
         updateIntake();
+        updateLauncherTeleOp();
         tm.updateOnlyPanels(7);
     }
 
@@ -186,6 +187,7 @@ public class TeleOpController {
     public void updateLauncherTeleOp() {
         if (gamepad2.dpadUpWasPressed()) robot.launcher.increaseVelocityModifier(25);
         if (gamepad2.dpadDownWasPressed()) robot.launcher.increaseVelocityModifier(-25);
+        if (gamepad2.right_trigger >= 0.5) robot.launcher.spin();
 
         tm.print("Launcher Vel", robot.launcher.getCachedVel(), VERBOSE);
         tm.print("Goal", robot.launcher.getGoalVel(), VERBOSE);

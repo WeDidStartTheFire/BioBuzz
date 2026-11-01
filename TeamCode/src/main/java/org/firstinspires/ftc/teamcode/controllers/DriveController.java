@@ -146,7 +146,8 @@ public class DriveController {
         double turn = -gp.right_stick_x * speedMultiplier;
         DrivePowers powers = new DrivePowers(forward, lateral, turn);
         Pose pose = drivetrain.follower.pose();
-        powers = ManualDrive.fieldCentric(powers, pose == null ? 0 : pose.heading(), 0);
+        if (fieldCentric)
+            powers = ManualDrive.fieldCentric(powers, pose == null ? 0 : pose.heading(), 0);
 
         if (aiming && sol != null)
             ManualDrive.headingLock(drivetrain.follower, headingController, powers, sol.phi);

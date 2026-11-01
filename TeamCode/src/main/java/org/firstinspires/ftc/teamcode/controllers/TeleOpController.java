@@ -78,6 +78,7 @@ public class TeleOpController {
             tm.print("avg dt (ms)", totalMs / totalUpdates, VERBOSE);
         }
         lastUpdateTime = t;
+        robot.drivetrain.update();
         if (gamepad2.rightStickButtonWasPressed()) {
             robot.turret.setTarget(Turret.Target.MANUAL);
             robot.turret.toggleTargetChangeable();
@@ -86,6 +87,7 @@ public class TeleOpController {
         robot.turret.update(true);
         updateIntake();
         updateLauncherTeleOp();
+        robot.intake.update();
         tm.updateOnlyPanels(7);
     }
 

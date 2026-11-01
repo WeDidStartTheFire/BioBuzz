@@ -62,6 +62,7 @@ public class KalmanLocalizer extends LoggingLocalizer {
     public static int MAX_TAG_VAR_REDUCTION = 4;
     public static boolean USE_MEASUREMENT_VARIANCE = true;
     public static double X_VAR_SCALAR = 1, Y_VAR_SCALAR = 1, ANG_VAR_SCALAR = 1;
+    public static boolean OVERRIDE_LL_ANGLE = true;
     private static final int BUFFER_SIZE = 100;
     private boolean invalidPose = false;
     private int currentPipeline;
@@ -113,7 +114,7 @@ public class KalmanLocalizer extends LoggingLocalizer {
                 "otos pose y", "otos pose h", "corrected pose x", "corrected pose y",
                 "corrected pose h", "corrected vel x", "corrected vel y", "corrected vel h",
                 "invalid pose", "pipeline", "valid result", "angular velocity", "linear velocity",
-                "tag count", "rejected", "hives match", "avg dist", "weighted dist",
+                "tag count", "rejected", "hives match", "use all", "avg dist", "weighted dist",
                 "avg ambig (all)", "valid tags", "total weight", "ll pose x", "ll pose y",
                 "ll pose h", "lin var", "ang var", "x var", "y var", "head var"};
         super.initializeLogging();
@@ -170,19 +171,33 @@ public class KalmanLocalizer extends LoggingLocalizer {
         boolean useAll = false;
         int tagsCounted = 0;
         double totalWeight = 0;
+        JSONArray fiducialArray = LLUtils.getFiducialArray(result);
         if (hivesMatchFMap()) {
             Pose3D botpose = invalidPose ? result.getBotpose() : result.getBotpose_MT2();
             double angle = result.getBotpose().getOrientation().getYaw(DEGREES) - 90;
             if (angle < 0) angle += 360;
             LLPose = pose3DToPose(botpose).withHeading(toRadians(angle));
             useAll = true;
-        } else {
+            for (LLResultTypes.FiducialResult fiducial : result.getFiducialResults()) {
+                Pose3D botpose3d = invalidPose ? fiducial.getRobotPoseFieldSpace() :
+                        LLUtils.getRobotPoseFieldSpace_MT2(fiducialArray, fiducial);
+                if (botpose3d == null) continue;
+                double heading = fiducial.getRobotPoseFieldSpace().getOrientation().getYaw(RADIANS)
+                        - PI * 0.5;
+                Pose tagBotpose = pose3DToPose(botpose3d).withHeading(heading);
+                double distFromCurrentEstimate = invalidPose ? 0 : tagBotpose.distance(pose);
+                if (distFromCurrentEstimate > MAX_DIST * 2) {
+                    useAll = false;
+                    break;
+                }
+            }
+        }
+        if (!useAll) {
             Pose weightedTotal = Pose.zero();
             Pose totalPose = Pose.zero();
             ArrayList<Double> headings = new ArrayList<>();
             ArrayList<Double> weights = new ArrayList<>();
             double totalAmbiguity = 0;
-            JSONArray fiducialArray = LLUtils.getFiducialArray(result);
             for (LLResultTypes.FiducialResult fiducial : result.getFiducialResults()) {
                 Pose3D botpose3d = invalidPose ? fiducial.getRobotPoseFieldSpace() :
                         LLUtils.getRobotPoseFieldSpace_MT2(fiducialArray, fiducial);
@@ -221,6 +236,7 @@ public class KalmanLocalizer extends LoggingLocalizer {
         }
 
         int numTags = useAll ? result.getBotposeTagCount() : tagsCounted;
+        addLog("use all", useAll);
         addLog("valid tags", numTags);
         addLog("total weight", totalWeight);
 
@@ -248,6 +264,8 @@ public class KalmanLocalizer extends LoggingLocalizer {
         addLog("x var", xVar / X_VAR_SCALAR);
         addLog("y var", yVar / Y_VAR_SCALAR);
         addLog("head var", hVar / ANG_VAR_SCALAR);
+
+        if (OVERRIDE_LL_ANGLE) hVar = angVar = 999999999;
 
         if (invalidPose) {
             reinitialize(LLPose);

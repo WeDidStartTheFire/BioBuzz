@@ -117,12 +117,10 @@ public abstract class BaseAuto2<T extends AutoPaths> extends OpMode {
     @Override
     public final void loop() {
         robot.updateBulkCache();
-        robot.drivetrain.update();
         onLoop();
         Scheduler.execute();
-        robot.turret.update(true);
         intakeController.update();
-        robot.led.update();
+        robot.update();
 
         tm.drawRobot(follower);
         tm.print("Intake State", intakeController.getState(), INFO);

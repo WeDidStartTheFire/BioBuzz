@@ -125,6 +125,10 @@ public abstract class BaseAuto2<T extends AutoPaths> extends OpMode {
         robot.update();
 
         tm.drawRobot(follower);
+        tm.print("Is Follower Busy", follower.isBusy(), INFO);
+        tm.print("Is Follower Idle", follower.idle(), INFO);
+        tm.print("Is Follower Following", follower.following(), INFO);
+        tm.print("Is Follower Holding", follower.holding(), INFO);
         tm.print("Intake State", intakeController.getState(), INFO);
         Pose pose = robot.drivetrain.pose();
         if (pose != null) tm.print(pose, DEBUG);

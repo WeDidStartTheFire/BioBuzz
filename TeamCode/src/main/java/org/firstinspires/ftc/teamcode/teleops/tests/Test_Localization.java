@@ -27,10 +27,11 @@ public class Test_Localization extends OpMode {
 
     @Override
     public void loop() {
+        robot.update();
         tm.drawRobot(robot.drivetrain.follower);
         Pose drivetrainPosition = robot.drivetrain.pose();
         if (drivetrainPosition != null)
             tm.print(drivetrainPosition, INFO);
-        tm.update();
+        tm.updateOnlyPanels();
     }
 }

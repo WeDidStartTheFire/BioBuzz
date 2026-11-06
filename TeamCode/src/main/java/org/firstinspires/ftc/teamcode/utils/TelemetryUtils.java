@@ -372,8 +372,8 @@ public class TelemetryUtils {
      * @see #warn(ErrorLevel, Object)
      */
     public enum ErrorLevel {
-        LOW("⚠️LOW WARNING⚠️"),
-        MEDIUM("⚠️MEDIUM WARNING⚠️"),
+        LOW("⚠️Low Warning⚠️"),
+        MEDIUM("⚠️Medium Warning⚠️"),
         HIGH("🚨HIGH WARNING🚨"),
         CRITICAL("🚨CRITICAL WARNING🚨");
 

@@ -3,9 +3,8 @@ package org.firstinspires.ftc.teamcode.utilities;
 import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.INFO;
 
 import com.bylazar.configurables.annotations.Configurable;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.Utility;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 
@@ -14,16 +13,16 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-@Utility(name = "Read Data", description = "Reads color sensor data from file")
+@TeleOp(name = "Read Data")
 @Configurable
-@Disabled
 public class ReadData extends OpMode {
     private TelemetryUtils tm;
     private static int i = 0;
     private File dir;
     private File file;
     private int prefixIndex = 0;
-    private final String[] prefixes = {"kalman_data_", "colors_"};
+    private final String[] prefixes = {"kalman_data_", "complementary_data_", "limelight_data_",
+            "colors_"};
 
     @Override
     public void init() {
@@ -42,12 +41,34 @@ public class ReadData extends OpMode {
             prefixIndex = (prefixIndex + 1) % prefixes.length;
             updateFile = true;
         }
+        if (gamepad1.bWasPressed()) {
+            prefixIndex = (prefixIndex + prefixes.length - 1) % prefixes.length;
+            updateFile = true;
+        }
         if (gamepad1.dpadUpWasPressed()) {
             i++;
             updateFile = true;
         }
         if (gamepad1.dpadDownWasPressed()) {
             i--;
+            updateFile = true;
+        }
+        if (gamepad1.dpadLeftWasPressed()) {
+            i = 0;
+            updateFile = true;
+        }
+        if (gamepad1.dpadRightWasPressed()) {
+            int max = -1;
+            File testFile;
+            int testI = 0;
+            while (true) {
+                testFile = new File(dir, prefixes[prefixIndex] + i + ".csv");
+                if (testFile.exists()) {
+                    max = testI;
+                    testI++;
+                } else break;
+            }
+            if (max != -1) i = max;
             updateFile = true;
         }
         if (updateFile) {
@@ -61,13 +82,9 @@ public class ReadData extends OpMode {
     @Override
     public void start() {
         file = new File(dir, prefixes[prefixIndex] + i + ".csv");
-        try {
-            FileReader fr = new FileReader(file);
-            BufferedReader br = new BufferedReader(fr);
+        try (FileReader fr = new FileReader(file); BufferedReader br = new BufferedReader(fr)) {
             Object[] lines = br.lines().toArray();
             for (Object line : lines) tm.print("", line, INFO);
-            br.close();
-            fr.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -8,18 +8,18 @@ import static org.firstinspires.ftc.teamcode.utils.Utils.loadOdometryPosition;
 
 import com.pedropathing.math.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.MatchContext;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.enums.Color;
-import org.firstinspires.ftc.teamcode.enums.RobotEnvironment;
-import org.firstinspires.ftc.teamcode.pedro.localizers.KalmanLocalizer;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 
 @TeleOp(name = "Kalman Test", group = "Test")
+@Disabled
 public class Test_KalmanFilter extends OpMode {
     private TeleOpController teleop;
     private Robot robot;
@@ -32,9 +32,6 @@ public class Test_KalmanFilter extends OpMode {
         robot.drivetrain.setPose(loadOdometryPosition());
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
         tm = robot.tm();
-        tm.setEnvironment(RobotEnvironment.DEBUG);
-        ((KalmanLocalizer) robot.drivetrain.follower.localizer).enableTelemetry(tm);
-        ((KalmanLocalizer) robot.drivetrain.follower.localizer).enableLogging();
         if (!robot.drivetrain.isPoseValid())
             tm.warn(MEDIUM, "Robot Centric driving will be used until the position is reset");
         else tm.print("Field Centric Driving", "✅", INFO);

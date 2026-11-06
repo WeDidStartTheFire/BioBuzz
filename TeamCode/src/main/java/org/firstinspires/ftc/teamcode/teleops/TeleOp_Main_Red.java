@@ -33,6 +33,7 @@ public class TeleOp_Main_Red extends OpMode {
 
     @Override
     public void start() {
+        teleop.drivetrainLogic();
         teleop.start();
     }
 

@@ -16,12 +16,21 @@ import org.json.JSONObject;
 
 public class LLUtils {
 
-    private static JSONObject getMatchingFiducialJSON(LLResult result, FiducialResult fiducial) {
+    @Nullable
+    public static JSONArray getFiducialArray(LLResult result) {
         String jsonString = result.toString();
         try {
             JSONObject jsonData = new JSONObject(jsonString);
-            JSONArray fiducialArray = jsonData.optJSONArray("Fiducial");
-            if (fiducialArray == null) return new JSONObject();
+            return jsonData.optJSONArray("Fiducial");
+        } catch (JSONException e) {
+            return null;
+        }
+    }
+
+    private static JSONObject getMatchingFiducialJSON(@Nullable JSONArray fiducialArray,
+                                                      FiducialResult fiducial) {
+        if (fiducialArray == null) return new JSONObject();
+        try {
             for (int i = 0; i < fiducialArray.length(); i++) {
                 JSONObject fiducialData = fiducialArray.getJSONObject(i);
                 int id = fiducialData.optInt("fID", -1);
@@ -33,14 +42,15 @@ public class LLUtils {
         return new JSONObject();
     }
 
-    public static double getAmbiguity(LLResult result, FiducialResult fiducial) {
-        JSONObject data = getMatchingFiducialJSON(result, fiducial);
+    public static double getAmbiguity(@Nullable JSONArray fiducialArray, FiducialResult fiducial) {
+        JSONObject data = getMatchingFiducialJSON(fiducialArray, fiducial);
         return data.optDouble("ambig", Double.NaN);
     }
 
     @Nullable
-    public static Pose3D getRobotPoseFieldSpace_MT2(LLResult result, FiducialResult fiducial) {
-        JSONObject data = getMatchingFiducialJSON(result, fiducial);
+    public static Pose3D getRobotPoseFieldSpace_MT2(@Nullable JSONArray fiducialArray,
+                                                    FiducialResult fiducial) {
+        JSONObject data = getMatchingFiducialJSON(fiducialArray, fiducial);
         JSONArray jsonArray = data.optJSONArray("t6r_fs_orb");
         if (jsonArray == null || jsonArray.length() == 0) return null;
         return createPose3DRobot(parsePoseArray(jsonArray));

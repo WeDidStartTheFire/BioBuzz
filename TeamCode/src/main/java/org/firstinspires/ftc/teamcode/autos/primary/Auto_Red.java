@@ -25,16 +25,12 @@ public class Auto_Red extends BaseAuto2<org.firstinspires.ftc.teamcode.autos.pat
                 .setStart(timer::reset)
                 .setExecute(robot.launcher::spin)
                 .setDone(() -> timer.seconds() == 3)
-                .setEnd(endCondition -> {
-                    robot.launcher.stop();
-                });
+                .setEnd(endCondition -> robot.launcher.stop());
     }
 
     private static Command startIntaking(Robot robot) {
         return Command.build()
-                .setStart(() -> {
-                    robot.intake.setBehavior(Intake.Behavior.OFF);
-                })
+                .setStart(() -> robot.intake.setBehavior(Intake.Behavior.OFF))
                 .setExecute(() -> {
                 })
                 .setDone(() -> true)
@@ -44,9 +40,7 @@ public class Auto_Red extends BaseAuto2<org.firstinspires.ftc.teamcode.autos.pat
 
     private static Command stopIntaking(Robot robot) {
         return Command.build()
-                .setStart(() -> {
-                    robot.intake.setBehavior(Intake.Behavior.OFF);
-                })
+                .setStart(() -> robot.intake.setBehavior(Intake.Behavior.OFF))
                 .setExecute(() -> {
                 })
                 .setDone(() -> true)

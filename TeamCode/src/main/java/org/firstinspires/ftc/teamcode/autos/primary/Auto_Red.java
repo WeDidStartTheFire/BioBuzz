@@ -24,6 +24,7 @@ public class Auto_Red extends BaseAuto2<org.firstinspires.ftc.teamcode.autos.pat
         return Command.build()
                 .setStart(timer::reset)
                 .setExecute(robot.launcher::spin) // I couldn't figure out how to add a delay, so this currently turns on and then off.
+                .setDone(() -> timer.seconds() == 3)
                 .setEnd(endCondition -> {
                     robot.launcher.stop();
                 });

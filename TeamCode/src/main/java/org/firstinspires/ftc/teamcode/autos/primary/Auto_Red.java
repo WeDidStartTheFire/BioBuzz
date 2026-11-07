@@ -23,7 +23,7 @@ public class Auto_Red extends BaseAuto2<org.firstinspires.ftc.teamcode.autos.pat
 
         return Command.build()
                 .setStart(timer::reset)
-                .setExecute(robot.launcher::spin) // I couldn't figure out how to add a delay, so this currently turns on and then off.
+                .setExecute(robot.launcher::spin)
                 .setDone(() -> timer.seconds() == 3)
                 .setEnd(endCondition -> {
                     robot.launcher.stop();
@@ -34,6 +34,7 @@ public class Auto_Red extends BaseAuto2<org.firstinspires.ftc.teamcode.autos.pat
         return Command.build()
                 .setStart(() -> {
                 }).setExecute(() -> robot.intake.setBehavior(Intake.Behavior.INTAKE))
+                .setDone(() -> true)
                 .setEnd(endCondition -> {
                 });
     }
@@ -42,6 +43,7 @@ public class Auto_Red extends BaseAuto2<org.firstinspires.ftc.teamcode.autos.pat
         return Command.build()
                 .setStart(() -> {
                 }).setExecute(() -> robot.intake.setBehavior(Intake.Behavior.OFF))
+                .setDone(() -> true)
                 .setEnd(endCondition -> {
                 });
     }

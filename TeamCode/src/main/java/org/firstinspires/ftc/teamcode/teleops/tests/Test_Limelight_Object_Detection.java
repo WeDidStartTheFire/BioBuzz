@@ -24,6 +24,7 @@ public class Test_Limelight_Object_Detection extends OpMode {
     public void init() {
         robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
         robot.drivetrain.setPose(loadOdometryPosition());
+        if (robot.limelight.limelight != null) robot.limelight.limelight.pipelineSwitch(3);
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
         tm = robot.tm();
         if (!robot.drivetrain.isPoseValid())

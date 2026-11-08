@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 import org.firstinspires.ftc.teamcode.robot.Subsystem;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Configurable
@@ -45,7 +46,6 @@ public class Limelight implements Subsystem {
 
     @Override
     public void think() {
-
     }
 
     @Override
@@ -146,5 +146,27 @@ public class Limelight implements Subsystem {
         }
 
         return HivePosition.UNKNOWN;
+    }
+
+    public List<Double> getPositionXOfObjects() {
+        List<Double> positions = new ArrayList<>();
+        if (limelight != null && getFiducials() != null) {
+            for (LLResultTypes.FiducialResult fiducial : getFiducials()) {
+                positions.add(fiducial.getTargetPoseRobotSpace().getPosition().x);
+            }
+        }
+
+        return positions;
+    }
+
+    public List<Double> getPositionYOfObjects() {
+        List<Double> positions = new ArrayList<>();
+        if (limelight != null && getFiducials() != null) {
+            for (LLResultTypes.FiducialResult fiducial : getFiducials()) {
+                positions.add(fiducial.getTargetPoseRobotSpace().getPosition().y);
+            }
+        }
+
+        return positions;
     }
 }

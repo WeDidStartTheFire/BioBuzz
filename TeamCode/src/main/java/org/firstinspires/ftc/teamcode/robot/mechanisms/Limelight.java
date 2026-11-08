@@ -69,6 +69,12 @@ public class Limelight implements Subsystem {
         return result.getFiducialResults();
     }
 
+    public @Nullable List<LLResultTypes.DetectorResult> getDetector() {
+        LLResult result = getLatestResult();
+        if (result == null || !result.isValid()) return null;
+        return result.getDetectorResults();
+    }
+
     public @Nullable LLResult getLatestResult() {
         if (limelight == null) return null;
         return limelight.getLatestResult();
@@ -150,9 +156,9 @@ public class Limelight implements Subsystem {
 
     public List<Double> getPositionXOfObjects() {
         List<Double> positions = new ArrayList<>();
-        if (limelight != null && getFiducials() != null) {
-            for (LLResultTypes.FiducialResult fiducial : getFiducials()) {
-                positions.add(fiducial.getTargetPoseRobotSpace().getPosition().x);
+        if (limelight != null && getDetector() != null) {
+            for (LLResultTypes.DetectorResult detector : getDetector()) {
+                positions.add(detector.getTargetXPixels());
             }
         }
 
@@ -161,9 +167,9 @@ public class Limelight implements Subsystem {
 
     public List<Double> getPositionYOfObjects() {
         List<Double> positions = new ArrayList<>();
-        if (limelight != null && getFiducials() != null) {
-            for (LLResultTypes.FiducialResult fiducial : getFiducials()) {
-                positions.add(fiducial.getTargetPoseRobotSpace().getPosition().y);
+        if (limelight != null && getDetector() != null) {
+            for (LLResultTypes.DetectorResult detector : getDetector()) {
+                positions.add(detector.getTargetYPixels());
             }
         }
 

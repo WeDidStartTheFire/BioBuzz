@@ -17,17 +17,15 @@ import java.util.ArrayList;
 
 @TeleOp
 public class CVTest extends LinearOpMode {
-    private CVPathGen pather;
-    private Follower follower;
     public static boolean isRed = true;
     ArrayList<Pose> allBalls = new ArrayList<>();
 
     @Override
     public void runOpMode() throws InterruptedException {
-        follower = Constants.create(hardwareMap);
+        Follower follower = Constants.create(hardwareMap);
         follower.setPose(new Pose(35, 8.5, Math.toRadians(90)));
         follower.update();
-        pather = new CVPathGen(hardwareMap, follower, isRed, telemetry);
+        CVPathGen pather = new CVPathGen(hardwareMap, follower, isRed, telemetry);
         TelemetryUtils tm = new TelemetryUtils(telemetry);
 
         waitForStart();

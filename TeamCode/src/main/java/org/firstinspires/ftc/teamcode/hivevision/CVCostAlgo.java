@@ -8,7 +8,10 @@ import java.util.Collections;
 import java.util.Comparator;
 
 public class CVCostAlgo {
-    private ArrayList<ArrayList<Pose>> permutationsGen(ArrayList<Pose> ballList, ArrayList<Pose> buffer, ArrayList<ArrayList<Pose>> candidates, int index) {
+    private ArrayList<ArrayList<Pose>> permutationsGen(ArrayList<Pose> ballList,
+                                                       ArrayList<Pose> buffer,
+                                                       ArrayList<ArrayList<Pose>> candidates,
+                                                       int index) {
 
         if (buffer.size() == Math.min(4, ballList.size())) {
             candidates.add(new ArrayList<>(buffer));
@@ -29,16 +32,17 @@ public class CVCostAlgo {
         if (balls.isEmpty()) {
             return new ArrayList<>();
         }
-        ArrayList<ArrayList<Pose>> canidateGroups = new ArrayList<>();
-        canidateGroups.addAll(permutationsGen(balls, new ArrayList<>(), new ArrayList<>(), 0));
+        ArrayList<ArrayList<Pose>> canidateGroups =
+                new ArrayList<>(permutationsGen(balls, new ArrayList<>(), new ArrayList<>(), 0));
         ArrayList<ArrayList<Pose>> candidateRoutes = new ArrayList<>();
 
         for (ArrayList<Pose> group : canidateGroups) {
             ArrayList<Pose> sorted = new ArrayList<>();
-            group.sort(Comparator.comparingDouble(ball -> curpose.distance(ball)));
+            group.sort(Comparator.comparingDouble(curpose::distance));
             sorted.add(group.remove(0));
             while (!group.isEmpty()) {
-                group.sort(Comparator.comparingDouble(ball -> sorted.get(sorted.size() - 1).distance(ball)));
+                group.sort(Comparator.comparingDouble(ball ->
+                        sorted.get(sorted.size() - 1).distance(ball)));
                 sorted.add(group.remove(0));
             }
             candidateRoutes.add(sorted);
@@ -110,7 +114,7 @@ public class CVCostAlgo {
         return route;
     }
 
-    class Routes {
+    static class Routes {
         ArrayList<Pose> balls;
         double distance;
         double score;

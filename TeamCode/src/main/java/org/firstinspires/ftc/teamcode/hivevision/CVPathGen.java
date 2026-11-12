@@ -44,17 +44,13 @@ public class CVPathGen {
         this.isRed = isRed;
         this.telemetry = telemetry;
 
-
         ll = hardwareMap.get(Limelight3A.class, "limelight"); //change to your name
         ll.start();
         ll.pipelineSwitch(3); // change to your pipeline
     }
 
     public CVPathGen(boolean isRed) {
-
         this.isRed = isRed;
-
-
     }
 
     public ArrayList<Pose> getBalls(boolean sim) {
@@ -107,8 +103,7 @@ public class CVPathGen {
         ArrayList<Pose> balls = getBalls(simulation);
         Pose po = simulation ? simBotPose : follower.pose();
         balls.removeIf(ball -> isRed ? ball.x() > 70 : ball.x() < 70);
-        ArrayList<Pose> best = new ArrayList<>();
-        best.addAll(algo.costFunc(balls, po));
+        ArrayList<Pose> best = new ArrayList<>(algo.costFunc(balls, po));
         return algo.combiner(best, po);
     }
 
@@ -128,9 +123,7 @@ public class CVPathGen {
         }
         Pose[] balls = ballPoses.toArray(new Pose[0]);
         drawChosen(ballPoses);
-        Path p = Paths.through(balls).tangent();
-        return p;
-
+        return Paths.through(balls).tangent();
     }
 
     public ArrayList<Pose> pathGenSim() {

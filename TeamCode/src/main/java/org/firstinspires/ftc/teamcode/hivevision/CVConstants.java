@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode.hivevision;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.math.Matrix;
 
+@Configurable
 public class CVConstants {
-    public static final double CAMERA_HEIGHT = 12.6; // CHANGE THIS
-    public static final double CAMERA_PITCH = Math.toRadians(30); // CHANGE THIS
-    public static final double FORWARD_OFFSET = 5; // CHANGE THIS
-    public static final double RIGHT_OFFSET = 7.5;
+    public static double CAMERA_HEIGHT = 12.6;
+    public static double CAMERA_PITCH = Math.toRadians(30);
+    public static double FORWARD_OFFSET = 5;
+    public static double LATERAL_OFFSET = 7.5;
 
     public static final Matrix xyzConverter = new Matrix(
             new double[][]{

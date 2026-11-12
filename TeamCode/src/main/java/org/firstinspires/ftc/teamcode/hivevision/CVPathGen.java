@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.hivevision;
 
-import static org.firstinspires.ftc.teamcode.hivevision.CVConstants.RIGHT_OFFSET;
+import static org.firstinspires.ftc.teamcode.hivevision.CVConstants.LATERAL_OFFSET;
 import static java.lang.Math.PI;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
@@ -89,8 +89,10 @@ public class CVPathGen {
 
         Matrix cam = new Matrix(
                 new double[][]{
-                        {curpose.x() + CVConstants.FORWARD_OFFSET * Math.cos(curpose.heading())},
-                        {curpose.y() + CVConstants.FORWARD_OFFSET * sin(curpose.heading())},
+                        {curpose.x() + CVConstants.FORWARD_OFFSET * cos(curpose.heading())
+                                + LATERAL_OFFSET * cos(curpose.heading() - PI / 2)},
+                        {curpose.y() + CVConstants.FORWARD_OFFSET * sin(curpose.heading())
+                                + LATERAL_OFFSET * sin(curpose.heading() - PI / 2)},
                         {CVConstants.CAMERA_HEIGHT}
                 }
         );
@@ -107,20 +109,11 @@ public class CVPathGen {
         return algo.combiner(best, po);
     }
 
-
     public Path pathGen() {
         ArrayList<Pose> ballPoses = new ArrayList<>();
-        double endHeading = follower.pose().heading() - PI / 2;
-        Pose addPose = new Pose(RIGHT_OFFSET * cos(endHeading), RIGHT_OFFSET * sin(endHeading));
         ballPoses.add(follower.pose());
         ballPoses.addAll(sortBalls());
-        for (int i = 1; i < ballPoses.size(); i++) {
-            Pose newPose = ballPoses.get(i).plus(addPose);
-            ballPoses.set(i, newPose);
-        }
-        if (ballPoses.size() < 2) {
-            return null;
-        }
+        if (ballPoses.size() < 2) return null;
         Pose[] balls = ballPoses.toArray(new Pose[0]);
         drawChosen(ballPoses);
         return Paths.through(balls).tangent();

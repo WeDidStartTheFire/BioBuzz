@@ -33,17 +33,13 @@ public class Auto_Test_Deadline extends BaseAuto2<org.firstinspires.ftc.teamcode
 
     private static Command setState(States state) {
         return Command.build()
-                .setStart(() -> {
-                    currState = state;
-                }).setDone(() -> currState == state);
+                .setStart(() -> currState = state).setDone(() -> currState == state);
     }
 
     private static Command wait(int time, Timer timer) {
         return Command.build()
                 .setStart(timer::reset)
-                .setDone(() -> {
-                    return timer.seconds() >= time;
-                });
+                .setDone(() -> timer.seconds() >= time);
     }
 
     private static Command stateController(Robot robot) {

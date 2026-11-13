@@ -35,8 +35,7 @@ public class Auto_Test_Deadline extends BaseAuto2<org.firstinspires.ftc.teamcode
         return Command.build()
                 .setStart(() -> {
                     currState = state;
-                }).setDone(() -> currState == state).setEnd(endCondition -> {
-                });
+                }).setDone(() -> currState == state);
     }
 
     private static Command wait(int time, Timer timer) {
@@ -44,9 +43,6 @@ public class Auto_Test_Deadline extends BaseAuto2<org.firstinspires.ftc.teamcode
                 .setStart(timer::reset)
                 .setDone(() -> {
                     return timer.seconds() >= time;
-                })
-                .setEnd(endCondition -> {
-                    // End waiting
                 });
     }
 

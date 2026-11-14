@@ -151,7 +151,7 @@ public class DriveController {
 
         if (aiming && sol != null)
             ManualDrive.headingLock(drivetrain.follower, headingController, powers, sol.phi);
-        else ManualDrive.driveOrHold(drivetrain.follower, powers);
+        else ManualDrive.fieldCentric(powers, pose == null ? 0 : pose.heading());
     }
 
     /**

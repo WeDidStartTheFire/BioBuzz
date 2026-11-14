@@ -36,7 +36,7 @@ public class PIDFController extends PIDController {
     }
 
     public double calculate() {
-        return calculate(target, target - getError());
+        return calculate(target, getError());
     }
 
     @Override

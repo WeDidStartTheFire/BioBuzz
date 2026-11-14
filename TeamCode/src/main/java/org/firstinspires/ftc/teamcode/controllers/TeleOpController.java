@@ -64,8 +64,8 @@ public class TeleOpController {
     }
 
     /**
-     * Updates all robot systems including telemetry, odometry, and mechanisms.
-     * Should be called repeatedly during TeleOp operation.
+     * Updates all robot systems including telemetry, odometry, and mechanisms. Should be called
+     * repeatedly during TeleOp operation.
      */
     public void update() {
         long t = System.nanoTime();
@@ -82,18 +82,17 @@ public class TeleOpController {
             robot.turret.setTarget(Turret.Target.MANUAL);
             robot.turret.toggleTargetChangeable();
         }
-        robot.turret.rotateManual(gamepad2.right_stick_x * .001 * ms);
         robot.readSensors();
+        robot.turret.rotateManual(gamepad2.right_stick_x * .001 * ms);
+        updateLauncherTeleOp();
+        updateIntake();
         robot.think();
         robot.update();
-        updateIntake();
-        updateLauncherTeleOp();
         tm.updateOnlyPanels(7);
     }
 
     /**
-     * Stops all robot systems and displays final logs.
-     * Should be called when TeleOp mode ends.
+     * Stops all robot systems and displays final logs. Should be called when TeleOp mode ends.
      */
     public void stop() {
         robot.stop();
@@ -170,8 +169,8 @@ public class TeleOpController {
     }
 
     /**
-     * Handles intake control based on gamepad input.
-     * Manages intake, outtake, and automatic stopping.
+     * Handles intake control based on gamepad input. Manages intake, outtake, and automatic
+     * stopping.
      */
     public void updateIntake() {
         if (gamepad1.right_trigger > 0.3) intakeController.intake();
@@ -183,14 +182,15 @@ public class TeleOpController {
 
 
     /**
-     * Updates launcher controls during TeleOp mode.
-     * Handles manual spin, intake, and launching.
+     * Updates launcher controls during TeleOp mode. Handles manual spin, intake, and launching.
      */
     public void updateLauncherTeleOp() {
         if (gamepad2.dpadUpWasPressed()) robot.launcher.increaseVelocityModifier(25);
         if (gamepad2.dpadDownWasPressed()) robot.launcher.increaseVelocityModifier(-25);
         if (gamepad2.right_trigger >= 0.5) robot.launcher.spin();
+        else robot.launcher.stop();
 
+        tm.print("Launcher Power", robot.launcher.getPower(), VERBOSE);
         tm.print("Launcher Vel", robot.launcher.getCachedVel(), VERBOSE);
         tm.print("Goal", robot.launcher.getGoalVel(), VERBOSE);
     }

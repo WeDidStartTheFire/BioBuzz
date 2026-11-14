@@ -2,10 +2,10 @@ package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
 import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.BALL_VEL_TO_MOTOR_VEL_COEFF;
 import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.BALL_VEL_TO_MOTOR_VEL_CONST;
+import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.LAUNCHER_VEL;
 import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.launcherPIDF;
 import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.launcherReversePIDF;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.LAUNCHER_MOTOR;
-import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.ErrorLevel.MEDIUM;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,6 +15,7 @@ import com.pedropathing.math.Velocity;
 import com.pedropathing.utils.Timer;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
@@ -58,6 +59,7 @@ public class Launcher implements Subsystem {
             launcherMotor.setTargetPosition(0);
             launcherMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherReversePIDF);
             launcherMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            launcherMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
         spinningTimer = new Timer();
         velocityModifier = 0;
@@ -73,7 +75,8 @@ public class Launcher implements Subsystem {
      * @return The target velocity in ticks/sec
      */
     public double getGoalVel() {
-        return getGoalVel(poseGetter.pose(), poseGetter.vel());
+        return LAUNCHER_VEL;
+        //        return getGoalVel(poseGetter.pose(), poseGetter.vel());
     }
 
     /**
@@ -95,12 +98,16 @@ public class Launcher implements Subsystem {
         double goalVel = getGoalVel();
         if (!spinning) spinningTimer.reset();
         spinning = true;
-        double motorVel = getVel();
+        double motorVel = getCachedVel();
         pidController.setTarget(goalVel);
         pidController.updateFeedForwardInput(goalVel);
         pidController.updatePosition(motorVel);
         double voltage = Math.max(voltageSensor.getVoltage(), 1e-6);
         power = pidController.calculate() * 12.0 / voltage;
+    }
+
+    public double getPower() {
+        return power;
     }
 
     /**
@@ -151,7 +158,7 @@ public class Launcher implements Subsystem {
 
     @Override
     public void readSensors() {
-
+        getVel();
     }
 
     @Override
@@ -172,6 +179,7 @@ public class Launcher implements Subsystem {
         if (!spinning && cachedPower == 0) return;
         spinning = false;
         cachedPower = 0;
+        power = 0;
         if (launcherMotor != null) launcherMotor.setPower(0);
     }
 

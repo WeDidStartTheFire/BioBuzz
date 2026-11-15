@@ -5,6 +5,8 @@ import static java.lang.Math.PI;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
+import androidx.annotation.Nullable;
+
 import com.pedropathing.api.Paths;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Matrix;
@@ -109,6 +111,7 @@ public class CVPathGen {
         return algo.combiner(best, po);
     }
 
+    @Nullable
     public Path pathGen() {
         ArrayList<Pose> ballPoses = new ArrayList<>();
         ballPoses.add(follower.pose());

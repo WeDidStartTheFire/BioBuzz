@@ -5,7 +5,6 @@ import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_MOTOR;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_SERVO_A;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_SERVO_B;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_SERVO_C;
-import static java.lang.Math.abs;
 
 import androidx.annotation.Nullable;
 
@@ -13,9 +12,9 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 import org.firstinspires.ftc.teamcode.robot.Subsystem;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 
 public class Intake implements Subsystem {
     private final @Nullable CRServo intakeServoA, intakeServoB, intakeServoC;
@@ -42,12 +41,13 @@ public class Intake implements Subsystem {
         this.behavior = behavior;
     }
 
-    public Behavior getBehavior() {
-        return behavior;
+    @Override
+    public void readSensors() {
+
     }
 
     @Override
-    public void update() {
+    public void think() {
         switch (behavior) {
             case OFF:
                 insidePower = 0;
@@ -64,6 +64,10 @@ public class Intake implements Subsystem {
                 outsidePower = 1;
                 break;
         }
+    }
+
+    @Override
+    public void update() {
         if (intakeMotor != null) intakeMotor.setPower(outsidePower);
         if (intakeServoB != null) intakeServoB.setPower(outsidePower);
         if (intakeServoA != null) intakeServoA.setPower(insidePower);

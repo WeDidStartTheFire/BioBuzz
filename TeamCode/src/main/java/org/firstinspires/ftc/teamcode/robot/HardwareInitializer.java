@@ -5,8 +5,8 @@ import androidx.annotation.Nullable;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.enums.Hardware;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 
 public class HardwareInitializer {
     /**

@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.enums.Color;
 public abstract class AutoPaths {
 
     protected final PoseFactory poseFactory;
-    private static final Pose CENTER = new Pose(70.75, 70.75);
+    private static final Pose CENTER = new Pose(72, 72);
 
     public AutoPaths(Color pathsColor, Color autoColor) {
         PoseFactory tmp = PoseFactory.degrees();

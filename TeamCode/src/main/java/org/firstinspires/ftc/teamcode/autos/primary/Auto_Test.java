@@ -16,6 +16,7 @@ public class Auto_Test extends BaseAuto<Auto_Test.State> {
     private Path pa1, pa2, pa3, pa4;
     private final Color color = Color.BLUE;
     public static final String name = "Tuning Test";
+
     protected enum State {
         FINISHED,
         START,
@@ -66,6 +67,7 @@ public class Auto_Test extends BaseAuto<Auto_Test.State> {
                 break;
         }
     }
+
     @Override
     protected void configure() {
         configure(startPose, initialState, color, name);

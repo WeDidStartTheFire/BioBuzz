@@ -20,9 +20,15 @@ public class ProjectileSolver {
     static final double g = 386.0885826772; // Constant for gravity in in/s^2
 
     public static class LaunchSolution {
-        public final double w; // Launch speed magnitude (relative to robot motion)
-        public final double phi; // Horizontal azimuth (radians, degrees?)
-        public final double t; // Time from launch for projectile to reach target
+
+        /// Launch speed magnitude (relative to robot motion)
+        public final double w;
+
+        /// Horizontal azimuth (radians, degrees?)
+        public final double phi;
+
+        /// Time from launch for projectile to reach target
+        public final double t;
 
         LaunchSolution(double w, double phi, double t) {
             this.w = w;
@@ -40,11 +46,11 @@ public class ProjectileSolver {
     public static @Nullable LaunchSolution getLaunchSolution(@NonNull Pose pose,
                                                              @Nullable Velocity vel) {
         Pose3D targetPose = new Pose3D(new Position(),
-            new YawPitchRollAngles(AngleUnit.RADIANS, 0, 0, 0, 0));
+                new YawPitchRollAngles(AngleUnit.RADIANS, 0, 0, 0, 0));
         return solveLaunch(pose.x(), pose.y(), LAUNCHER_HEIGHT,
-            vel == null ? 0 : vel.toVector2D().x(), vel == null ? 0 : vel.toVector2D().y(),
-            targetPose.getPosition().x, targetPose.getPosition().y, targetPose.getPosition().z,
-            LAUNCHER_ANGLE);
+                vel == null ? 0 : vel.vx, vel == null ? 0 : vel.vy,
+                targetPose.getPosition().x, targetPose.getPosition().y, targetPose.getPosition().z,
+                LAUNCHER_ANGLE);
     }
 
     /**
@@ -56,20 +62,6 @@ public class ProjectileSolver {
     public static @Nullable LaunchSolution getLaunchSolution(PoseGetter poseGetter) {
         Pose pose = poseGetter.pose();
         return pose == null ? null : getLaunchSolution(pose, poseGetter.vel());
-    }
-
-    /**
-     * Gets the launch solution assuming the robot is stationary.
-     *
-     * @return LaunchSolution containing launch parameters, or null if no solution exists
-     */
-    public static @Nullable LaunchSolution getLaunchSolutionStationary(Pose pose) {
-        if (pose == null) return null;
-        Pose3D targetPose = new Pose3D(new Position(),
-            new YawPitchRollAngles(AngleUnit.RADIANS, 0, 0, 0, 0));
-        return solveLaunch(pose.x(), pose.y(), LAUNCHER_HEIGHT, 0, 0,
-            targetPose.getPosition().x, targetPose.getPosition().y, targetPose.getPosition().z,
-            LAUNCHER_ANGLE);
     }
 
 
@@ -90,10 +82,10 @@ public class ProjectileSolver {
      * is not possible
      */
     public static @Nullable LaunchSolution solveLaunch(
-        double xr, double yr, double zr, // Robot position
-        double vx, double vy, // Robot x-y velocities (vz = 0)
-        double xt, double yt, double zt, // Target position
-        double theta // Launch angle measured from x-y plane
+            double xr, double yr, double zr, // Robot position
+            double vx, double vy, // Robot x-y velocities (vz = 0)
+            double xt, double yt, double zt, // Target position
+            double theta // Launch angle measured from x-y plane
     ) {
         // Position deltas between robot and target
         double dx = xt - xr;

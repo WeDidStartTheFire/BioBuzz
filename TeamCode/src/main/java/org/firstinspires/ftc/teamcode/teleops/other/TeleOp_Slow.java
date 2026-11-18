@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode.teleops.other;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
 import static org.firstinspires.ftc.teamcode.constants.TeleOpConstants.speeds;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.INFO;
 import static java.lang.Math.abs;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -10,9 +10,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.MatchContext;
-import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 
 @TeleOp(name = "Slow", group = "C")
 public class TeleOp_Slow extends OpMode {
@@ -28,7 +28,8 @@ public class TeleOp_Slow extends OpMode {
     @Override
     public void loop() {
         double axial, lateral, yaw, xMove, yMove;
-        double speedMultiplier = gamepad1.left_bumper ? speeds[0] : gamepad1.right_bumper ? speeds[2] : speeds[1];
+        double speedMultiplier = gamepad1.left_bumper ? speeds[0] :
+                gamepad1.right_bumper ? speeds[2] : speeds[1];
 
         xMove = gamepad1.left_stick_x;
         yMove = gamepad1.left_stick_y;
@@ -61,7 +62,8 @@ public class TeleOp_Slow extends OpMode {
         leftBackPower *= baseSpeedMultiplier;
         rightBackPower *= baseSpeedMultiplier;
 
-        robot.drivetrain.setMotorPowers(leftBackPower, rightBackPower, leftFrontPower, rightFrontPower);
+        robot.drivetrain.setMotorPowers(leftBackPower, rightBackPower, leftFrontPower,
+                rightFrontPower);
 
         tm.print("Speed Multiplier", speedMultiplier, INFO);
     }

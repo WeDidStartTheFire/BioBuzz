@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.enums;
 
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.CRITICAL;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.HIGH;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.LOW;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.MEDIUM;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.ErrorLevel.CRITICAL;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.ErrorLevel.HIGH;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.ErrorLevel.LOW;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.ErrorLevel.MEDIUM;
 
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 
 public enum Hardware {
     DRIVETRAIN_LEFT_FRONT_MOTOR("Left Front Drivetrain Motor", DcMotorEx.class, "leftFront", Hub.CONTROL, PortType.MOTOR, 1, CRITICAL),
@@ -31,11 +31,10 @@ public enum Hardware {
     TOUCH_SENSOR_A("Touch Sensor A", TouchSensor.class, "touchSensorA", Hub.UNKNOWN, PortType.DIGITAL, -1, LOW),
     TOUCH_SENSOR_B("Touch Sensor B", TouchSensor.class, "touchSensorB", Hub.UNKNOWN, PortType.DIGITAL, -1, LOW),
     TURRET_TOUCH_SENSOR("Turret Touch Sensor", TouchSensor.class, "turretTouchSensor", Hub.EXPANSION, PortType.DIGITAL, 2, HIGH),
-    LAUNCHER_MOTOR_A("Launcher Motor A", DcMotorEx.class, "launcherMotorA", Hub.EXPANSION, PortType.MOTOR, 1, CRITICAL),
-    LAUNCHER_MOTOR_B("Launcher Motor B", DcMotorEx.class, "launcherMotorB", Hub.EXPANSION, PortType.MOTOR, 2, CRITICAL),
+    LAUNCHER_MOTOR("Launcher Motor", DcMotorEx.class, "launcherMotor", Hub.EXPANSION, PortType.MOTOR, 0, CRITICAL),
     LIMELIGHT("Limelight", Limelight3A.class, "limelight", Hub.CONTROL, PortType.USB, -1, MEDIUM),
     SPARKFUN_OTOS("SparkFun OTOS", SparkFunOTOS.class, "sensorOtos", Hub.CONTROL, PortType.I2C, 1, CRITICAL),
-    INTAKE_MOTOR("Intake Motor", DcMotorEx.class, "intakeMotor", Hub.EXPANSION, PortType.MOTOR, 0, HIGH),
+    INTAKE_MOTOR("Intake Motor", DcMotorEx.class, "intakeMotor", Hub.EXPANSION, PortType.MOTOR, 1, HIGH),
     INTAKE_SERVO_A("Intake Servo A", CRServo.class, "intakeServoA", Hub.EXPANSION, PortType.SERVO, 3, HIGH),
     INTAKE_SERVO_B("Intake Servo B (roller)", CRServo.class, "intakeServoB", Hub.EXPANSION, PortType.SERVO, 4, LOW),
     INTAKE_SERVO_C("Intake Servo C", CRServo.class, "intakeServoC", Hub.EXPANSION, PortType.SERVO, 5, HIGH),

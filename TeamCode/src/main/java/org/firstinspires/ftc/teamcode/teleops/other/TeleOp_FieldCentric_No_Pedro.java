@@ -1,18 +1,19 @@
 package org.firstinspires.ftc.teamcode.teleops.other;
 
 import static org.firstinspires.ftc.teamcode.MatchContext.Mode.TELEOP;
-import static org.firstinspires.ftc.teamcode.TelemetryUtils.PrintLevel.INFO;
-import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.ErrorLevel.MEDIUM;
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.INFO;
+import static org.firstinspires.ftc.teamcode.utils.Utils.loadOdometryPosition;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.MatchContext;
-import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 
 @TeleOp(name = "Field Centric No Pedro", group = "C")
 @Disabled
@@ -26,7 +27,7 @@ public class TeleOp_FieldCentric_No_Pedro extends OpMode {
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
         TelemetryUtils tm = robot.tm();
         if (!robot.drivetrain.isPoseValid())
-            tm.warn(TelemetryUtils.ErrorLevel.MEDIUM, "Field centric driving without valid position");
+            tm.warn(MEDIUM, "Field centric driving without valid position");
         else tm.print("Field Centric Driving", "✅", INFO);
         tm.print("Color", "\uD83D\uDFE6Blue\uD83D\uDFE6 (Default)", INFO);
     }

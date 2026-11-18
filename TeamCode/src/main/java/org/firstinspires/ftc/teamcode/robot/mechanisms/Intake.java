@@ -26,7 +26,7 @@ public class Intake implements Subsystem {
         OFF, INTAKE, OUTTAKE
     }
 
-    private Behavior behavior = Behavior.OFF;
+    public Behavior behavior = Behavior.OFF;
 
     public Intake(HardwareMap hardwareMap, TelemetryUtils tm) {
         intakeMotor = HardwareInitializer.init(hardwareMap, tm, INTAKE_MOTOR);

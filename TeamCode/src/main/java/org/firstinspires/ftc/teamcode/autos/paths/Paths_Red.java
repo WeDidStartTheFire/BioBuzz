@@ -7,12 +7,9 @@ import com.pedropathing.paths.Path;
 import org.firstinspires.ftc.teamcode.enums.Color;
 
 public class Paths_Red extends AutoPaths {
-
-    // To preview this path, go to https://drive.google.com/file/d/1_F6lwjFkEukZpYYJoJS5zcTTrUIc843F/view?usp=sharing
-    private Pose start, startToShoot1, shootToPrepPickupStart, shootToPrepPickup,
-            prepPickupToPickup, pickupToBackUp, pickupToBackUpControl1,
-            backUpToShoot2Start, backUpToShoot2, shoot2ToPark1,
-            shoot2ToPark1Control1, park1ToPark2, park2ToPark3;
+    private Pose start, startToShoot1, shoot1ToPickupStart, shoot1ToPickup, shoot1ToPickupControl1,
+            pickupToShoot2Start, pickupToShoot2, pickupToShoot2Control1, shootToFinishStart, shootToFinish,
+            shootToFinishControl1, shootToFinishControl2;
 
     public Paths_Red(Color pathsColor, Color autoColor) {
         super(pathsColor, autoColor);
@@ -20,57 +17,41 @@ public class Paths_Red extends AutoPaths {
 
     @Override
     protected void buildPoints() {
-        start = poseFactory.of(31.1464, 8, 90);
-        startToShoot1 = poseFactory.of(59, 23, 90);
-        shootToPrepPickupStart = poseFactory.of(59, 23, 90);
-        shootToPrepPickup = poseFactory.of(10.75, 16.75, -90);
-        prepPickupToPickup = poseFactory.of(10.75, 8.75, -90);
-        pickupToBackUp = poseFactory.of(28.75, 28.75, -170.5377);
-        pickupToBackUpControl1 = poseFactory.of(10.75, 25.75, 0);
-        backUpToShoot2Start = poseFactory.of(28.75, 28.75, 180);
-        backUpToShoot2 = poseFactory.of(58.75, 22.75, 90);
-        shoot2ToPark1 = poseFactory.of(16.75, 88.75, 86.4237);
-        shoot2ToPark1Control1 = poseFactory.of(13.75, 40.75, 0);
-        park1ToPark2 = poseFactory.of(16.75, 94.75, -90);
-        park2ToPark3 = poseFactory.of(10.75, 94.75, 0);
+        start = poseFactory.of(56, 8, 90);
+        startToShoot1 = poseFactory.of(56, 36, 90);
+        shoot1ToPickupStart = poseFactory.of(56, 36, 90);
+        shoot1ToPickup = poseFactory.of(8.5876, 46.8857, 180);
+        shoot1ToPickupControl1 = poseFactory.of(29.283, 36.6469, 0);
+        pickupToShoot2Start = poseFactory.of(8.5876, 46.8857, 180);
+        pickupToShoot2 = poseFactory.of(55.75, 31.75, 90);
+        pickupToShoot2Control1 = poseFactory.of(26.75, 29.75, 0);
+        shootToFinishStart = poseFactory.of(55.75, 31.75, 90);
+        shootToFinish = poseFactory.of(11.75, 105.75, 180);
+        shootToFinishControl1 = poseFactory.of(11.75, 37.75, 0);
+        shootToFinishControl2 = poseFactory.of(21.75, 75.75, 0);
     }
 
     @Override
     public Pose start() {
         return start;
     }
-
-
     public Path startToShoot1() {
         return Paths.line(start, startToShoot1).constant(startToShoot1);
     }
 
-    public Path shootToPrepPickup() {
-        return Paths.line(shootToPrepPickupStart, shootToPrepPickup).linear(shootToPrepPickupStart, shootToPrepPickup);
+    public Path shoot1ToPickup() {
+        return Paths.curve(shoot1ToPickupStart, shoot1ToPickupControl1,
+                shoot1ToPickup).linear(shoot1ToPickupStart, shoot1ToPickup);
     }
 
-    public Path prepPickupToPickup() {
-        return Paths.line(shootToPrepPickup, prepPickupToPickup).tangent();
+    public Path pickupToShoot2() {
+        return Paths.curve(pickupToShoot2Start, pickupToShoot2Control1,
+                pickupToShoot2).linear(pickupToShoot2Start, pickupToShoot2);
     }
 
-    public Path pickupToBackUp() {
-        return Paths.curve(prepPickupToPickup, pickupToBackUpControl1, pickupToBackUp).reverseTangent();
-    }
-
-    public Path backUpToShoot2() {
-        return Paths.line(backUpToShoot2Start, backUpToShoot2).linear(backUpToShoot2Start, backUpToShoot2);
-    }
-
-    public Path shoot2ToPark1() {
-        return Paths.curve(backUpToShoot2, shoot2ToPark1Control1, shoot2ToPark1).tangent();
-    }
-
-    public Path park1ToPark2() {
-        return Paths.line(shoot2ToPark1, park1ToPark2).reverseTangent();
-    }
-
-    public Path park2ToPark3() {
-        return Paths.line(park1ToPark2, park2ToPark3).reverseTangent();
+    public Path shootToFinish() {
+        return Paths.curve(shootToFinishStart, shootToFinishControl1, shootToFinishControl2,
+                shootToFinish).linear(shootToFinishStart, shootToFinish);
     }
 
 }

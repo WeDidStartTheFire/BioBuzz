@@ -6,6 +6,7 @@
 - [Ivy](https://pedropathing.com/docs/ivy)
 - [Panels](https://panels.bylazar.com)
 - [Sloth](https://github.com/Dairy-Foundation/Sloth)
+- [Hive Vision](https://github.com/hivevisionftc/Hive-Vision)
 - [BlazeFTC](https://github.com/owenpmckenna/blaze_ftc) (not used yet; currently researching)
 
 ## Other Resources

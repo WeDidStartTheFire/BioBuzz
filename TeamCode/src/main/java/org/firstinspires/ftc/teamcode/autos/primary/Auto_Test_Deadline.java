@@ -55,7 +55,7 @@ public class Auto_Test_Deadline extends BaseAuto2<org.firstinspires.ftc.teamcode
                         case IDLE:
                             if (robot.launcher.isSpinning(robot.launcher.getVel())) {
                                 robot.launcher.stop();
-                            } else if (robot.intake.getBehavior() == Behavior.INTAKE) {
+                            } else if (robot.intake.behavior == Behavior.INTAKE) {
                                 robot.intake.setBehavior(Behavior.OFF);
                             }
                             break;
@@ -69,19 +69,14 @@ public class Auto_Test_Deadline extends BaseAuto2<org.firstinspires.ftc.teamcode
                 setState(States.SHOOT),
                 wait(3, timer),
                 setState(States.IDLE),
-                follow(follower, paths.shootToPrepPickup()),
                 setState(States.INTAKE),
+                follow(follower, paths.shoot1ToPickup()),
                 wait(1, timer),
-                follow(follower, paths.prepPickupToPickup()),
-                setState(States.IDLE),
-                follow(follower, paths.pickupToBackUp()),
-                follow(follower, paths.backUpToShoot2()),
+                follow(follower, paths.pickupToShoot2()),
                 setState(States.SHOOT),
                 wait(3, timer),
                 setState(States.IDLE),
-                follow(follower, paths.shoot2ToPark1()),
-                follow(follower, paths.park1ToPark2()),
-                follow(follower, paths.park2ToPark3())
+                follow(follower, paths.shootToFinish())
         );
     }
 

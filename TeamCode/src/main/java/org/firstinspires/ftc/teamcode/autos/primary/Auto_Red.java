@@ -53,16 +53,12 @@ public class Auto_Red extends BaseAuto2<org.firstinspires.ftc.teamcode.autos.pat
         return sequential(
                 follow(follower, paths.startToShoot1()),
                 shoot(robot),
-                follow(follower, paths.shootToPrepPickup()),
                 startIntaking(robot),
-                follow(follower, paths.prepPickupToPickup()),
+                follow(follower, paths.shoot1ToPickup()),
                 stopIntaking(robot),
-                follow(follower, paths.pickupToBackUp()),
-                follow(follower, paths.backUpToShoot2()),
+                follow(follower, paths.pickupToShoot2()),
                 shoot(robot),
-                follow(follower, paths.shoot2ToPark1()),
-                follow(follower, paths.park1ToPark2()),
-                follow(follower, paths.park2ToPark3())
+                follow(follower, paths.shootToFinish())
         );
     }
 

@@ -7,10 +7,9 @@ import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.utils.Timer;
 
+import org.firstinspires.ftc.teamcode.autos.AutoStates;
 import org.firstinspires.ftc.teamcode.autos.BaseAuto2;
 import org.firstinspires.ftc.teamcode.enums.Color;
-import org.firstinspires.ftc.teamcode.robot.Robot;
-import org.firstinspires.ftc.teamcode.robot.mechanisms.Intake.Behavior;
 
 public class Auto_Test_Deadline extends BaseAuto2<org.firstinspires.ftc.teamcode.autos.paths.Paths_Red> {
 
@@ -18,64 +17,29 @@ public class Auto_Test_Deadline extends BaseAuto2<org.firstinspires.ftc.teamcode
     public static final String group = "A";
     public Timer timer = new Timer();
 
-    public enum States {
-        SHOOT,
-        INTAKE,
-        IDLE
-    }
-
-    public static States currState;
-
     @Override
     protected void configure() {
         configure(org.firstinspires.ftc.teamcode.autos.paths.Paths_Red.class, Color.RED, "Test Deadline");
     }
-
-    private static Command setState(States state) {
-        return Command.build()
-                .setStart(() -> currState = state).setDone(() -> currState == state);
-    }
-
     private static Command wait(int time, Timer timer) {
         return Command.build()
                 .setStart(timer::reset)
                 .setDone(() -> timer.seconds() >= time);
     }
 
-    private static Command stateController(Robot robot) {
-        return Command.build()
-                .setExecute(() -> {
-                    switch (currState) {
-                        case SHOOT:
-                            robot.launcher.spin();
-                            break;
-                        case INTAKE:
-                            robot.intake.setBehavior(Behavior.INTAKE);
-                            break;
-                        case IDLE:
-                            if (robot.launcher.isSpinning(robot.launcher.getVel())) {
-                                robot.launcher.stop();
-                            } else if (robot.intake.behavior == Behavior.INTAKE) {
-                                robot.intake.setBehavior(Behavior.OFF);
-                            }
-                            break;
-                    }
-                }).setDone(() -> false);
-    }
-
     private Command followPaths() {
         return sequential(
                 follow(follower, paths.startToShoot1()),
-                setState(States.SHOOT),
+                autoStates.setCurrentState(AutoStates.State.SHOOT),
                 wait(3, timer),
-                setState(States.IDLE),
-                setState(States.INTAKE),
+                autoStates.setCurrentState(AutoStates.State.IDLE),
                 follow(follower, paths.shoot1ToPickup()),
+                autoStates.setCurrentState(AutoStates.State.INTAKE),
                 wait(1, timer),
                 follow(follower, paths.pickupToShoot2()),
-                setState(States.SHOOT),
+                autoStates.setCurrentState(AutoStates.State.SHOOT),
                 wait(3, timer),
-                setState(States.IDLE),
+                autoStates.setCurrentState(AutoStates.State.IDLE),
                 follow(follower, paths.shootToFinish())
         );
     }
@@ -84,8 +48,7 @@ public class Auto_Test_Deadline extends BaseAuto2<org.firstinspires.ftc.teamcode
     protected Command getAutoRoutine() {
         return deadline(
                 deadline(
-                        followPaths(), // Deadline, everything will stop when this is finished.
-                        stateController(robot)
+                        followPaths() // Deadline, everything will stop when this is finished.
                 )
         );
     }

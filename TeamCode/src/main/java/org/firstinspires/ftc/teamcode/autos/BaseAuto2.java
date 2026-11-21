@@ -23,6 +23,7 @@ import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 public abstract class BaseAuto2<T extends AutoPaths> extends OpMode {
     protected Robot robot;
     protected Follower follower;
+    public AutoStates autoStates;
     private IntakeController intakeController;
     protected Pose shootPose;
     protected TelemetryUtils tm;
@@ -95,6 +96,7 @@ public abstract class BaseAuto2<T extends AutoPaths> extends OpMode {
     public final void init() {
         configure();
         robot = new Robot(hardwareMap, telemetry, new MatchContext(AUTO, color));
+        autoStates = new AutoStates(robot);
         follower = robot.drivetrain.follower;
         follower.setPose(paths.start());
         tm = robot.tm();
@@ -119,6 +121,7 @@ public abstract class BaseAuto2<T extends AutoPaths> extends OpMode {
     public final void loop() {
         onLoop();
         Scheduler.execute();
+        autoStates.update();
 
         robot.readSensors();
         robot.think();
@@ -149,6 +152,7 @@ public abstract class BaseAuto2<T extends AutoPaths> extends OpMode {
     @Override
     public final void stop() {
         Scheduler.reset();
+        autoStates.setCurrentState(AutoStates.State.IDLE);
         robot.drivetrain.update();
         follower.stop();
         Pose pose = robot.drivetrain.pose();

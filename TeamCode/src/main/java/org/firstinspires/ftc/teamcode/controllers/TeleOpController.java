@@ -29,7 +29,8 @@ public class TeleOpController {
     private final Follower follower;
     private final TelemetryUtils tm;
     private long lastUpdateTime;
-    private int totalMs;
+    private double totalMs;
+    private double rollingAvgDt;
     private int totalUpdates;
     private final Timer softZeroTimer = new Timer(), hardZeroTimer = new Timer();
     private boolean softResetDone = false, hardResetDone = false;
@@ -67,13 +68,15 @@ public class TeleOpController {
      */
     public void update() {
         long t = System.nanoTime();
-        int ms = 0;
+        double ms = 0;
         if (lastUpdateTime != 0) {
-            ms = Math.toIntExact((t - lastUpdateTime) / 1_000_000);
+            ms = (double) (t - lastUpdateTime) / 1_000_000;
+            rollingAvgDt = rollingAvgDt * 0.98 + ms * 0.02;
             totalMs += ms;
             totalUpdates++;
-            tm.print("dt (ms)", ms, VERBOSE);
-            tm.print("avg dt (ms)", totalMs / totalUpdates, VERBOSE);
+            tm.print("dt (ms)", ((int) (ms * 100)) / 100.0, VERBOSE);
+            tm.print("avg dt (ms)", ((int) (totalMs / totalUpdates * 100)) / 100.0, VERBOSE);
+            tm.print("rolling avg dt (ms)", ((int) (rollingAvgDt * 100)) / 100.0, VERBOSE);
         }
         lastUpdateTime = t;
         if (gamepad2.rightStickButtonWasPressed()) {

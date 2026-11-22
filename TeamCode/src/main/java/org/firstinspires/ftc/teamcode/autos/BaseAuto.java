@@ -103,6 +103,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         buildPaths();
         intakeController = new IntakeController(robot.intake, tm);
         tm.print(name + " auto initialized", INFO);
+        tm.drawRobot(robot.drivetrain.follower);
         tm.update();
         setStateNoWait(initialState);
         robot.initBulkCache();
@@ -149,10 +150,14 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
 
     @Override
     public final void stop() {
+        robot.drivetrain.readSensors();
         robot.drivetrain.update();
         robot.drivetrain.follower.stop();
         Pose pose = robot.drivetrain.pose();
-        if (pose != null) saveOdometryPosition(pose);
+        if (pose != null) {
+            saveOdometryPosition(pose);
+            tm.log("Position saved", "successful");
+        } else tm.log("Position saved", "unsuccessful");
         intakeController.stop();
         robot.limelight.stop();
         tm.showLogs();

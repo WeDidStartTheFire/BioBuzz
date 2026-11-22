@@ -5,7 +5,6 @@ import static org.firstinspires.ftc.teamcode.constants.Positions.RED_PARK;
 import static org.firstinspires.ftc.teamcode.constants.ResetConstants.HARD_RESET_WAIT;
 import static org.firstinspires.ftc.teamcode.constants.ResetConstants.SOFT_RESET_WAIT;
 import static org.firstinspires.ftc.teamcode.enums.Color.BLUE;
-import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.DEBUG;
 import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.INFO;
 import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.VERBOSE;
 
@@ -60,7 +59,6 @@ public class TeleOpController {
      * start() method of the OpMode.
      */
     public void start() {
-        robot.limelight.start();
     }
 
     /**
@@ -86,6 +84,7 @@ public class TeleOpController {
         robot.turret.rotateManual(gamepad2.right_stick_x * .001 * ms);
         updateLauncherTeleOp();
         updateIntake();
+        drivetrainLogic();
         robot.think();
         robot.update();
         tm.updateOnlyPanels(7);
@@ -97,7 +96,7 @@ public class TeleOpController {
     public void stop() {
         robot.stop();
         tm.showLogs();
-        tm.update();
+        tm.forceUpdate();
     }
 
     /**
@@ -163,7 +162,7 @@ public class TeleOpController {
         fieldCentric = fieldCentric && !robotCentric;
         tm.drawRobot(follower);
         Pose pose = robot.drivetrain.pose();
-        if (pose != null) tm.print(pose, DEBUG);
+        if (pose != null) tm.print(pose, VERBOSE);
         if (usePedro) driveController.updateTeleOp(gamepad1, fieldCentric);
         else driveController.updateTeleOpNoPedro(gamepad1, fieldCentric);
     }

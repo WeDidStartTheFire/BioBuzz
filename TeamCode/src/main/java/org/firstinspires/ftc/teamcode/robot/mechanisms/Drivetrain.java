@@ -234,11 +234,6 @@ public class Drivetrain implements Subsystem, PoseGetter {
 
     @Override
     public void readSensors() {
-
-    }
-
-    @Override
-    public void think() {
         if (follower == null) return;
         follower.update();
         pose = follower.pose();
@@ -246,12 +241,11 @@ public class Drivetrain implements Subsystem, PoseGetter {
     }
 
     @Override
+    public void think() {
+    }
+
+    @Override
     public void update() {
-        if (isMotorDisconnected()) return;
-        lf.setVelocity(lfPower);
-        lb.setVelocity(lbPower);
-        rf.setVelocity(rfPower);
-        rb.setVelocity(rbPower);
     }
 
     /** Stops all drive train motors on the robot. */

@@ -100,6 +100,7 @@ public abstract class BaseAuto2<T extends AutoPaths> extends OpMode {
         tm = robot.tm();
         intakeController = new IntakeController(robot.intake, tm);
         tm.print(name + " auto initialized", INFO);
+        tm.drawRobot(robot.drivetrain.follower);
         tm.update();
         robot.initBulkCache();
         Scheduler.reset();
@@ -149,10 +150,14 @@ public abstract class BaseAuto2<T extends AutoPaths> extends OpMode {
     @Override
     public final void stop() {
         Scheduler.reset();
+        robot.drivetrain.readSensors();
         robot.drivetrain.update();
         follower.stop();
         Pose pose = robot.drivetrain.pose();
-        if (pose != null) saveOdometryPosition(pose);
+        if (pose != null) {
+            saveOdometryPosition(pose);
+            tm.log("Position saved", "successful");
+        } else tm.log("Position saved", "unsuccessful");
         intakeController.stop();
         robot.limelight.stop();
         tm.showLogs();

@@ -11,13 +11,14 @@ import com.pedropathing.paths.Path;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.autos.BaseAuto2;
-import org.firstinspires.ftc.teamcode.autos.paths.Ball_Intake;
+import org.firstinspires.ftc.teamcode.autos.paths.Paths_Ball_Intake;
+import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.hivevision.CVPathGen;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Autonomous(name = "Ball Intake", group = "A")
-public class Auto_Ball_Intake extends BaseAuto2<Ball_Intake> {
+public class Auto_Ball_Intake extends BaseAuto2<Paths_Ball_Intake> {
     public final String baseName = "Ball Intake";
     public final String group = "A";
 
@@ -44,7 +45,8 @@ public class Auto_Ball_Intake extends BaseAuto2<Ball_Intake> {
                             intakenPollen.getAndIncrement();
                         } else if (turnAmount.get() < 8){
                             Pose pose = follower.pose();
-                            Path path1 = Paths.line(pose, pose.plus(new Pose(.000001, .000001))).linear(pose.heading(), pose.heading() - toRadians(45));
+                            Path path1 = Paths.line(pose, pose.plus(new Pose(.000001, .000001)))
+                                    .linear(pose.heading(), pose.heading() - toRadians(45));
                             follower.follow(path1);
                             turnAmount.getAndIncrement();
                         } else {
@@ -69,6 +71,6 @@ public class Auto_Ball_Intake extends BaseAuto2<Ball_Intake> {
 
     @Override
     protected void configure() {
-
+        super.configure(Paths_Ball_Intake.class, Color.BLUE, baseName);
     }
 }

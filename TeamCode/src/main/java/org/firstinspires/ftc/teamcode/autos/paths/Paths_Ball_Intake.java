@@ -4,8 +4,8 @@ import com.pedropathing.math.Pose;
 
 import org.firstinspires.ftc.teamcode.enums.Color;
 
-public class Ball_Intake extends AutoPaths {
-    public Ball_Intake(Color pathsColor, Color autoColor) {
+public class Paths_Ball_Intake extends AutoPaths {
+    public Paths_Ball_Intake(Color pathsColor, Color autoColor) {
         super(pathsColor, autoColor);
     }
 

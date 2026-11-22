@@ -8,7 +8,6 @@ import static org.firstinspires.ftc.teamcode.Utils.lerp;
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
@@ -28,6 +27,7 @@ public class DriveController {
         this.robot = robot;
         this.tm = robot.drivetrain.tm;
     }
+
     /**
      * Updates TeleOp drivetrain movement based on controllers without using Pedro Pathing
      *
@@ -37,6 +37,7 @@ public class DriveController {
     public void updateTeleOpNoPedro(Gamepad gp, boolean fieldCentric, double speed) {
         double axial, lateral, yaw, xMove, yMove;
         double speedMultiplier = lerp(gp.left_trigger, speeds[2], speeds[0]);
+        speed *= speedMultiplier;
 
         if (fieldCentric) {
             double angle = PI / 2 - robot.drivetrain.getYaw(RADIANS);

@@ -2,9 +2,6 @@ package org.firstinspires.ftc.teamcode.teleops;
 
 import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 
-import com.bylazar.gamepad.GamepadManager;
-import com.bylazar.gamepad.PanelsGamepad;
-import com.qualcomm.hardware.limelightvision.LLFieldMap;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -18,10 +15,6 @@ import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
-import org.firstinspires.ftc.teamcode.robot.ServoFred;
-import org.openftc.apriltag.AprilTagDetection;
-
-import java.util.List;
 
 @TeleOp(name = "TeleOp_AprilTag_Follower", group = "C")
 public class TeleOp_AprilTag_Follower extends OpMode {
@@ -30,7 +23,6 @@ public class TeleOp_AprilTag_Follower extends OpMode {
     Limelight3A limelight;
     private TelemetryUtils tm;
     private TeleOpController teleop;
-    private ServoFred fred;
     Gamepad gamepad;
     int targetID = 0;
 
@@ -38,7 +30,7 @@ public class TeleOp_AprilTag_Follower extends OpMode {
     public void init() {
         gamepad = new Gamepad();
         gamepad.left_stick_x = 0;
-        limelight = hardwareMap.get(Limelight3A.class, "Limelight");
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
         RobotState.color = RobotConstants.Color.BLUE;
         RobotState.auto = false;
         robot = new Robot(hardwareMap, telemetry, false);
@@ -51,21 +43,43 @@ public class TeleOp_AprilTag_Follower extends OpMode {
     }
 
     @Override
+    public void init_loop() {
+        LLResult result = limelight.getLatestResult();
+        for (LLResultTypes.FiducialResult fiducial : result.getFiducialResults()) {
+            tm.print(String.valueOf(fiducial.getTargetXPixels()));
+        }
+        tm.update();
+    }
+
+    // Main problem, not updating Joystick values
+    @Override
     public void loop() {
         LLResult result = limelight.getLatestResult();
+        robot.initBulkCache();
+        robot.updateBulkCache();
+        teleop.drivetrainLogic(false, 1);
         for (LLResultTypes.FiducialResult fiducial : result.getFiducialResults()) {
             if (targetID == 0) {
                 targetID = fiducial.getFiducialId();
-            } if (fiducial.getFiducialId() == targetID) {
-                if (gamepad == null) { tm.print("Gamepad returning null!"); }
-                else if (fiducial.getTargetXPixels() <= -0.5) { gamepad.left_stick_x = -0.25f; }
-                else if (fiducial.getTargetXPixels() >= 0.5) { gamepad.left_stick_x = 0.25f; }
-                else { gamepad.left_stick_x = 0f; }
+            }
+            // Could be problem, it could be detecting different AprilTag than the one it saw First
+            if (fiducial.getFiducialId() == targetID) {
+                tm.print(String.valueOf(fiducial.getTargetXPixels()));
+                if (gamepad == null) tm.print("Gamepad returning null!");
+                else if (fiducial.getTargetXPixels() <= 600)
+                    // Target pixels may be the wrong value, fine-tuning might help.
+                    gamepad.left_stick_x = -1f;
+                else if (fiducial.getTargetXPixels() >= 900)
+                    gamepad.left_stick_x = 1f;
+                else gamepad.left_stick_x = 0f;
+                // This is here for testing, I will probably remove this.
             }
         }
-        robot.initBulkCache();
-        robot.updateBulkCache();
-        teleop.drivetrainLogic(false, false, 200);
+        // Following prints are for reading the target ID (ID it saw first), left joystick X, and
+        // just checking if gamepad exists.
+        tm.print(String.valueOf(targetID));
+        tm.print(String.valueOf(gamepad.left_stick_x));
+        tm.print(String.valueOf(gamepad));
         tm.update();
 
 

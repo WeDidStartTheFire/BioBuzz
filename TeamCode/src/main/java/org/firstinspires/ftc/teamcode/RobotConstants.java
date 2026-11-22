@@ -1,26 +1,19 @@
 package org.firstinspires.ftc.teamcode;
 
 import static java.lang.Math.PI;
-import static java.lang.Math.toRadians;
 
 import androidx.annotation.NonNull;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 public class RobotConstants {
     public static final ElapsedTime runtime = new ElapsedTime();
     static final double SMALL_WHEEL_DIAMETER = 3.77953;
     static final double WHEEL_DIAMETER_INCHES = SMALL_WHEEL_DIAMETER;
-    static final double COUNTS_PER_MOTOR_REV = 537.6898395722;  // ((((1.0 + (46.0 / 17.0))) * (1.0 + (46.0 / 11.0))) * 28.0);
+    // ((((1.0 + (46.0 / 17.0))) * (1.0 + (46.0 / 11.0))) * 28.0);
+    static final double COUNTS_PER_MOTOR_REV = 537.6898395722;
     static final double DRIVE_GEAR_REDUCTION = 1.0; // No External Gearing
     public static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * PI);
 

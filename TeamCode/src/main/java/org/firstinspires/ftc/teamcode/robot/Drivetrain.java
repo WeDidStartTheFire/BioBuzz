@@ -46,7 +46,6 @@ public class Drivetrain {
     public boolean useOdometry;
 
     public TelemetryUtils tm;
-    private final HardwareMap hardwareMap;
 
 
     /**
@@ -58,7 +57,6 @@ public class Drivetrain {
      */
     public Drivetrain(HardwareMap hardwareMap, TelemetryUtils tm, boolean useOdom) {
         this.tm = tm;
-        this.hardwareMap = hardwareMap;
         otos = HardwareInitializer.init(hardwareMap, SparkFunOTOS.class, "otosSensor");
 
         imu = hardwareMap.get(IMU.class, "imu");
@@ -74,7 +72,8 @@ public class Drivetrain {
         rf = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "rightFront"); // Port 0
         rb = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "rightBack"); // Port 4
         if (isMotorDisconnected()) {
-            tm.warn(CRITICAL, "At least one drive train motor is not connected, so all will be disabled");
+            tm.warn(CRITICAL, "At least one drive train motor is not connected, so all will be " +
+                    "disabled");
             lf = lb = rf = rb = null;
         }
 
@@ -111,6 +110,7 @@ public class Drivetrain {
      * @param inches    Amount of inches to drive.
      * @param direction (opt.) Direction to drive if inches is zero.*
      */
+    @Deprecated
     public void drive(double inches, Dir direction) {
         if (isMotorDisconnected()) return;
 

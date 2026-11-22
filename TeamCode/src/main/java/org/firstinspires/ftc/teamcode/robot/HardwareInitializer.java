@@ -15,7 +15,8 @@ public class HardwareInitializer {
      * @param deviceName       the name of the device object to be retrieved
      * @return the requested device or null if not present
      */
-    public static @Nullable <T> T init(HardwareMap hardwareMap, Class<T> classOrInterface, String deviceName) {
+    public static @Nullable <T> T init(HardwareMap hardwareMap, Class<T> classOrInterface,
+                                       String deviceName) {
         T device;
         try {
             device = hardwareMap.get(classOrInterface, deviceName);

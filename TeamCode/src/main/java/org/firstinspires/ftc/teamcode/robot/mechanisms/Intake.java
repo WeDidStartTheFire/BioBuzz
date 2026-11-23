@@ -30,6 +30,7 @@ public class Intake implements Subsystem {
 
     public Intake(HardwareMap hardwareMap, TelemetryUtils tm) {
         intakeMotor = HardwareInitializer.init(hardwareMap, tm, INTAKE_MOTOR);
+        if (intakeMotor != null) intakeMotor.setDirection(REVERSE);
 
         intakeServoA = HardwareInitializer.init(hardwareMap, tm, INTAKE_SERVO_A);
         intakeServoB = HardwareInitializer.init(hardwareMap, tm, INTAKE_SERVO_B);

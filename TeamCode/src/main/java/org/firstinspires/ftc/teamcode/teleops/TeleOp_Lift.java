@@ -43,8 +43,8 @@ public class TeleOp_Lift extends OpMode {
     @Override
     public void init() {
         robot = new Robot(hardwareMap, telemetry, false);
+        tm = robot.drivetrain.tm;
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
-        tm = new TelemetryUtils(telemetry);
         lift = new Lift(hardwareMap, tm);
         claw = new Claw(hardwareMap, tm);
         currentState = State.IDLE;

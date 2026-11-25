@@ -6,7 +6,6 @@ import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.LAUNCHER_
 import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.launcherPIDF;
 import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.launcherReversePIDF;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.LAUNCHER_MOTOR;
-import static org.firstinspires.ftc.teamcode.enums.Hardware.LAUNCHER_MOTOR_A;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -95,7 +94,8 @@ public class Launcher implements Subsystem {
         spinning = true;
     }
 
-    public void calculate() {
+    @Override
+    public void think() {
         if (!spinning) return;
         double goalVel = getGoalVel();
         double motorVel = getCachedVel();
@@ -158,11 +158,6 @@ public class Launcher implements Subsystem {
     @Override
     public void readSensors() {
         getVel();
-    }
-
-    @Override
-    public void think() {
-
     }
 
     @Override

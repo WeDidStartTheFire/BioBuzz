@@ -83,7 +83,7 @@ public class TuneTurretPIDF extends OpMode {
         pidf = new PIDFCoefficients(P, 0, D, F);
         robot.turret.turretPIDController.setCoefficients(pidf);
         robot.turret.turretPIDController.setTarget(encoderGoal);
-        robot.turret.calculate(gamepad2.left_stick_button);
+        robot.turret.think(gamepad2.left_stick_button);
         double pos = robot.turret.getEncoderPosition();
         double error = pos - encoderGoal;
         tm.print("Position", pos, VERBOSE);

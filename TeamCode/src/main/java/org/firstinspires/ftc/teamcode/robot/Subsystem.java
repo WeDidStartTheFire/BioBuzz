@@ -4,6 +4,7 @@ public interface Subsystem {
     void readSensors();
 
     void think();
+
     void update();
 
     void stop();

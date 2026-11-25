@@ -129,7 +129,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
 
         robot.readSensors();
         robot.think();
-        robot.turret.calculate(true);
+        robot.turret.think(true);
         intakeController.update();
         robot.led.update();
 

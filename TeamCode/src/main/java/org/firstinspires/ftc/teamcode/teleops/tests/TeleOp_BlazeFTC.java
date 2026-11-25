@@ -41,9 +41,9 @@ public class TeleOp_BlazeFTC extends OpMode {
             // Every time this function is called, you should have new encoder data available in
             // your motors. Run PID loops here. I recommend doing it like this, report your data do
             // not do computation here:
-            robot.launcher.calculate();
-            robot.turret.calculate();
-            robot.intake.calculate();
+            robot.launcher.think();
+            robot.turret.think();
+            robot.intake.think();
             robot.writeExpansionHubMotors();
             tm.print("bulk loop time (ms)", elt.milliseconds(), VERBOSE);
             elt.reset();

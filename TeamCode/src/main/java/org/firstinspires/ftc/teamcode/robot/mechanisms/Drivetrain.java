@@ -138,13 +138,6 @@ public class Drivetrain implements Subsystem, PoseGetter {
         return validPose;
     }
 
-    public void update() {
-        if (follower == null) return;
-        follower.update();
-        pose = follower.pose();
-        vel = follower.velocity();
-    }
-
     public double getYaw(AngleUnit angleUnit) {
         if (imu == null) return 0;
         return imu.getRobotOrientation(INTRINSIC, ZYX, angleUnit).firstAngle;

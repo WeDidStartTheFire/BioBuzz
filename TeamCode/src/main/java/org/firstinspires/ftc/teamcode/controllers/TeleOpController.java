@@ -85,7 +85,7 @@ public class TeleOpController {
         }
         robot.readSensors();
         robot.turret.rotateManual(gamepad2.right_stick_x * .001 * ms);
-        robot.turret.calculate(true);
+        robot.turret.think(true);
         robot.led.update();
         robot.writeMotors();
         updateLauncherTeleOp();

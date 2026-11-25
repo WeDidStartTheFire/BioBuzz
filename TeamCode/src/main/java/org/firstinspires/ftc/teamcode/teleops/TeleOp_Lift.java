@@ -12,17 +12,42 @@ public class TeleOp_Lift extends OpMode {
     private Robot robot;
     private Lift lift;
 
+    enum State {
+        UP,
+        DOWN,
+        IDLE
+    }
+
+    State currentState;
+
+    private void updateStates() {
+        switch (currentState) {
+            case UP:
+                lift.setLiftMotorPower(1.0f);
+                break;
+            case DOWN:
+                lift.setLiftMotorPower(-1.0f);
+                break;
+            case IDLE:
+                lift.setLiftMotorPower(0.0f);
+                break;
+        }
+    }
+
     @Override
     public void init() {
         robot = new Robot(hardwareMap, telemetry, false);
         tm = new TelemetryUtils(telemetry);
         lift = new Lift(hardwareMap, tm);
+        currentState = State.IDLE;
     }
 
     @Override
     public void loop() {
-        if (gamepad1.dpadUpWasPressed()) {lift.setLiftMotorPower(1);}
-        else if (gamepad1.dpadDownWasPressed()) {lift.setLiftMotorPower(-1);}
-        else {lift.setLiftMotorPower(0);}
+        if (gamepad1.dpadUpWasPressed()) { currentState = State.UP; }
+        else if (gamepad1.dpadUpWasReleased()) { currentState = State.IDLE; }
+        else if (gamepad1.dpadDownWasPressed()) { currentState = State.DOWN; }
+        else if (gamepad1.dpadDownWasReleased()) { currentState = State.IDLE; }
+        updateStates();
     }
 }

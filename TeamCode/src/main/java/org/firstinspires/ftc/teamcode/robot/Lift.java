@@ -15,7 +15,7 @@ public class Lift {
     public Lift(HardwareMap hardwareMap, TelemetryUtils tm) {
         this.tm = tm;
 
-        liftMotor = HardwareInitializer.init(hardwareMap, DcMotor.class, "rightBack");
+        liftMotor = HardwareInitializer.init(hardwareMap, DcMotor.class, "lift");
         if (liftMotor == null) {tm.warn(TelemetryUtils.ErrorLevel.CRITICAL, "Lift motor is null!");}
     }
 

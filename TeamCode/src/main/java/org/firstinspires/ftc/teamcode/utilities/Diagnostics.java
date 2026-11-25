@@ -14,8 +14,7 @@ import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_MOTOR;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_SERVO_A;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_SERVO_B;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_SERVO_C;
-import static org.firstinspires.ftc.teamcode.enums.Hardware.LAUNCHER_MOTOR_A;
-import static org.firstinspires.ftc.teamcode.enums.Hardware.LAUNCHER_MOTOR_B;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.LAUNCHER_MOTOR;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.LED;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.LIMELIGHT;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.SPARKFUN_OTOS;
@@ -59,8 +58,7 @@ public class Diagnostics extends LinearOpMode {
         intakeServoB = HardwareInitializer.init(hardwareMap, tm, INTAKE_SERVO_B);
         intakeServoC = HardwareInitializer.init(hardwareMap, tm, INTAKE_SERVO_C);
 
-        launcherMotorA = HardwareInitializer.init(hardwareMap, tm, LAUNCHER_MOTOR_A);
-        launcherMotorB = HardwareInitializer.init(hardwareMap, tm, LAUNCHER_MOTOR_B);
+        launcherMotorA = HardwareInitializer.init(hardwareMap, tm, LAUNCHER_MOTOR);
 
         HardwareInitializer.init(hardwareMap, tm, LED);
 

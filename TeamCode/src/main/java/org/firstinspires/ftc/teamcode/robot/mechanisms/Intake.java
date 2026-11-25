@@ -34,6 +34,7 @@ public class Intake implements Subsystem {
 
     public Intake(HardwareMap hardwareMap, TelemetryUtils tm) {
         intakeMotor = new BlazeMotor(hardwareMap, tm, INTAKE_MOTOR);
+        if (intakeMotor != null) intakeMotor.setDirection(REVERSE);
 
         intakeServoA = HardwareInitializer.init(hardwareMap, tm, INTAKE_SERVO_A);
         intakeServoB = HardwareInitializer.init(hardwareMap, tm, INTAKE_SERVO_B);
@@ -43,6 +44,15 @@ public class Intake implements Subsystem {
 
     public void setBehavior(Behavior behavior) {
         this.behavior = behavior;
+    }
+
+    @Override
+    public void readSensors() {
+
+    }
+
+    @Override
+    public void think() {
         switch (behavior) {
             case OFF:
                 powerInside(0);
@@ -56,11 +66,8 @@ public class Intake implements Subsystem {
         }
     }
 
+    @Override
     public void update() {
-        calculate();
-    }
-
-    public void calculate() {
         if (abs(insidePower - cachedInsidePower) > .02) {
             cachedInsidePower = insidePower;
             if (intakeServoA != null) intakeServoA.setPower(insidePower);

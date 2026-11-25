@@ -4,7 +4,7 @@ import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.INF
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.Utility;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 
@@ -13,7 +13,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-@Utility(name = "Read Data", description = "Reads color sensor data from file")
+@TeleOp(name = "Read Data")
 @Configurable
 public class ReadData extends OpMode {
     private TelemetryUtils tm;

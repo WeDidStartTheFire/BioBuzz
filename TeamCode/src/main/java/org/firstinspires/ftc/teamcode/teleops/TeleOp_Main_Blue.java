@@ -22,13 +22,15 @@ public class TeleOp_Main_Blue extends OpMode {
     @Override
     public void init() {
         Robot robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.BLUE));
+        TelemetryUtils tm = robot.tm();
         robot.drivetrain.setPose(loadOdometryPosition());
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
-        TelemetryUtils tm = robot.tm();
         if (!robot.drivetrain.isPoseValid())
             tm.warn(MEDIUM, "Robot Centric driving will be used until the position is reset");
         else tm.print("Field Centric Driving", "✅", INFO);
         tm.print("Color", "🟦🟦Blue🟦🟦", INFO);
+        tm.drawRobot(robot.drivetrain.follower);
+        tm.updateOnlyPanels();
     }
 
     @Override

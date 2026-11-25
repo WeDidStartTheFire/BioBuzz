@@ -5,7 +5,6 @@ import static org.firstinspires.ftc.teamcode.constants.Positions.RED_PARK;
 import static org.firstinspires.ftc.teamcode.constants.ResetConstants.HARD_RESET_WAIT;
 import static org.firstinspires.ftc.teamcode.constants.ResetConstants.SOFT_RESET_WAIT;
 import static org.firstinspires.ftc.teamcode.enums.Color.BLUE;
-import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.DEBUG;
 import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.INFO;
 import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.VERBOSE;
 
@@ -30,7 +29,8 @@ public class TeleOpController {
     private final Follower follower;
     private final TelemetryUtils tm;
     private long lastUpdateTime;
-    private int totalMs;
+    private double totalMs;
+    private double rollingAvgDt;
     private int totalUpdates;
     private final Timer softZeroTimer = new Timer(), hardZeroTimer = new Timer();
     private boolean softResetDone = false, hardResetDone = false;
@@ -60,44 +60,49 @@ public class TeleOpController {
      * start() method of the OpMode.
      */
     public void start() {
-        robot.limelight.start();
     }
 
     /**
-     * Updates all robot systems including telemetry, odometry, and mechanisms.
-     * Should be called repeatedly during TeleOp operation.
+     * Updates all robot systems including telemetry, odometry, and mechanisms. Should be called
+     * repeatedly during TeleOp operation.
      */
     public void update() {
         long t = System.nanoTime();
-        int ms = 0;
+        double ms = 0;
         if (lastUpdateTime != 0) {
-            ms = Math.toIntExact((t - lastUpdateTime) / 1_000_000);
+            ms = (double) (t - lastUpdateTime) / 1_000_000;
+            rollingAvgDt = rollingAvgDt * 0.98 + ms * 0.02;
             totalMs += ms;
             totalUpdates++;
-            tm.print("dt (ms)", ms, VERBOSE);
-            tm.print("avg dt (ms)", totalMs / totalUpdates, VERBOSE);
+            tm.print("dt (ms)", ((int) (ms * 100)) / 100.0, VERBOSE);
+            tm.print("avg dt (ms)", ((int) (totalMs / totalUpdates * 100)) / 100.0, VERBOSE);
+            tm.print("rolling avg dt (ms)", ((int) (rollingAvgDt * 100)) / 100.0, VERBOSE);
         }
         lastUpdateTime = t;
         if (gamepad2.rightStickButtonWasPressed()) {
             robot.turret.setTarget(Turret.Target.MANUAL);
             robot.turret.toggleTargetChangeable();
         }
+        robot.readSensors();
         robot.turret.rotateManual(gamepad2.right_stick_x * .001 * ms);
         robot.turret.calculate(true);
         robot.led.update();
         robot.writeMotors();
+        updateLauncherTeleOp();
         updateIntake();
+        drivetrainLogic();
+        robot.think();
+        robot.update();
         tm.updateOnlyPanels(7);
     }
 
     /**
-     * Stops all robot systems and displays final logs.
-     * Should be called when TeleOp mode ends.
+     * Stops all robot systems and displays final logs. Should be called when TeleOp mode ends.
      */
     public void stop() {
         robot.stop();
         tm.showLogs();
-        tm.update();
+        tm.forceUpdate();
     }
 
     /**
@@ -163,14 +168,14 @@ public class TeleOpController {
         fieldCentric = fieldCentric && !robotCentric;
         tm.drawRobot(follower);
         Pose pose = robot.drivetrain.pose();
-        if (pose != null) tm.print(pose, DEBUG);
+        if (pose != null) tm.print(pose, VERBOSE);
         if (usePedro) driveController.updateTeleOp(gamepad1, fieldCentric);
         else driveController.updateTeleOpNoPedro(gamepad1, fieldCentric);
     }
 
     /**
-     * Handles intake control based on gamepad input.
-     * Manages intake, outtake, and automatic stopping.
+     * Handles intake control based on gamepad input. Manages intake, outtake, and automatic
+     * stopping.
      */
     public void updateIntake() {
         if (gamepad1.right_trigger > 0.3) intakeController.intake();
@@ -182,13 +187,15 @@ public class TeleOpController {
 
 
     /**
-     * Updates launcher controls during TeleOp mode.
-     * Handles manual spin, intake, and launching.
+     * Updates launcher controls during TeleOp mode. Handles manual spin, intake, and launching.
      */
     public void updateLauncherTeleOp() {
         if (gamepad2.dpadUpWasPressed()) robot.launcher.increaseVelocityModifier(25);
         if (gamepad2.dpadDownWasPressed()) robot.launcher.increaseVelocityModifier(-25);
+        if (gamepad2.right_trigger >= 0.5) robot.launcher.spin();
+        else robot.launcher.stop();
 
+        tm.print("Launcher Power", robot.launcher.getPower(), VERBOSE);
         tm.print("Launcher Vel", robot.launcher.getCachedVel(), VERBOSE);
         tm.print("Goal", robot.launcher.getGoalVel(), VERBOSE);
     }

@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 import org.firstinspires.ftc.teamcode.robot.Subsystem;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Configurable
@@ -39,6 +40,15 @@ public class Limelight implements Subsystem {
     }
 
     @Override
+    public void readSensors() {
+
+    }
+
+    @Override
+    public void think() {
+    }
+
+    @Override
     public void update() {
     }
 
@@ -57,6 +67,12 @@ public class Limelight implements Subsystem {
         LLResult result = getLatestResult();
         if (result == null || !result.isValid()) return null;
         return result.getFiducialResults();
+    }
+
+    public @Nullable List<LLResultTypes.DetectorResult> getDetector() {
+        LLResult result = getLatestResult();
+        if (result == null || !result.isValid()) return null;
+        return result.getDetectorResults();
     }
 
     public @Nullable LLResult getLatestResult() {
@@ -136,5 +152,27 @@ public class Limelight implements Subsystem {
         }
 
         return HivePosition.UNKNOWN;
+    }
+
+    public List<Double> getPositionXOfObjects() {
+        List<Double> positions = new ArrayList<>();
+        if (limelight != null && getDetector() != null) {
+            for (LLResultTypes.DetectorResult detector : getDetector()) {
+                positions.add(detector.getTargetXPixels());
+            }
+        }
+
+        return positions;
+    }
+
+    public List<Double> getPositionYOfObjects() {
+        List<Double> positions = new ArrayList<>();
+        if (limelight != null && getDetector() != null) {
+            for (LLResultTypes.DetectorResult detector : getDetector()) {
+                positions.add(detector.getTargetYPixels());
+            }
+        }
+
+        return positions;
     }
 }

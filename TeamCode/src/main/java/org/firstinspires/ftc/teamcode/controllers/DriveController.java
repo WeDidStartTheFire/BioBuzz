@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.controllers;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
-import static org.firstinspires.ftc.teamcode.ProjectileSolver.getLaunchSolution;
 import static org.firstinspires.ftc.teamcode.constants.ResetConstants.SNAP_THRESHOLD_DISTANCE;
 import static org.firstinspires.ftc.teamcode.constants.ResetConstants.SNAP_THRESHOLD_HEADING;
 import static org.firstinspires.ftc.teamcode.constants.ResetConstants.WALL_HIGH;
@@ -12,6 +11,7 @@ import static org.firstinspires.ftc.teamcode.constants.TeleOpConstants.speeds;
 import static org.firstinspires.ftc.teamcode.constants.TeleOpConstants.teleopHeadingPID;
 import static org.firstinspires.ftc.teamcode.enums.Color.BLUE;
 import static org.firstinspires.ftc.teamcode.enums.Color.RED;
+import static org.firstinspires.ftc.teamcode.utils.ProjectileSolver.getLaunchSolution;
 import static org.firstinspires.ftc.teamcode.utils.Utils.lerp;
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
@@ -25,9 +25,9 @@ import com.pedropathing.paths.Path;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.MatchContext;
-import org.firstinspires.ftc.teamcode.ProjectileSolver;
 import org.firstinspires.ftc.teamcode.pedro.controllers.PIDFController;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Drivetrain;
+import org.firstinspires.ftc.teamcode.utils.ProjectileSolver;
 
 public class DriveController {
 
@@ -146,7 +146,8 @@ public class DriveController {
         double turn = -gp.right_stick_x * speedMultiplier;
         DrivePowers powers = new DrivePowers(forward, lateral, turn);
         Pose pose = drivetrain.follower.pose();
-        powers = ManualDrive.fieldCentric(powers, pose == null ? 0 : pose.heading(), 0);
+        if (fieldCentric)
+            powers = ManualDrive.fieldCentric(powers, pose == null ? 0 : pose.heading(), 0);
 
         if (aiming && sol != null)
             ManualDrive.headingLock(drivetrain.follower, headingController, powers, sol.phi);

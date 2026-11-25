@@ -6,6 +6,7 @@ import static org.firstinspires.ftc.teamcode.utils.Utils.loadOdometryPosition;
 
 import com.pedropathing.math.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -16,6 +17,7 @@ import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 
 @TeleOp(name = "Limelight Test", group = "Test")
+@Disabled
 public class Test_Limelight extends OpMode {
     private TeleOpController teleop;
     private Robot robot;

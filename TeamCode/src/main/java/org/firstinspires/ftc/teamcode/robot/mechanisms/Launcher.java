@@ -2,11 +2,11 @@ package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
 import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.BALL_VEL_TO_MOTOR_VEL_COEFF;
 import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.BALL_VEL_TO_MOTOR_VEL_CONST;
+import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.LAUNCHER_VEL;
 import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.launcherPIDF;
 import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.launcherReversePIDF;
+import static org.firstinspires.ftc.teamcode.enums.Hardware.LAUNCHER_MOTOR;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.LAUNCHER_MOTOR_A;
-import static org.firstinspires.ftc.teamcode.enums.Hardware.LAUNCHER_MOTOR_B;
-import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.ErrorLevel.MEDIUM;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,7 +19,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.PoseGetter;
-import org.firstinspires.ftc.teamcode.ProjectileSolver;
 import org.firstinspires.ftc.teamcode.pedro.controllers.PIDFController;
 import org.firstinspires.ftc.teamcode.robot.BlazeMotor;
 import org.firstinspires.ftc.teamcode.robot.Subsystem;
@@ -29,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Launcher implements Subsystem {
 
-    private final BlazeMotor launcherMotorA, launcherMotorB;
+    private final @NonNull BlazeMotor launcherMotor;
     private final @NonNull Timer spinningTimer;
     private boolean spinning = false;
     private @Nullable Pose lastPose;
@@ -54,18 +53,11 @@ public class Launcher implements Subsystem {
         this.tm = tm;
         this.poseGetter = poseGetter;
         this.voltageSensor = voltageSensor;
-
-        launcherMotorA = new BlazeMotor(hardwareMap, tm, LAUNCHER_MOTOR_A);
-        launcherMotorA.setTargetPosition(0);
-        launcherMotorA.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherReversePIDF);
-        launcherMotorA.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        launcherMotorB = new BlazeMotor(hardwareMap, tm, LAUNCHER_MOTOR_B);
-        launcherMotorB.setDirection(DcMotorSimple.Direction.REVERSE);
-        launcherMotorB.setTargetPosition(0);
-        launcherMotorB.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherReversePIDF);
-        launcherMotorB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
+        launcherMotor = new BlazeMotor(hardwareMap, tm, LAUNCHER_MOTOR);
+        launcherMotor.setTargetPosition(0);
+        launcherMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherReversePIDF);
+        launcherMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        launcherMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         spinningTimer = new Timer();
         velocityModifier = 0;
     }
@@ -80,7 +72,8 @@ public class Launcher implements Subsystem {
      * @return The target velocity in ticks/sec
      */
     public double getGoalVel() {
-        return getGoalVel(poseGetter.pose(), poseGetter.vel());
+        return LAUNCHER_VEL;
+        //        return getGoalVel(poseGetter.pose(), poseGetter.vel());
     }
 
     /**
@@ -90,15 +83,7 @@ public class Launcher implements Subsystem {
      * @return The target velocity in ticks/sec
      */
     public double getGoalVel(@Nullable Pose pose, @Nullable Velocity vel) {
-        if (pose == null) return 0;
-        if (pose.equals(lastPose) && ((vel == null && lastVel == null) ||
-                vel != null && vel.equals(lastVel)))
-            return lastGoalVel + velocityModifier;
-        ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolution(pose, vel);
-        lastPose = pose;
-        lastVel = vel;
-        lastGoalVel = sol != null ? ballVelToMotorVel(sol.w) : 0;
-        return lastGoalVel + velocityModifier;
+        return 1000;
     }
 
     /**
@@ -113,14 +98,17 @@ public class Launcher implements Subsystem {
     public void calculate() {
         if (!spinning) return;
         double goalVel = getGoalVel();
-        double motorVel = getVel();
+        double motorVel = getCachedVel();
         pidController.setTarget(goalVel);
         pidController.updateFeedForwardInput(goalVel);
         pidController.updatePosition(motorVel);
-        double voltage = Math.max(voltageSensor.getVoltage(launcherMotorA.hardware.hub), 1e-6);
-        double power = pidController.calculate() * 12.0 / voltage;
-        launcherMotorA.setPower(power);
-        launcherMotorB.setPower(power);
+        double voltage = Math.max(voltageSensor.getVoltage(launcherMotor.hardware.hub), 1e-6);
+        power = pidController.calculate() * 12.0 / voltage;
+        launcherMotor.setPower(power);
+    }
+
+    public double getPower() {
+        return power;
     }
 
     /**
@@ -168,9 +156,18 @@ public class Launcher implements Subsystem {
     }
 
     @Override
+    public void readSensors() {
+        getVel();
+    }
+
+    @Override
+    public void think() {
+
+    }
+
+    @Override
     public void update() {
-        if (launcherMotorA != null) launcherMotorA.setPower(power);
-        if (launcherMotorB != null) launcherMotorB.setPower(power);
+        launcherMotor.setPower(power);
     }
 
     /**
@@ -179,8 +176,7 @@ public class Launcher implements Subsystem {
     @Override
     public void stop() {
         spinning = false;
-        launcherMotorA.writeZeroPower();
-        launcherMotorB.writeZeroPower();
+        launcherMotor.writeZeroPower();
     }
 
     /**
@@ -197,7 +193,7 @@ public class Launcher implements Subsystem {
      * @return Whether the launch motors are connected
      */
     public boolean isConnected() {
-        return launcherMotorA != null && launcherMotorB != null;
+        return launcherMotor.isInitialized();
     }
 
     /**
@@ -207,13 +203,7 @@ public class Launcher implements Subsystem {
      * motor's encoder is detected to be disconnected.
      */
     public double getVel() {
-        double aRawVel = launcherMotorA.getVelocity();
-        double bRawVel = launcherMotorB.getVelocity();
-        double aVel = aRawVel == 0 && bRawVel > 100 ? bRawVel : aRawVel;
-        double bVel = bRawVel == 0 && aRawVel > 100 ? aRawVel : bRawVel;
-        if (aRawVel == 0 && bRawVel > 100) tm.warn(MEDIUM, "Launch encoder A disconnected");
-        if (bRawVel == 0 && aRawVel > 100) tm.warn(MEDIUM, "Launch encoder B disconnected");
-        return cachedVel = (aVel + bVel) / 2;
+        return cachedVel = launcherMotor.getVelocity();
     }
 
     public double getCachedVel() {

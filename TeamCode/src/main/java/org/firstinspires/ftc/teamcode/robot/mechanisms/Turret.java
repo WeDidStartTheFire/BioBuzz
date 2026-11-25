@@ -37,17 +37,17 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.PoseGetter;
-import org.firstinspires.ftc.teamcode.ProjectileSolver;
 import org.firstinspires.ftc.teamcode.pedro.controllers.PIDFController;
 import org.firstinspires.ftc.teamcode.robot.BlazeMotor;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 import org.firstinspires.ftc.teamcode.robot.Subsystem;
+import org.firstinspires.ftc.teamcode.utils.ProjectileSolver;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 
 public class Turret implements Subsystem {
     public static boolean panelsResetTurret = false;
 
-    public final BlazeMotor turretMotor;
+    public final @NonNull BlazeMotor turretMotor;
     public final @Nullable TouchSensor turretTouchSensor;
     private final VoltageSensor voltageSensor;
     private Target target = Target.HOLD;
@@ -125,14 +125,14 @@ public class Turret implements Subsystem {
         reset = true;
     }
 
-    public void calculate() {
-        calculate(true);
+    public void think() {
+        think(true);
     }
 
     /**
      * Updates the turret PID and continues aiming at the target
      */
-    public void calculate(boolean canReset) {
+    public void think(boolean canReset) {
         if (!turretMotor.isInitialized()) return;
 
         double motorVel = turretMotor.getVelocity();
@@ -196,8 +196,12 @@ public class Turret implements Subsystem {
     }
 
     @Override
+    public void readSensors() {
+
+    }
+
+    @Override
     public void update() {
-        calculate();
     }
 
     /**
@@ -216,7 +220,6 @@ public class Turret implements Subsystem {
      * @param angle Turret angle, radians
      */
     private void setRobotCentricAngle(double angle) {
-        if (turretMotor == null) return;
         turretPIDController.setTarget(
                 Math.clamp((int) (normalizeAngle(toDegrees(angle) + TURRET_OFFSET)
                                 * TURRET_ENCODERS_PER_DEGREE + offset - TURRET_TS_OFFSET_ENC),

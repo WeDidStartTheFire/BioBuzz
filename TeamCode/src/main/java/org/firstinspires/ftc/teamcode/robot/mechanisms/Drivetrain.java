@@ -232,6 +232,22 @@ public class Drivetrain implements Subsystem, PoseGetter {
         rb.setZeroPowerBehavior(behavior);
     }
 
+    @Override
+    public void readSensors() {
+        if (follower == null) return;
+        follower.update();
+        pose = follower.pose();
+        vel = follower.velocity();
+    }
+
+    @Override
+    public void think() {
+    }
+
+    @Override
+    public void update() {
+    }
+
     /** Stops all drive train motors on the robot. */
     @Override
     public void stop() {

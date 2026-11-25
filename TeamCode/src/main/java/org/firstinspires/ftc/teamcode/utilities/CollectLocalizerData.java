@@ -9,6 +9,7 @@ import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.VER
 import static org.firstinspires.ftc.teamcode.utils.Utils.addLine;
 import static org.firstinspires.ftc.teamcode.utils.Utils.loadOdometryPosition;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -28,12 +29,14 @@ import java.io.IOException;
 import java.util.Arrays;
 
 @TeleOp(name = "Collect Localizer Data", group = "Test")
+@Configurable
 public class CollectLocalizerData extends OpMode {
     private TeleOpController teleop;
     private Robot robot;
     private TelemetryUtils tm;
     private BufferedWriter bw;
     private String followerType = "kalman";
+    public static boolean useGamepad = false;
 
     @Override
     public void init() {
@@ -110,6 +113,10 @@ public class CollectLocalizerData extends OpMode {
         robot.drivetrain.update();
         LLResult result = robot.limelight.getLatestResult();
         tm.drawRobot(robot.drivetrain.follower);
+        if (gamepad1.aWasPressed()) {
+            useGamepad = !useGamepad;
+            if (!useGamepad) robot.drivetrain.follower.stop();
+        }
         if (result != null) {
             tm.print("LL Pose MT1", result.getBotpose(), VERBOSE);
             tm.print("LL Std Dev MT1 X", result.getStddevMt1()[0], VERBOSE);
@@ -122,6 +129,7 @@ public class CollectLocalizerData extends OpMode {
             tm.print("LL Std Dev MT2 Heading", result.getStddevMt2()[5], VERBOSE);
         }
         addLine(bw, ((LoggingLocalizer) robot.drivetrain.follower.localizer).getLog());
+        if (useGamepad) teleop.drivetrainLogic();
         teleop.update();
     }
 

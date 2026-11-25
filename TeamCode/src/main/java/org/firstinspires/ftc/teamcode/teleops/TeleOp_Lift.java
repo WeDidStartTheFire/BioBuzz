@@ -29,13 +29,13 @@ public class TeleOp_Lift extends OpMode {
     private void updateStates() {
         switch (currentState) {
             case UP:
-                lift.setLiftMotorPower(-1f);
+                lift.setLiftMotorPower(1);
                 break;
             case DOWN:
-                lift.setLiftMotorPower(1f);
+                lift.setLiftMotorPower(-1);
                 break;
             case IDLE:
-                lift.setLiftMotorPower(0f);
+                lift.setLiftMotorPower(0.1);
                 break;
         }
     }

@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.teleops;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.Lift;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
+@TeleOp(name = "TeleOp_Lift", group = "A")
 public class TeleOp_Lift extends OpMode {
 
     private TelemetryUtils tm;

@@ -21,6 +21,11 @@ import dev.anygeneric.blazeftc.Hub;
 @TeleOp(name = "BlazeFTC Example", group = "C")
 public class TeleOp_BlazeFTC extends OpMode {
     private TeleOpController teleop;
+    private double bulkLoopTime;
+    private double totalBulkLoopTime = 0;
+    private int totalBulkLoops = 0;
+    private double rollingAvgBulkLoopTime = 0;
+    private TelemetryUtils tm;
 
     @Override
     public void init() {
@@ -28,8 +33,9 @@ public class TeleOp_BlazeFTC extends OpMode {
         BlazeDummyPlug.engageMotorAccel(hardwareMap);
         Robot robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, BLUE));
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
+        teleop.setDisableExHubWrites(true);
 
-        TelemetryUtils tm = robot.tm();
+        tm = robot.tm();
         if (!robot.drivetrain.isPoseValid())
             tm.warn(TelemetryUtils.ErrorLevel.MEDIUM, "Robot Centric driving will be used until " +
                     "the position is reset");
@@ -45,7 +51,17 @@ public class TeleOp_BlazeFTC extends OpMode {
             robot.turret.think();
             robot.intake.think();
             robot.writeExpansionHubMotors();
-            tm.print("bulk loop time (ms)", elt.milliseconds(), VERBOSE);
+            bulkLoopTime = elt.milliseconds();
+            if (rollingAvgBulkLoopTime == 0) {
+                rollingAvgBulkLoopTime--;
+                elt.reset();
+                return null;
+            }
+            if (rollingAvgBulkLoopTime == -1) rollingAvgBulkLoopTime = bulkLoopTime;
+            rollingAvgBulkLoopTime = rollingAvgBulkLoopTime * .98 + bulkLoopTime * .02;
+            totalBulkLoops++;
+            totalBulkLoopTime += bulkLoopTime;
+            //            tm.print("bulk loop time (ms)", elt.milliseconds(), VERBOSE);
             elt.reset();
             return null;
         });
@@ -68,9 +84,9 @@ public class TeleOp_BlazeFTC extends OpMode {
 
     @Override
     public void loop() {
-        teleop.drivetrainLogic();
-        teleop.updateIntake();
-        teleop.updateLauncherTeleOp();
+        tm.print("bulk loop time (ms)", bulkLoopTime, VERBOSE);
+        tm.print("avg bulk loop time (ms)", totalBulkLoopTime / totalBulkLoops, VERBOSE);
+        tm.print("rolling avg bulk loop time (ms)", rollingAvgBulkLoopTime, VERBOSE);
         teleop.update();
     }
 

@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.MatchContext;
 import org.firstinspires.ftc.teamcode.PoseGetter;
+import org.firstinspires.ftc.teamcode.enums.Hub;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.ColorSensor;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Drivetrain;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Intake;
@@ -15,8 +16,8 @@ import org.firstinspires.ftc.teamcode.robot.mechanisms.LED;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Launcher;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Limelight;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
-import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.VoltageSensor;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,12 +59,13 @@ public class Robot implements Subsystem {
         subsystems.add(turret);
     }
 
-    public void writeMotors() {
-        BlazeMotor.writeAllMotors();
+    public void writeMotors(boolean disableExHubWrites) {
+        if (disableExHubWrites) BlazeMotor.writeMotors(Hub.CONTROL);
+        else BlazeMotor.writeAllMotors();
     }
 
     public void writeExpansionHubMotors() {
-        BlazeMotor.writeAllMotors();
+        BlazeMotor.writeMotors(Hub.EXPANSION);
     }
 
     /**

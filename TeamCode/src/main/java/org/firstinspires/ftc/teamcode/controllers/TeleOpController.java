@@ -35,6 +35,7 @@ public class TeleOpController {
     private final Timer softZeroTimer = new Timer(), hardZeroTimer = new Timer();
     private boolean softResetDone = false, hardResetDone = false;
     private boolean robotCentric = false;
+    private boolean disableExHubWrites = false;
 
     /**
      * Initializes the TeleOpController with robot hardware and gamepads. To be called in the init()
@@ -55,6 +56,10 @@ public class TeleOpController {
         follower = robot.drivetrain.follower;
     }
 
+    public void setDisableExHubWrites(boolean bool) {
+        disableExHubWrites = bool;
+    }
+
     /**
      * Initializes robot systems for TeleOp mode and starts the limelight. To be called in the
      * start() method of the OpMode.
@@ -71,7 +76,7 @@ public class TeleOpController {
         double ms = 0;
         if (lastUpdateTime != 0) {
             ms = (double) (t - lastUpdateTime) / 1_000_000;
-            rollingAvgDt = rollingAvgDt * 0.98 + ms * 0.02;
+            rollingAvgDt = rollingAvgDt == 0 ? ms : rollingAvgDt * 0.98 + ms * 0.02;
             totalMs += ms;
             totalUpdates++;
             tm.print("dt (ms)", ((int) (ms * 100)) / 100.0, VERBOSE);
@@ -85,13 +90,11 @@ public class TeleOpController {
         }
         robot.readSensors();
         robot.turret.rotateManual(gamepad2.right_stick_x * .001 * ms);
-        robot.turret.think(true);
-        robot.led.update();
-        robot.writeMotors();
         updateLauncherTeleOp();
         updateIntake();
         drivetrainLogic();
         robot.think();
+        robot.writeMotors(disableExHubWrites);
         robot.update();
         tm.updateOnlyPanels(7);
     }

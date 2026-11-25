@@ -15,12 +15,16 @@ import org.firstinspires.ftc.teamcode.enums.Color;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtils;
 
+import dev.anygeneric.blazeftc.BlazeDummyPlug;
+
 @TeleOp(name = RED_TELEOP_NAME, group = "B")
 public class TeleOp_Main_Red extends OpMode {
     private TeleOpController teleop;
 
     @Override
     public void init() {
+        BlazeDummyPlug.initializeBlazeFTC(hardwareMap);
+        BlazeDummyPlug.engageMotorAccel(hardwareMap);
         Robot robot = new Robot(hardwareMap, telemetry, new MatchContext(TELEOP, Color.RED));
         TelemetryUtils tm = robot.tm();
         robot.drivetrain.setPose(loadOdometryPosition());

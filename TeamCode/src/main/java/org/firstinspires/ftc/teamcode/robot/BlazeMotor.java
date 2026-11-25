@@ -48,7 +48,7 @@ public class BlazeMotor implements DcMotorEx {
         double[] powers = new double[]{Double.NaN, Double.NaN, Double.NaN, Double.NaN};
         for (BlazeMotor motor : motors)
             if (motor.hardware.hub == hub) powers[motor.hardware.port] = motor.power;
-        setMotorPowers(1, powers[0], powers[1], powers[2], powers[3]);
+        setMotorPowers(hub == Hub.EXPANSION ? 1 : 0, powers[0], powers[1], powers[2], powers[3]);
     }
 
     public boolean isInitialized() {

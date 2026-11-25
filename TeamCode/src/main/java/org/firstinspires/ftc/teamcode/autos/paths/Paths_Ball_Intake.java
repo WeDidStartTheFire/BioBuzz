@@ -16,6 +16,5 @@ public class Paths_Ball_Intake extends AutoPaths {
 
     @Override
     protected void buildPoints() {
-
     }
 }

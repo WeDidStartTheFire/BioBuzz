@@ -43,12 +43,10 @@ public class LED implements Subsystem {
 
     @Override
     public void readSensors() {
-
     }
 
     @Override
     public void think() {
-
     }
 
     /**

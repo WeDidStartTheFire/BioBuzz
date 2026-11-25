@@ -41,7 +41,6 @@ public class Limelight implements Subsystem {
 
     @Override
     public void readSensors() {
-
     }
 
     @Override

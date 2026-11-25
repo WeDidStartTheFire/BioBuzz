@@ -125,6 +125,9 @@ public class Turret implements Subsystem {
         reset = true;
     }
 
+    /**
+     * Updates the turret PID and continues aiming at the target
+     */
     public void think() {
         think(true);
     }
@@ -132,14 +135,21 @@ public class Turret implements Subsystem {
     /**
      * Updates the turret PID and continues aiming at the target
      */
-    public void think(boolean canReset) {
+    public void think(boolean canReset, boolean canPrint) {
         if (!turretMotor.isInitialized()) return;
 
         double motorVel = turretMotor.getVelocity();
         resetLogic(canReset, motorVel);
         if (!reset && timesNotReset < MAX_TIMES_NOT_RESET) return;
 
-        calculatePower(motorVel);
+        calculatePower(motorVel, canPrint);
+    }
+
+    /**
+     * Updates the turret PID and continues aiming at the target
+     */
+    public void think(boolean canReset) {
+        think(canReset, true);
     }
 
     private void resetLogic(boolean canReset, double motorVel) {
@@ -156,7 +166,7 @@ public class Turret implements Subsystem {
         if (!reset) timesNotReset++;
     }
 
-    private void calculatePower(double motorVel) {
+    private void calculatePower(double motorVel, boolean canPrint) {
         if (!turretMotor.isInitialized()) return;
 
         if (target == Target.GOAL) {
@@ -172,10 +182,12 @@ public class Turret implements Subsystem {
             velocityPIDController.setTarget(-toDegrees(vel.omega) * TURRET_ENCODERS_PER_DEGREE);
         velocityPIDController.updatePosition(motorVel);
 
-        tm.print("Turret Pos", pos, VERBOSE);
-        tm.print("Turret Goal", turretPIDController.target(), VERBOSE);
-        tm.print("Turret Offset", offset, INFO);
-        tm.print("Turret Vel", motorVel, DEBUG);
+        if (canPrint) {
+            tm.print("Turret Pos", pos, VERBOSE);
+            tm.print("Turret Goal", turretPIDController.target(), VERBOSE);
+            tm.print("Turret Offset", offset, INFO);
+            tm.print("Turret Vel", motorVel, DEBUG);
+        }
 
         if (target == Target.NONE) return;
         double feedforward = vel == null ? 0 : -vel.omega * TURRET_FEEDFORWARD;
@@ -197,7 +209,6 @@ public class Turret implements Subsystem {
 
     @Override
     public void readSensors() {
-
     }
 
     @Override

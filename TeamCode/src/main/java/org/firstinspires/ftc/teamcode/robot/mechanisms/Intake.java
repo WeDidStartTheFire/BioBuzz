@@ -5,7 +5,6 @@ import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_MOTOR;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_SERVO_A;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_SERVO_B;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.INTAKE_SERVO_C;
-
 import static java.lang.Math.abs;
 
 import androidx.annotation.Nullable;
@@ -34,7 +33,7 @@ public class Intake implements Subsystem {
 
     public Intake(HardwareMap hardwareMap, TelemetryUtils tm) {
         intakeMotor = new BlazeMotor(hardwareMap, tm, INTAKE_MOTOR);
-        if (intakeMotor != null) intakeMotor.setDirection(REVERSE);
+        intakeMotor.setDirection(REVERSE);
 
         intakeServoA = HardwareInitializer.init(hardwareMap, tm, INTAKE_SERVO_A);
         intakeServoB = HardwareInitializer.init(hardwareMap, tm, INTAKE_SERVO_B);
@@ -48,7 +47,6 @@ public class Intake implements Subsystem {
 
     @Override
     public void readSensors() {
-
     }
 
     @Override
@@ -57,13 +55,17 @@ public class Intake implements Subsystem {
             case OFF:
                 powerInside(0);
                 powerOutside(0);
+                break;
             case INTAKE:
                 powerInside(-1);
                 powerOutside(-1);
+                break;
             case OUTTAKE:
                 powerInside(1);
                 powerOutside(1);
+                break;
         }
+        intakeMotor.setPower(outsidePower);
     }
 
     @Override
@@ -75,9 +77,9 @@ public class Intake implements Subsystem {
         }
         if (abs(outsidePower - cachedOutsidePower) > .02) {
             cachedOutsidePower = outsidePower;
-            intakeMotor.setPower(outsidePower);
             if (intakeServoB != null) intakeServoB.setPower(outsidePower);
         }
+        intakeMotor.setPower(outsidePower);
     }
 
     public void stop() {

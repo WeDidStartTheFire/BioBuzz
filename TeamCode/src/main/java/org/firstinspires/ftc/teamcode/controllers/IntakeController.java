@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.controllers;
 
+import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.PrintLevel.DEBUG;
+
 import com.pedropathing.utils.Timer;
 
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Intake;
@@ -42,12 +44,17 @@ public class IntakeController {
         switch (state) {
             case IDLE:
                 isBusy = false;
+                tm.print("Off", DEBUG);
                 intake.setBehavior(Intake.Behavior.OFF);
                 break;
             case INTAKE:
+                isBusy = true;
+                tm.print("Intake", DEBUG);
                 intake.setBehavior(Intake.Behavior.INTAKE);
                 break;
             case OUTTAKE:
+                isBusy = true;
+                tm.print("Outtake", DEBUG);
                 intake.setBehavior(Intake.Behavior.OUTTAKE);
                 break;
         }

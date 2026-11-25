@@ -38,7 +38,7 @@ public class TeleOp_Fred extends OpMode {
     public void loop() {
         robot.initBulkCache();
         robot.updateBulkCache();
-        teleop.drivetrainLogic(true, 200);
+        teleop.drivetrainLogic(true, 0.5);
         tm.print("Claw 1 Position", fred.getClawPosition(1));
         tm.print("Claw 2 Position", fred.getClawPosition(2));
         tm.update();

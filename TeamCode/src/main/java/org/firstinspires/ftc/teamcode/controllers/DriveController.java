@@ -50,7 +50,7 @@ public class DriveController {
             yMove = Math.cos(moveAngle) * magnitude;
         } else {
             xMove = gp.left_stick_x;
-            yMove = gp.left_stick_y;
+            yMove = -gp.left_stick_y;
         }
         axial = yMove * baseSpeedMultiplier;
         lateral = -xMove * baseSpeedMultiplier;

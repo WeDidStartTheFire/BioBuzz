@@ -7,7 +7,6 @@ import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.utils.Timer;
 
-import org.firstinspires.ftc.teamcode.autos.AutoStates;
 import org.firstinspires.ftc.teamcode.autos.BaseAuto2;
 import org.firstinspires.ftc.teamcode.enums.Color;
 
@@ -30,16 +29,16 @@ public class Auto_Test_Deadline extends BaseAuto2<org.firstinspires.ftc.teamcode
     private Command followPaths() {
         return sequential(
                 follow(follower, paths.startToShoot1()),
-                autoStates.setCurrentState(AutoStates.State.SHOOT),
+                autoStates.setCurrentState("SHOOT"),
                 wait(3, timer),
-                autoStates.setCurrentState(AutoStates.State.IDLE),
+                autoStates.setCurrentState("IDLE"),
                 follow(follower, paths.shoot1ToPickup()),
-                autoStates.setCurrentState(AutoStates.State.INTAKE),
+                autoStates.setCurrentState("INTAKE"),
                 wait(1, timer),
                 follow(follower, paths.pickupToShoot2()),
-                autoStates.setCurrentState(AutoStates.State.SHOOT),
+                autoStates.setCurrentState("SHOOT"),
                 wait(3, timer),
-                autoStates.setCurrentState(AutoStates.State.IDLE),
+                autoStates.setCurrentState("IDLE"),
                 follow(follower, paths.shootToFinish())
         );
     }

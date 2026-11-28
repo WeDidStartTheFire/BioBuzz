@@ -5,7 +5,6 @@ import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.BALL_VEL_
 import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.launcherPIDF;
 import static org.firstinspires.ftc.teamcode.constants.LaunchConstants.launcherReversePIDF;
 import static org.firstinspires.ftc.teamcode.enums.Hardware.LAUNCHER_MOTOR;
-import static org.firstinspires.ftc.teamcode.utils.TelemetryUtils.ErrorLevel.MEDIUM;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

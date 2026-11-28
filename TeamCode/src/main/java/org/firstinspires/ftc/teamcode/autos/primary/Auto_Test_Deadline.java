@@ -47,7 +47,8 @@ public class Auto_Test_Deadline extends BaseAuto2<org.firstinspires.ftc.teamcode
     protected Command getAutoRoutine() {
         return deadline(
                 deadline(
-                        followPaths() // Deadline, everything will stop when this is finished.
+                        followPaths(), // Deadline, everything will stop when this is finished.
+                        autoStates.update()
                 )
         );
     }
